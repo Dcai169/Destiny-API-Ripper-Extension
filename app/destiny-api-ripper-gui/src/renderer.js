@@ -8,23 +8,34 @@ items = JSON.parse(fs.readFileSync('./data/item_definitions.json'));
 
 function createItemTile(item) {
     let tileRoot = $('<div></div>', {
-        class: 'item-tile container p-1', 
-        id: item.hash
+        class: 'item-tile d-flex align-items-center p-1', 
+        id: item.hash,
     });
     tileRoot.append($('<img></img>', {
         src: `https://bungie.net${item.displayProperties.icon}`,
         referrerpolicy: 'no-referrer',
         crossorigin: 'None'
     }));
-    tileRoot.append($('<div></div>'))
-    tileRoot.append($(`<h6></h6>`, {
+
+    let textDiv = $('<div></div>', {
+        class: 'tile-text d-inline-flex p-2'
+    })
+
+    let textContainer = $('<div></div>', {});
+
+    textContainer.append($(`<h6></h6>`, {
         text: (item.displayProperties.name ? item.displayProperties.name : undefined),
         class: 'm-0'
     }));
-    tileRoot.append($(`<small></small>`, {
+
+    textContainer.append($(`<small></small>`, {
         text: (item.itemTypeAndTierDisplayName ? item.itemTypeAndTierDisplayName : undefined),
         class: 'fst-italic'
     }));
+
+    textDiv.append(textContainer);
+    tileRoot.append(textDiv);
+
     return tileRoot;
 }
 

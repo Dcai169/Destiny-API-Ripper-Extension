@@ -9,6 +9,11 @@
   <script>require('popper.js');</script>
   <script>require('bootstrap');</script>
   <script defer src="renderer.js"></script>
+  <style>
+    .item-tile:hover {
+      background-color: gray;
+    }
+  </style>
 </head>
 
 <body style="display: grid; grid-template-columns: 1fr minmax(0px, 30%);">
@@ -25,7 +30,7 @@
       </form>
     </div>
     <!-- Body -->
-    <div class="container" style="display: grid; grid-template: auto;" id="item-container" style="overflow-y: scroll;" tabindex="0" disabled="disabled">
+    <div class="m-2" style="display: flex; flex-flow: row wrap; overflow-y: auto; height:57.35em;" id="item-container" tabindex="0" disabled="disabled">
 
     </div>
   </div>

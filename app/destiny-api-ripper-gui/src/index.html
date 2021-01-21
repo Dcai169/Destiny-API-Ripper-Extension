@@ -17,7 +17,7 @@
     <div class="container d-flex justify-content-end">
       <form class="d-flex p-2">
         <div class="d-inline p-1">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
         </div>
         <div class="d-inline p-1">
           <button class="btn btn-primary" type="submit">Search</button>
@@ -25,7 +25,7 @@
       </form>
     </div>
     <!-- Body -->
-    <div class="container d-grid" id="item-container" style="overflow-y: scroll;" tabindex="0" disabled="disabled">
+    <div class="container" style="display: grid; grid-template: auto;" id="item-container" style="overflow-y: scroll;" tabindex="0" disabled="disabled">
 
     </div>
   </div>

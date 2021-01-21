@@ -8,62 +8,41 @@
   <script>const $ = require('jquery');</script>
   <script>require('popper.js');</script>
   <script>require('bootstrap');</script>
+  <script defer src="renderer.js"></script>
 </head>
 
-<body style="display: grid; grid-template-columns: 1fr minmax(0px, 30%);">    
-    <div style="display: grid; grid-template-rows: 1fr minmax(0px, 40vh);">
-      <div>
-        <!-- Header -->
-        <div class="container d-flex flex-row-reverse">
-          <form class="d-flex p-2">
-            <div class="d-inline">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            </div>
-            <div class="d-inline">
-              <button class="btn btn-primary" type="submit">Search</button>
-            </div>
-          </form>
+<body style="display: grid; grid-template-columns: 1fr minmax(0px, 30%);">
+  <div>
+    <!-- Header -->
+    <div class="container d-flex justify-content-end">
+      <form class="d-flex p-2">
+        <div class="d-inline p-1">
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
         </div>
-        <!-- Body -->
-        <div class="container d-grid" id="item-container" style="overflow-y: scroll;" tabindex="0" disabled="disabled" >
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ut scelerisque felis, quis bibendum nunc. Cras bibendum, nisl ac ultricies tincidunt, nisi nunc gravida felis, sit amet venenatis eros est id velit. Vivamus sit amet nunc id leo vestibulum pellentesque sit amet eu mi. Sed malesuada ut felis sed posuere. Nulla fringilla neque in felis sagittis, ac tempus sapien pharetra. Vestibulum a eros eget ipsum feugiat facilisis. Vivamus tincidunt ut quam consequat auctor. Nunc convallis molestie nulla, sit amet ornare tortor lacinia sed. Nulla mollis massa id scelerisque tincidunt. Ut a elit orci. Praesent volutpat leo sit amet semper lobortis. Sed ornare porttitor luctus. Nullam tempus sem eget risus ultrices scelerisque.
-            
-            Vestibulum elit sapien, dapibus quis lacus eu, bibendum auctor sem. Nulla faucibus arcu diam, eget ornare felis sodales nec. Cras et ornare lorem. Nunc eu enim vel orci accumsan ultrices non at justo. Etiam consequat, mauris nec feugiat iaculis, leo urna malesuada velit, fringilla placerat purus velit vitae ante. Nunc et dignissim metus. Donec id arcu et arcu interdum aliquam at et ante. Phasellus pellentesque dolor porta augue tincidunt, eu tempor nunc elementum. Maecenas et nunc interdum dolor congue aliquam sit amet eget enim.
-            
-            Etiam tempus sem at tellus dignissim, ac vestibulum elit varius. Donec pharetra, velit at blandit mattis, turpis lectus lacinia turpis, varius tincidunt erat arcu nec risus. Nunc convallis nulla ipsum, eu gravida lacus bibendum ut. Fusce dictum purus sed mauris sodales, placerat vestibulum nibh cursus. Donec eu libero accumsan, dignissim enim sit amet, aliquet ex. Praesent dapibus pellentesque arcu. Curabitur volutpat, massa ac imperdiet rutrum, orci massa euismod tortor, ut dictum est purus id mi. Vestibulum posuere velit eu venenatis dapibus. Nunc nec ex ornare, viverra erat vitae, sollicitudin ligula. Duis consequat augue in molestie euismod. Mauris quis dui pulvinar, facilisis nisi ac, imperdiet ligula.
-            
-            Proin commodo elit eu erat vehicula lacinia. In imperdiet auctor ipsum. Sed nulla augue, fringilla a sollicitudin et, fringilla id erat. Phasellus posuere, metus non finibus finibus, dolor nulla fringilla diam, laoreet rutrum purus enim non sem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed tellus urna. In eu ante scelerisque, blandit tellus non, lacinia nisi. Sed tempus eros consequat est rhoncus varius.
-            
-            Morbi ornare vitae ante id blandit. Suspendisse eros dolor, condimentum ac interdum id, convallis sed dui. Morbi egestas nunc at metus suscipit, nec auctor diam vestibulum. Sed eget ultricies enim, sed laoreet nibh. Cras consequat malesuada ante interdum sollicitudin. Proin at ex turpis. Nulla mollis erat suscipit commodo tincidunt. Nullam imperdiet justo eu mi posuere vehicula. Donec non elit urna. Sed auctor libero ipsum, eget placerat tortor placerat vel. Vestibulum aliquam sed ligula eget dignissim. Phasellus ante eros, fringilla vitae eleifend ac, commodo vitae mi.
-            
-            Sed efficitur mauris dui, sed fermentum turpis varius et. Vivamus ut diam vel lorem pharetra facilisis. Curabitur at est tincidunt, maximus nunc ac, cursus ipsum. Sed feugiat eros ante, at porta odio aliquet nec. Sed sed ante elementum, dapibus neque eget, vestibulum libero. Donec vel tempor dolor. Vestibulum lacinia vitae ipsum sed auctor. Vestibulum auctor tincidunt justo, vel accumsan nisi semper aliquet. Vivamus varius neque sit amet massa elementum, ac imperdiet mauris eleifend.
-            
-            Phasellus sodales, purus at volutpat dictum, enim ipsum tristique ligula, in aliquet mi erat sit amet lectus. Donec non facilisis sem, eget tincidunt dolor. Vivamus vestibulum ligula et massa consequat fringilla accumsan ut nibh. Pellentesque finibus laoreet nulla eu aliquet. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Ut nunc augue, ultricies id lectus eget, viverra pulvinar neque. In et tempor elit. Morbi vel sollicitudin ligula.
-            
-            Donec nec orci ipsum. Quisque sapien odio, pharetra sit amet consequat et, egestas eget massa. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc id auctor odio. Phasellus sem quam, iaculis quis ligula et, sollicitudin imperdiet est. Donec ut nibh pretium, fringilla lacus posuere, pulvinar mauris. In maximus vulputate felis, eget consequat justo mattis quis. Suspendisse consequat hendrerit luctus. Donec id arcu in erat scelerisque egestas. Integer vel ipsum molestie, consectetur justo at, porta diam. Aenean non ultrices erat. Proin at diam nec nisl fringilla dictum non vitae neque. Aliquam euismod mattis sodales.
-            
-            Mauris blandit, purus et luctus lacinia, urna elit suscipit purus, nec mollis lacus dui vel turpis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed posuere imperdiet nibh a interdum. Suspendisse fringilla, augue ut pellentesque rutrum, urna nisi feugiat velit, nec porta odio quam at ipsum. Suspendisse eu orci non eros lacinia dignissim vitae eget elit. Pellentesque vitae convallis diam. Suspendisse eu mi elementum, semper ante fermentum, mattis magna. Mauris lobortis ipsum quis elit tincidunt condimentum. Vivamus ac dictum purus, ut dapibus ante. Aliquam ut massa congue, suscipit lorem at, ultrices leo. Vestibulum euismod velit at ullamcorper semper. Mauris malesuada nulla vel elit tincidunt, id rutrum neque semper.
-            
-            In sagittis et nisi vel finibus. Duis sit amet accumsan quam. Etiam id ultricies augue, rutrum rutrum erat. Nulla diam mi, tincidunt eu interdum ac, rutrum in nunc. Fusce rhoncus consequat turpis vel volutpat. Etiam commodo viverra lectus, maximus dignissim lorem condimentum ac. Aliquam in ipsum erat. Fusce faucibus elementum urna, vel venenatis ligula. Sed nec massa at tellus efficitur interdum non non nunc. Curabitur commodo purus nec nunc venenatis feugiat. Quisque sollicitudin posuere lobortis. Quisque et ligula elementum, tristique neque sit amet, dictum nisl. Fusce ut diam vel quam dignissim pharetra. Fusce rutrum ornare velit eget fringilla. Nullam lectus risus, viverra at luctus ut, aliquam nec leo. </p>
+        <div class="d-inline p-1">
+          <button class="btn btn-primary" type="submit">Search</button>
         </div>
-      </div>
-      <!-- Terminal Output -->
-      <div class="bg-dark">
+      </form>
+    </div>
+    <!-- Body -->
+    <div class="container d-grid" id="item-container" style="overflow-y: scroll;" tabindex="0" disabled="disabled">
 
-      </div>
     </div>
   </div>
   <!-- Queue -->
   <div class="container bg-secondary" style="height: 100vh;">
-    <div class="container p-2">
-      <div class="d-inline">
-        <button type="button" class="btn btn-info">Clear</button>
+    <div class="container p-2 d-flex justify-content-center" id="queue-buttons">
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-outline-danger">Clear Queue</button>
       </div>
-      <div class="d-inline">
-        <button type="button" class="btn btn-success">Execute</button>
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-info">Add Item</button>
+      </div>
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-primary">Execute Queue</button>
       </div>
     </div>
-    <div class="container">
+    <div class="container p-2">
       <ul id="extract-queue">
 
       </ul>

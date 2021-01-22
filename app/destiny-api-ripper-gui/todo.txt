@@ -2,6 +2,15 @@ UI/UX
 * Put items back into #item-container in the correct order by using .after() instead of .append()
 * Implement search
 * Implement filters
+    * Armor
+        * Class (Hunter, Titan, Warlock)
+        * Armor Type (Head, Chest, Arms, Legs, Class)
+    * Weapons
+        * Ammo Type (Primary, Secondary, Heavy)
+        * Damage Type (Kinetic, Void, Solar, Arc, Stasis)
+        * Weapon Type (Shotty, LMG, Auto, Pulse, etc)
+    * Rarity
+    * Events
 * Check internet connection before ripping
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Implement user supplied hash (USP) queue items
@@ -16,7 +25,7 @@ UI/UX
 * Add a locale picker (en, de, fr, pl, ru, es-mx, pt-br, etc)
 
 Ripping
-* Implement Ripping
+* Implement API Ripping
     * Call CGT with proper command line arguments
 * Handle errors (Invalid hash, etc)
 

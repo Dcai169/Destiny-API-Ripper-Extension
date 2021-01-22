@@ -16,21 +16,21 @@
   </style>
 </head>
 
-<body style="display: grid; grid-template-columns: 1fr minmax(0px, 30%);">
+<body style="display: grid; grid-template-columns: 1fr minmax(0px, 25%);">
   <div>
     <!-- Header -->
     <div class="container d-flex justify-content-end">
-      <form class="d-flex p-2">
+      <div class="d-flex p-2">
         <div class="d-inline p-1">
           <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
         </div>
         <div class="d-inline p-1">
-          <button class="btn btn-primary" type="submit">Search</button>
+          <button class="btn btn-primary" id="reset-button">Refresh</button>
         </div>
-      </form>
+      </div>
     </div>
     <!-- Body -->
-    <div class="m-2" style="display: flex; flex-flow: row wrap; overflow-y: auto; height:57.35em;" id="item-container" tabindex="0" disabled="disabled">
+    <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:57.35em; justify-content: flex-start;" id="item-container" tabindex="0" disabled="disabled">
 
     </div>
   </div>
@@ -38,19 +38,19 @@
   <div class="container bg-secondary" style="height: 100vh;">
     <div class="container p-2 d-flex justify-content-center" id="queue-buttons">
       <div class="d-inline p-1">
-        <button type="button" class="btn btn-outline-danger">Clear Queue</button>
+        <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
       </div>
       <div class="d-inline p-1">
-        <button type="button" class="btn btn-info">Add Item</button>
+        <button type="button" class="btn btn-info" id="queue-add-button">Add Hash</button>
       </div>
       <div class="d-inline p-1">
-        <button type="button" class="btn btn-primary">Execute Queue</button>
+        <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
       </div>
     </div>
     <div class="container p-2">
-      <ul id="extract-queue">
+      <div id="extract-queue" style="overflow: auto; height:57.35em;" tabindex="0" disabled="disabled">
 
-      </ul>
+      </div>
     </div>
   </div>
 </body>

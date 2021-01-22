@@ -25,12 +25,12 @@
           <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
         </div>
         <div class="d-inline p-1">
-          <button class="btn btn-primary" id="reset-button">Refresh</button>
+          <button class="btn btn-primary" id="search-button">Search</button>
         </div>
       </div>
     </div>
     <!-- Body -->
-    <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:57.35em; justify-content: flex-start;" id="item-container" tabindex="0" disabled="disabled">
+    <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:57.35em; justify-content: flex-start;" id="item-container" tabindex="-1" disabled="disabled">
 
     </div>
   </div>
@@ -47,8 +47,8 @@
         <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
       </div>
     </div>
-    <div class="container p-2">
-      <div id="extract-queue" style="overflow: auto; height:57.35em;" tabindex="0" disabled="disabled">
+    <div class="container p-2" tabindex="-1" disabled="disabled">
+      <div id="extract-queue" style="overflow: auto; height:57.35em;" tabindex="-1" disabled="disabled">
 
       </div>
     </div>

@@ -1,0 +1,31 @@
+UI/UX
+* Put items back into #item-container in the correct order by using .after() instead of .append()
+* Implement search
+* Implement filters
+* Check internet connection before ripping
+* Add button to item-tile to bypass using the queue (ie a RIP NOW button)
+* Implement user supplied hash (USP) queue items
+* Add button to reload item_definitions.json from Bnet API
+* Add User Preferences (Default output path, Sorting order, Show folder after rip)
+* Restore previous session (Queue, Active filters, Search Query, etc)
+* Add season badges to icons
+* Add darkmode
+* Add Destiny 1 support
+    * Aquire Destiny 1 manifest
+* Add mass selection mode
+* Add a locale picker (en, de, fr, pl, ru, es-mx, pt-br, etc)
+
+Ripping
+* Implement Ripping
+    * Call CGT with proper command line arguments
+* Handle errors (Invalid hash, etc)
+
+Maintainance/Updates
+* CGT
+    * Aquire Collada Generator Tool (CGT) from GitHub API 
+    * Check CGT hash
+    * Unpack CGT
+* Destiny Manifest
+    * Read manifest from Bnet API (Once every three monthsish)
+    * Filter manifest to only rippable items (NO Default shader/ornament/solstice glows/event items)
+    * Update local copy

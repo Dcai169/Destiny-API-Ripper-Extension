@@ -5,12 +5,10 @@ const { stdout } = require('process');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
-let queueButtons = $('#queue-buttons');
-let searchBox = $('#search-box');
 
 let outputPath = './output';
 let CGTPath = './DestinyColladaGenerator.exe'
-let items = JSON.parse(fs.readFileSync('./data/item_definitions.json'));
+let itemDefinitions = JSON.parse(fs.readFileSync('./data/item_definitions.json'));
 
 function createItemTile(item) {
     let tileRoot = $('<div></div>', {
@@ -62,19 +60,24 @@ function itemTileClickHandler(event) {
     }
 }
 
+function searchBoxUpdate(event) {
+    let searchQuery = event.target.value;
+    console.log(searchQuery);
+}
+
 function loadItems() {
     itemContainer.empty();
     queue.empty();
-    console.log(`${items.length} items indexed.`)
-    items.forEach(item => {
+    console.log(`${itemDefinitions.length} items indexed.`)
+    itemDefinitions.forEach(item => {
         itemContainer.append(createItemTile(item));
     });
-    console.log(`${items.length} items loaded.`)
+    console.log(`${itemDefinitions.length} items loaded.`)
 }
 
 function executeQueue() {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
-    let commandArgs = ['2', '-o', outputPath] + [...queue[0].children].map(item => { return item.id })
+    let commandArgs = ['2', '-o', outputPath].concat([...queue[0].children].map(item => { return item.id }));
     let child = execFile(CGTPath, commandArgs, (err, stdout, stderr) => {
         if (err) {
             throw err;
@@ -90,3 +93,4 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 document.getElementById('queue-clear-button').addEventListener('click', loadItems);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
+document.getElementById('search-box').addEventListener('input', searchBoxUpdate);

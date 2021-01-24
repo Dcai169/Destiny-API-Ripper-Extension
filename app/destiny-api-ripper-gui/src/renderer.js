@@ -7,6 +7,7 @@ let queue = $('#extract-queue');
 let outputPath = './output';
 let CGTPath = './DestinyColladaGenerator.exe'
 let itemDefinitions = JSON.parse(fs.readFileSync('./data/item_definitions.json'));
+let searchDebounceTimeout;
 
 // function that finds the closest value in a list of numbers
 function closest(searchTarget, targetList) {
@@ -56,7 +57,7 @@ function createItemTile(item) {
 }
 
 function addItemToContainer(item) {
-    let containerContents = [...itemContainer.eq(0).children()].map(item => {return item.dataset.index});
+    let containerContents = [...itemContainer.eq(0).children()].map(item => { return item.dataset.index });
     if (item.data('index') < Math.min(...containerContents)) {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
     } else {
@@ -79,19 +80,23 @@ function itemTileClickHandler(event) {
 }
 
 function searchBoxUpdate(event) {
-    if (event.target.value) {
-        itemContainer.eq(0).children().each((_, element) => {
-            if ($(`#${element.id}`).attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
+    clearTimeout(searchDebounceTimeout);
+    
+    searchDebounceTimeout = setTimeout(() => {
+        if (event.target.value) {
+            itemContainer.eq(0).children().each((_, element) => {
+                if ($(`#${element.id}`).attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
+                    $(`#${element.id}`).removeClass('hidden').addClass('p-1');
+                } else {
+                    $(`#${element.id}`).removeClass('p-1').addClass('hidden');
+                }
+            });
+        } else {
+            itemContainer.eq(0).children().each((_, element) => {
                 $(`#${element.id}`).removeClass('hidden').addClass('p-1');
-            } else {
-                $(`#${element.id}`).removeClass('p-1').addClass('hidden');
-            }
-        });
-    } else {
-        itemContainer.eq(0).children().each((_, element) => {
-            $(`#${element.id}`).removeClass('hidden').addClass('p-1');
-        });
-    }    
+            });
+        }
+    }, 750);
 }
 
 function loadItems() {

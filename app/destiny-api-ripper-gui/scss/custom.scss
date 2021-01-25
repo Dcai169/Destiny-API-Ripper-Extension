@@ -1,0 +1,29 @@
+// Required
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+
+// Optional
+@import "../node_modules/bootstrap/scss/reboot";
+
+@font-face {
+    font-family: 'NHG Display';
+    src: local('../fonts/NHaasGroteskDSPro-55Rg.woff2') format('woff2');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NHG Display';
+    src: local('../fonts/NHaasGroteskDSPro-56It.woff2') format('woff2');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'NHG Display';
+    src: local('../fonts/NHaasGroteskDSPro-65Md.woff2') format('woff2');
+    font-weight: bold;
+}
+
+$font-family-sans-serif: 'NHG';
+
+@import "../node_modules/bootstrap/scss/bootstrap.scss";

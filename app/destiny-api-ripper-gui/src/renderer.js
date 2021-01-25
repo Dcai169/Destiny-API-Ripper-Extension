@@ -44,12 +44,12 @@ function createItemTile(item) {
     textContainer.append($(`<h6></h6>`, {
         text: (item.displayProperties.name ? item.displayProperties.name : undefined),
         class: 'm-0',
-        style: 'font-size: 110%'
+        style: `color: var(--${item.inventory.tierTypeName.toLowerCase()}-color)`
     }));
-    textContainer.append($(`<small></small>`, {
-        text: (item.itemTypeAndTierDisplayName ? item.itemTypeAndTierDisplayName : undefined),
-        class: 'fst-italic',
-        style: 'font-size: 110%'
+    textContainer.append($(`<i></i>`, {
+        text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
+        class: 'fs-5 item-type',
+        // style: 'font-size: 110%'
     }));
 
     textDiv.append(textContainer);

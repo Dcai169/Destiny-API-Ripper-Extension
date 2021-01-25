@@ -1,6 +1,42 @@
+@font-face {
+  font-family: "Neue Haas Grotesk Display";
+  src: url("./fonts/NHaasGroteskDSPro-55Rg.woff2") format('woff2');
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Neue Haas Grotesk Display";
+  src: url("./fonts/NHaasGroteskDSPro-56It.woff2") format('woff2');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "Neue Haas Grotesk Display";
+  src: url("./fonts/NHaasGroteskDSPro-65Md.woff2") format('woff2');
+  font-weight: bold;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  margin: auto;
-  max-width: 38rem;
-  padding: 2rem;
+  font-family: "Neue Haas Grotesk Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  scrollbar-color: dark;
+}
+
+.item-tile:hover {
+  background-color: gray;
+}
+
+:root {
+  --common-color: #C3BCB4;
+  --uncommon-color: #366F42;
+  --rare-color: #5076A3;
+  --legendary-color: #513065;
+  --exotic-color: #CEAE32;
+}
+
+.hidden {
+  content-visibility: hidden;
+}
+
+.item-type {
+  color:black;
 }

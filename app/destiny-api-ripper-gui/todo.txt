@@ -1,6 +1,4 @@
 UI/UX
-* Put items back into #item-container in the correct order by using .after() instead of .append()
-* Implement search
 * Implement filters
     * Armor
         * Class (Hunter, Titan, Warlock)
@@ -38,3 +36,7 @@ Maintainance/Updates
     * Read manifest from Bnet API (Once every three monthsish)
     * Filter manifest to only rippable items (NO Default shader/ornament/solstice glows/event items)
     * Update local copy
+
+DONE
+* Put items back into #item-container in the correct order by using .after() instead of .append()
+* Implement search

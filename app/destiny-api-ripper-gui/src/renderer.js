@@ -43,11 +43,13 @@ function createItemTile(item) {
     let textContainer = $('<div></div>', {});
     textContainer.append($(`<h6></h6>`, {
         text: (item.displayProperties.name ? item.displayProperties.name : undefined),
-        class: 'm-0'
+        class: 'm-0',
+        style: 'font-size: 110%'
     }));
     textContainer.append($(`<small></small>`, {
         text: (item.itemTypeAndTierDisplayName ? item.itemTypeAndTierDisplayName : undefined),
-        class: 'fst-italic'
+        class: 'fst-italic',
+        style: 'font-size: 110%'
     }));
 
     textDiv.append(textContainer);
@@ -96,7 +98,7 @@ function searchBoxUpdate(event) {
                 $(`#${element.id}`).removeClass('hidden').addClass('p-1');
             });
         }
-    }, 750);
+    }, 500);
 }
 
 function loadItems() {

@@ -1,4 +1,4 @@
-require('dotenv').config({path:'api.env'});
+require('dotenv').config({ path: 'api.env' });
 const axios = require('axios');
 const { app, BrowserWindow } = require('electron');
 const fs = require('fs');
@@ -6,24 +6,24 @@ const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-  app.quit();
+    app.quit();
 }
 
 const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 1600,
-    height: 1000,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  });
+    // Create the browser window.
+    const mainWindow = new BrowserWindow({
+        width: 1600,
+        height: 1000,
+        webPreferences: {
+            nodeIntegration: true
+        }
+    });
 
-  // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+    // and load the index.html of the app.
+    mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -35,17 +35,17 @@ app.on('ready', createWindow);
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
 });
 
 app.on('activate', () => {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+    // On OS X it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) {
+        createWindow();
+    }
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -56,16 +56,16 @@ const apiRoot = baseUrl + '/Platform';
 
 // Check that d2 manifest exists
 fs.access(path.join(process.cwd(), 'data', 'manifest_d2.json'), (err) => {
-  if (err) {
-    console.log('Does not exist');
-    axios.get(apiRoot+'/Destiny2/Manifest/', {headers: {'X-API-Key': process.env.API_KEY}})
-    .then((res) => {
-      axios.get(baseUrl+res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemLiteDefinition)
-      .then((res) => {
-        console.log(res)
-      });
-    });
-  } else {
-    console.log('Exists');
-  }
+    if (err) {
+        console.log('Does not exist');
+        axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
+            .then((res) => {
+                axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemLiteDefinition)
+                    .then((res) => {
+                        console.log(res)
+                    });
+            });
+    } else {
+        console.log('Exists');
+    }
 });

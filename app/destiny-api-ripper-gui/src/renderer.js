@@ -28,13 +28,25 @@ function createItemTile(item) {
         }
     });
 
-    if (item.displayProperties.hasIcon) {
-        tileRoot.append($('<img></img>', {
-            src: `https://bungie.net${item.displayProperties.icon}`,
+    let imgDiv = $('<div></div>', {
+        style: 'display: grid; position: relative;'
+    });
+
+    imgDiv.append($('<img></img>', {
+        src: `https://bungie.net${item.displayProperties.icon}`,
+        referrerpolicy: 'no-referrer',
+        crossorigin: 'None',
+        style: 'grid-row: 1; grid-column: 1;'
+    }));
+
+    if (item.iconWatermark) {
+        imgDiv.append($('<img></img>', {
+            src: `https://bungie.net${item.iconWatermark}`,
             referrerpolicy: 'no-referrer',
-            crossorigin: 'None'
+            crossorigin: 'None',
+            style: 'grid-row: 1; grid-column: 1; z-index: 1;'
         }));
-    }
+    } 
 
     let textDiv = $('<div></div>', {
         class: 'tile-text d-inline-flex px-2'
@@ -53,6 +65,7 @@ function createItemTile(item) {
     }));
 
     textDiv.append(textContainer);
+    tileRoot.append(imgDiv);
     tileRoot.append(textDiv);
 
     return tileRoot;

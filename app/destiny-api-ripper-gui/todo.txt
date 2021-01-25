@@ -15,8 +15,6 @@ UI/UX
 * Add button to reload item_definitions.json from Bnet API
 * Add User Preferences (Default output path, Sorting order, Show folder after rip)
 * Restore previous session (Queue, Active filters, Search Query, etc)
-* Add season badges to icons
-* Add darkmode
 * Add Destiny 1 support
     * Aquire Destiny 1 manifest
 * Add mass selection mode
@@ -40,3 +38,5 @@ Maintainance/Updates
 DONE
 * Put items back into #item-container in the correct order by using .after() instead of .append()
 * Implement search
+* Add darkmode
+* Add season badges to icons

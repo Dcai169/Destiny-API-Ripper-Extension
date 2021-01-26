@@ -3,12 +3,13 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 const { execFile } = require('child_process');
+const { ipcRenderer } = require('electron');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 
 let outputPath = path.join(process.cwd(), 'output');;
-let cgtPath = path.join(process.cwd(), 'bin', 'DestinyColladaGenerator-v1-5-0.exe');
+let cgtPath = path.join(process.cwd(), 'bin', 'DestinyColladaGenerator-v1-5-1.exe');
 let destiny1ItemDefinitions = {};
 let destiny2ItemDefinitions = {};
 let searchDebounceTimeout;
@@ -182,18 +183,20 @@ function executeQueue() {
     setVisibility($('#loading-indicator'), true);
     let child = execFile(cgtPath, commandArgs, (err, stdout, stderr) => {
         if (err) {
-            setVisibility($('#loading-indicator'), false);
             throw err;
         }
-        console.log(stdout);
-        console.log(stderr);
-        setVisibility($('#loading-indicator'), false);
+        // console.log(stdout);
+        // console.log(stderr);
+        
     });
     console.log(child);
+    child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
+    child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
+    child.on('exit', (code) => {setVisibility($('#loading-indicator'), false);});
 }
 
 function notImplemented() {
-    alert('This feature has not been implemented yet');
+    alert('This feature has not been implemented yet.');
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
@@ -203,3 +206,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
 document.getElementById('search-box').addEventListener('input', searchBoxUpdate);
+document.getElementById('output-path').addEventListener('click', () => {ipcRenderer.send('selectDirectory')});
+
+ipcRenderer.on('selectDirectory-reply', (event, args) => {
+    if (args) {
+        $('#output-path').val(args[0]);
+    } else {
+        return
+    }
+});
+
+// Non implemented
+document.getElementById('sort-rules-button').addEventListener('click', notImplemented);
+document.getElementById('filter-button').addEventListener('click', notImplemented);

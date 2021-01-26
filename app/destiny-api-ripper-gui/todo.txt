@@ -21,17 +21,16 @@ UI/UX
     * Add a locale picker (en, de, fr, pl, ru, es-mx, pt-br, etc)
 * Add button to reload item_definitions.json from Bnet API
 * Check internet connection before ripping
-* Add Destiny 1 support
-    * Aquire Destiny 1 manifest
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Implement user supplied hash (USP) queue items
 * Restore previous session (Queue, Active filters, Search Query, etc)
 * Add mass selection mode
 
 Ripping
-* Implement API Ripping
-    * Call CGT with proper command line arguments
 * Handle errors (Invalid hash, etc)
+* Add Destiny 1 support
+    * Aquire Destiny 1 manifest
+    * MUST NOT allow d1 and d2 queues hashes to be ripped in the same command
 
 Maintainance/Updates
 * CGT
@@ -51,3 +50,5 @@ DONE
 * Implement search
 * Add darkmode
 * Add season badges to icons
+* Implement API Ripping
+    * Call CGT with proper command line arguments

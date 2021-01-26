@@ -13,51 +13,72 @@
   <link rel="stylesheet" href="index.css">
 </head>
 
-<body style="display: grid; grid-template-columns: 1fr minmax(0px, 27.5%);">
-  <div style="background-color: #858b90;">
-    <!-- Header -->
-    <div class="d-flex">
-      <div class="container d-flex justify-content-end p-2">
-        <div class="d-inline p-1 dropdown">
-          <button class="btn btn-secondary dropdown-toggle" id="sort-rules-button">Sort By</button>
+<body>
+  <!-- Page Content -->
+  <div style="display: grid; grid-template-columns: 1fr minmax(0px, 27.5%);">
+    <div style="background-color: #858b90;">
+      <!-- Header -->
+      <div class="d-flex">
+        <div class="container d-flex justify-content-end p-2">
+          <div class="d-inline p-1 dropdown">
+            <button class="btn btn-secondary dropdown-toggle" id="sort-rules-button">Sort By</button>
+          </div>
+          <div class="d-inline p-1 dropdown">
+            <button class="btn btn-secondary dropdown-toggle" id="filter-button">Filters</button>
+          </div>
+          <div class="d-inline p-1">
+            <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
+          </div>
         </div>
-        <div class="d-inline p-1 dropdown">
-          <button class="btn btn-secondary dropdown-toggle" id="filter-button">Filters</button>
-        </div>
-        <div class="d-inline p-1">
-          <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
+        <div class="d-flex p-2">
+          <div class="d-inline p-1">
+            <button class="btn btn-info" id="settings-button" data-toggle="modal" data-target="#settingsModal">Settings</button>
+          </div>
         </div>
       </div>
-      <div class="d-flex p-2">
-        <div class="d-inline p-1">
-          <button class="btn btn-info" id="search-button">Settings</button>
-        </div>
+      <!-- Body -->
+      <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;" id="item-container" tabindex="-1" disabled="disabled">
+  
       </div>
     </div>
-    <!-- Body -->
-    <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;" id="item-container" tabindex="-1" disabled="disabled">
-
+    <!-- Queue -->
+    <div class="container" style="height: 100vh; background-color: #7b8896;">
+      <div class="container p-2 d-flex justify-content-center">
+        <div class="d-inline p-1">
+          <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
+        </div>
+        <div class="d-inline p-1">
+          <button type="button" class="btn btn-info" id="queue-add-button">Add Hash</button>
+        </div>
+        <div class="d-inline p-1">
+          <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
+        </div>
+        <div class="d-inline hidden" id="loading-indicator">
+          <div class="spinner-border" role="status"></div>
+        </div>
+      </div>
+      <div class="container p-2" tabindex="-1" disabled="disabled">
+        <div id="extract-queue" style="overflow: auto; height:90vh;" tabindex="-1" disabled="disabled">
+  
+        </div>
+      </div>
     </div>
   </div>
-  <!-- Queue -->
-  <div class="container" style="height: 100vh; background-color: #7b8896;">
-    <div class="container p-2 d-flex justify-content-center">
-      <div class="d-inline p-1">
-        <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
-      </div>
-      <div class="d-inline p-1">
-        <button type="button" class="btn btn-info" id="queue-add-button">Add Hash</button>
-      </div>
-      <div class="d-inline p-1">
-        <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
-      </div>
-      <div class="d-inline hidden" id="loading-indicator">
-        <div class="spinner-border" role="status"></div>
-      </div>
-    </div>
-    <div class="container p-2" tabindex="-1" disabled="disabled">
-      <div id="extract-queue" style="overflow: auto; height:90vh;" tabindex="-1" disabled="disabled">
-
+  <!-- Modal -->
+  <div class="modal fade" tabindex="-1" id="settingsModal">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Settings</h5>
+          <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Modal body text goes here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
       </div>
     </div>
   </div>

@@ -9,7 +9,8 @@ let queue = $('#extract-queue');
 
 let outputPath = path.join(process.cwd(), 'output');;
 let cgtPath = path.join(process.cwd(), 'bin', 'DestinyColladaGenerator-v1-5-0.exe');
-let itemDefinitions = {};
+let destiny1ItemDefinitions = {};
+let destiny2ItemDefinitions = {};
 let searchDebounceTimeout;
 
 const baseUrl = 'https://bungie.net';
@@ -24,14 +25,14 @@ function itemFilter(item) {
     if (item.itemType === 19 && [20, 21].includes(item.itemSubType)) { return true }
 }
 
-function getItemDefinitions(callback) {
+function getDestiny2ItemDefinitions(callback) {
     axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
         .then((res) => {
             axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemDefinition)
                 .then((res) => {
                     for (let [hash, item] of Object.entries(res.data)) {
                         if (itemFilter(item)) {
-                            itemDefinitions[hash] = item;
+                            destiny2ItemDefinitions[hash] = item;
                         }
                     }
                     sortItemDefinitions(callback);
@@ -40,10 +41,10 @@ function getItemDefinitions(callback) {
 }
 
 function sortItemDefinitions(callback) {
-    let items = [...Object.values(itemDefinitions)].sort((a, b) => { return a.index - b.index });
-    itemDefinitions = new Map();
+    let items = [...Object.values(destiny2ItemDefinitions)].sort((a, b) => { return a.index - b.index });
+    destiny2ItemDefinitions = new Map();
     items.forEach((item) => {
-        itemDefinitions.set(item.hash, item);
+        destiny2ItemDefinitions.set(item.hash, item);
         // console.log(item.displayProperties.name)
     });
     callback();
@@ -56,7 +57,7 @@ function closest(searchTarget, targetList) {
     });
 }
 
-function createItemTile(item) {
+function createItemTile(item, game) {
     let tileRoot = $('<div></div>', {
         class: 'item-tile d-flex align-items-center p-1',
         // style: 'content-visibility: visible;',
@@ -76,6 +77,7 @@ function createItemTile(item) {
         src: `https://bungie.net${item.displayProperties.icon}`,
         referrerpolicy: 'no-referrer',
         crossorigin: 'None',
+        loading: 'lazy',
         style: 'grid-row: 1; grid-column: 1;'
     }));
 
@@ -84,6 +86,7 @@ function createItemTile(item) {
             src: `https://bungie.net${item.iconWatermark}`,
             referrerpolicy: 'no-referrer',
             crossorigin: 'None',
+            loading: 'lazy',
             style: 'grid-row: 1; grid-column: 1; z-index: 1;'
         }));
     }
@@ -164,11 +167,11 @@ function searchBoxUpdate(event) {
 function loadItems() {
     itemContainer.empty();
     queue.empty();
-    console.log(`${itemDefinitions.size} items indexed.`)
-    itemDefinitions.forEach((item) => {
-        itemContainer.append(createItemTile(item));
+    console.log(`${destiny2ItemDefinitions.size} items indexed.`)
+    destiny2ItemDefinitions.forEach((item) => {
+        itemContainer.append(createItemTile(item, 2));
     })
-    console.log(`${itemDefinitions.size} items loaded.`)
+    console.log(`${destiny2ItemDefinitions.size} items loaded.`)
 }
 
 function executeQueue() {
@@ -189,8 +192,12 @@ function executeQueue() {
     console.log(child);
 }
 
+function notImplemented() {
+    alert('This feature has not been implemented yet');
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
-    getItemDefinitions(loadItems);
+    getDestiny2ItemDefinitions(loadItems);
 });
 
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);

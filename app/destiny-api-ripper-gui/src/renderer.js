@@ -1,13 +1,53 @@
+require('dotenv').config({ path: 'api.env' });
+const axios = require('axios');
 const fs = require('fs');
+const path = require('path');
 const { execFile } = require('child_process');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 
-let outputPath = './output';
-let CGTPath = './DestinyColladaGenerator.exe'
-let itemDefinitions = JSON.parse(fs.readFileSync('./data/item_definitions.json'));
+let outputPath = path.join(process.cwd(), 'output');;
+let cgtPath = path.join(process.cwd(), 'bin', 'DestinyColladaGenerator-v1-5-0.exe');
+let itemDefinitions = {};
 let searchDebounceTimeout;
+
+const baseUrl = 'https://bungie.net';
+const apiRoot = baseUrl + '/Platform';
+
+function itemFilter(item) {
+    let testTypeDisplayName = (item.itemTypeDisplayName ? item.itemTypeDisplayName : '');
+    if (testTypeDisplayName.includes('Defaults')) { return false }
+    if (testTypeDisplayName.includes('Glow')) { return false }
+    if ([2, 22, 24].includes(item.itemType)) { return true }
+    if (item.defaultDamageType > 0) { return true }
+    if (item.itemType === 19 && [20, 21].includes(item.itemSubType)) { return true }
+}
+
+function getItemDefinitions(callback) {
+    axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
+        .then((res) => {
+            axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemDefinition)
+                .then((res) => {
+                    for (let [hash, item] of Object.entries(res.data)) {
+                        if (itemFilter(item)) {
+                            itemDefinitions[hash] = item;
+                        }
+                    }
+                    sortItemDefinitions(callback);
+                });
+        });
+}
+
+function sortItemDefinitions(callback) {
+    let items = [...Object.values(itemDefinitions)].sort((a, b) => { return a.index - b.index });
+    itemDefinitions = new Map();
+    items.forEach((item) => {
+        itemDefinitions.set(item.hash, item);
+        // console.log(item.displayProperties.name)
+    });
+    callback();
+}
 
 // function that finds the closest value in a list of numbers
 function closest(searchTarget, targetList) {
@@ -46,7 +86,7 @@ function createItemTile(item) {
             crossorigin: 'None',
             style: 'grid-row: 1; grid-column: 1; z-index: 1;'
         }));
-    } 
+    }
 
     let textDiv = $('<div></div>', {
         class: 'tile-text d-inline-flex px-2'
@@ -94,21 +134,28 @@ function itemTileClickHandler(event) {
     }
 }
 
+function setVisibility(jqueryObj, state) {
+    // true -> visible
+    // false -> hidden
+    jqueryObj.removeClass((state ? 'hidden' : 'p-1')).addClass((state ? 'p-1' : 'hidden'))
+}
+
 function searchBoxUpdate(event) {
     clearTimeout(searchDebounceTimeout);
-    
+
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
             itemContainer.eq(0).children().each((_, element) => {
-                if ($(`#${element.id}`).attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
-                    $(`#${element.id}`).removeClass('hidden').addClass('p-1');
+                let item = $(`#${element.id}`)
+                if (item.attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
+                    setVisibility(item, true);
                 } else {
-                    $(`#${element.id}`).removeClass('p-1').addClass('hidden');
+                    setVisibility(item, false);
                 }
             });
         } else {
             itemContainer.eq(0).children().each((_, element) => {
-                $(`#${element.id}`).removeClass('hidden').addClass('p-1');
+                setVisibility($(`#${element.id}`), true);
             });
         }
     }, 500);
@@ -117,27 +164,33 @@ function searchBoxUpdate(event) {
 function loadItems() {
     itemContainer.empty();
     queue.empty();
-    console.log(`${itemDefinitions.length} items indexed.`)
-    itemDefinitions.forEach(item => {
+    console.log(`${itemDefinitions.size} items indexed.`)
+    itemDefinitions.forEach((item) => {
         itemContainer.append(createItemTile(item));
-    });
-    console.log(`${itemDefinitions.length} items loaded.`)
+    })
+    console.log(`${itemDefinitions.size} items loaded.`)
 }
 
 function executeQueue() {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
-    let commandArgs = ['2', '-o', outputPath].concat([...queue.eq(0).children()].map(item => { return item.id }));
-    let child = execFile(CGTPath, commandArgs, (err, stdout, stderr) => {
+    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+    let commandArgs = ['2', '-o', outputPath].concat(itemHashes);
+    console.log(`Hashes: ${itemHashes}`);
+    setVisibility($('#loading-indicator'), true);
+    let child = execFile(cgtPath, commandArgs, (err, stdout, stderr) => {
         if (err) {
+            setVisibility($('#loading-indicator'), false);
             throw err;
         }
         console.log(stdout);
-        console.err(stderr);
+        console.log(stderr);
+        setVisibility($('#loading-indicator'), false);
     });
+    console.log(child);
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    loadItems();
+    getItemDefinitions(loadItems);
 });
 
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);

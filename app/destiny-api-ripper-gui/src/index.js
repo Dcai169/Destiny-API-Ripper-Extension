@@ -1,7 +1,4 @@
-require('dotenv').config({ path: 'api.env' });
-const axios = require('axios');
 const { app, BrowserWindow } = require('electron');
-const fs = require('fs');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -21,6 +18,9 @@ const createWindow = () => {
 
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
+
+    // Hide menubar
+    mainWindow.removeMenu();
 
     // Open the DevTools.
     mainWindow.webContents.openDevTools();
@@ -50,22 +50,36 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+// const baseUrl = 'https://bungie.net';
+// const apiRoot = baseUrl + '/Platform';
+// let itemDefinitions = {};
 
-const baseUrl = 'https://bungie.net';
-const apiRoot = baseUrl + '/Platform';
+// function itemFilter(item) {
+//     let testTypeDisplayName = (item.itemTypeDisplayName ? item.itemTypeDisplayName : '');
+//     if (testTypeDisplayName.includes('Defaults')) { return false }
+//     if (testTypeDisplayName.includes('Glow')) { return false }
+//     if ([2, 22, 24].includes(item.itemType)) { return true }
+//     if (item.defaultDamageType > 0) { return true }
+//     if (item.itemType === 19 && [20, 21].includes(item.itemSubType)) { return true }
+// }
 
-// Check that d2 manifest exists
-fs.access(path.join(process.cwd(), 'data', 'manifest_d2.json'), (err) => {
-    if (err) {
-        console.log('Does not exist');
-        axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
-            .then((res) => {
-                axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemLiteDefinition)
-                    .then((res) => {
-                        console.log(res)
-                    });
-            });
-    } else {
-        console.log('Exists');
-    }
-});
+// // Check that d2 manifest exists
+// fs.access(path.join(process.cwd(), 'data', 'item_definitions.json'), (err) => {
+//     if (err) {
+//         console.log('Does not exist');
+//         axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
+//             .then((res) => {
+//                 axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths.en.DestinyInventoryItemLiteDefinition)
+//                     .then((res) => {
+//                         for (let [hash, item] of Object.entries(res.data)) {
+//                             if (itemFilter(item)) {
+//                                 itemDefinitions[hash] = item;
+//                             }
+//                         }
+//                         fs.writeFile(path.join(process.cwd(), 'data', 'item_definitions.json'), JSON.stringify(itemDefinitions), 'utf8', (err) => { if (err) { console.log(err) } });
+//                     });
+//             });
+//     } else {
+//         console.log('Exists');
+//     }
+// });

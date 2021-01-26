@@ -21,10 +21,10 @@
       <div class="d-flex">
         <div class="container d-flex justify-content-end p-2">
           <div class="d-inline p-1 dropdown">
-            <button class="btn btn-secondary dropdown-toggle" id="sort-rules-button">Sort By</button>
+            <button class="btn btn-secondary" id="sort-rules-button">Sort By</button>
           </div>
           <div class="d-inline p-1 dropdown">
-            <button class="btn btn-secondary dropdown-toggle" id="filter-button">Filters</button>
+            <button class="btn btn-secondary" id="filter-button">Filters</button>
           </div>
           <div class="d-inline p-1">
             <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
@@ -73,7 +73,12 @@
           <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <p>Modal body text goes here.</p>
+          <div class="container">
+            <div class="mb-3">
+              <label class="form-label" for="output-path">Output path</label>
+              <input class="form-control" type="text" name="output-path" id="output-path" readonly>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

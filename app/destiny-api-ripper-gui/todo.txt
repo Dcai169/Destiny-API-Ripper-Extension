@@ -38,6 +38,7 @@ Maintainance/Updates
     * Aquire Collada Generator Tool (CGT) from GitHub API 
     * Check CGT hash
     * Unpack CGT
+    * Update CGT Path
 * Cache
     * Keep local copy of item_definitions.json
 * Destiny Manifest

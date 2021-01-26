@@ -253,4 +253,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
 *.env
+app/destiny-api-ripper-gui/bin/

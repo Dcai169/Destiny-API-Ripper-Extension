@@ -1,3 +1,6 @@
+TODO
+In order of priority (mostly)
+
 UI/UX
 * Implement filters
     * Armor
@@ -9,16 +12,21 @@ UI/UX
         * Weapon Type (Shotty, LMG, Auto, Pulse, etc)
     * Rarity
     * Events
-* Check internet connection before ripping
-* Add button to item-tile to bypass using the queue (ie a RIP NOW button)
-* Implement user supplied hash (USP) queue items
-* Add button to reload item_definitions.json from Bnet API
+* Sorting
+    * Name
+    * Item Type
+    * Ammo/Class
+    * Rarity
 * Add User Preferences (Default output path, Sorting order, Show folder after rip)
-* Restore previous session (Queue, Active filters, Search Query, etc)
+    * Add a locale picker (en, de, fr, pl, ru, es-mx, pt-br, etc)
+* Add button to reload item_definitions.json from Bnet API
+* Check internet connection before ripping
 * Add Destiny 1 support
     * Aquire Destiny 1 manifest
+* Add button to item-tile to bypass using the queue (ie a RIP NOW button)
+* Implement user supplied hash (USP) queue items
+* Restore previous session (Queue, Active filters, Search Query, etc)
 * Add mass selection mode
-* Add a locale picker (en, de, fr, pl, ru, es-mx, pt-br, etc)
 
 Ripping
 * Implement API Ripping
@@ -27,9 +35,12 @@ Ripping
 
 Maintainance/Updates
 * CGT
+    * Check for update (probably on startup)
     * Aquire Collada Generator Tool (CGT) from GitHub API 
     * Check CGT hash
     * Unpack CGT
+* Cache
+    * Keep local copy of item_definitions.json
 * Destiny Manifest
     * Read manifest from Bnet API (Once every three monthsish)
     * Filter manifest to only rippable items (NO Default shader/ornament/solstice glows/event items)

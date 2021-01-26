@@ -257,3 +257,4 @@ dist
 *.env
 app/destiny-api-ripper-gui/bin/
 tests/
+user_preferences.json

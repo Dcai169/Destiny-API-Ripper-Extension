@@ -1,6 +1,6 @@
 {
   "name": "destiny-api-ripper-gui",
-  "productName": "destiny-api-ripper-gui",
+  "productName": "Destiny API Ripper Extension",
   "version": "1.0.0",
   "description": "My Electron application description",
   "main": "src/index.js",

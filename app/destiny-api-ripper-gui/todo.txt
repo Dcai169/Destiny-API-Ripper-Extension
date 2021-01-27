@@ -2,6 +2,7 @@ TODO
 In order of priority (mostly)
 
 UI/UX
+* Add console out
 * Implement filters
     * Armor
         * Class (Hunter, Titan, Warlock)

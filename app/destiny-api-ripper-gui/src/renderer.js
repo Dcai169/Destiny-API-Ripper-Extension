@@ -202,23 +202,27 @@ function loadItems() {
 }
 
 function executeQueue() {
-    // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
-    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-    let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
-    console.log(`Hashes: ${itemHashes}`);
-    setVisibility($('#loading-indicator'), true);
-    let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
-        if (err) {
-            throw err;
-        }
-        // console.log(stdout);
-        // console.log(stderr);
+    if (navigator.onLine) {
+        // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
+        let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+        let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
+        console.log(`Hashes: ${itemHashes}`);
+        setVisibility($('#loading-indicator'), true);
+        let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
+            if (err) {
+                throw err;
+            }
+            // console.log(stdout);
+            // console.log(stderr);
 
-    });
-    console.log(child);
-    child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
-    child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
-    child.on('exit', (code) => { setVisibility($('#loading-indicator'), false); });
+        });
+        console.log(child);
+        child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
+        child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
+        child.on('exit', (code) => { setVisibility($('#loading-indicator'), false); });
+    } else {
+        console.log('No internet connection detected');
+    }
 }
 
 function propogateUserPreferences() {

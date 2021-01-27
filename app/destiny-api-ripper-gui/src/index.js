@@ -50,6 +50,10 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.on('selectDirectory', (event) => {
-    event.reply('selectDirectory-reply', dialog.showOpenDialogSync({title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent']}))
+ipcMain.on('selectOutputPath', (event) => {
+    event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
+});
+
+ipcMain.on('selectToolPath', (event) => {
+    event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
 });

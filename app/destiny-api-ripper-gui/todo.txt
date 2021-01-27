@@ -2,6 +2,7 @@ TODO
 In order of priority (mostly)
 
 UI/UX
+* Prevent user from clicking button again if child process is already running
 * Add console out
 * Implement filters
     * Armor

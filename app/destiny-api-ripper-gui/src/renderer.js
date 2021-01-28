@@ -207,7 +207,11 @@ function executeQueue() {
         let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
         let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
         console.log(`Hashes: ${itemHashes}`);
+
+        // change DOM to reflect program state
         setVisibility($('#loading-indicator'), true);
+        $('#queue-execute-button').attr('disabled', 'disabled');
+
         let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
             if (err) {
                 throw err;
@@ -219,7 +223,10 @@ function executeQueue() {
         console.log(child);
         child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
         child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
-        child.on('exit', (code) => { setVisibility($('#loading-indicator'), false); });
+        child.on('exit', (code) => { 
+            setVisibility($('#loading-indicator'), false);
+            $('#queue-execute-button').removeAttr('disabled');
+        });
     } else {
         console.log('No internet connection detected');
     }

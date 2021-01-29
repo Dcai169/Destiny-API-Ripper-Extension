@@ -47,7 +47,7 @@ function itemFilter(item) {
     let testTypeDisplayName = (item.itemTypeDisplayName ? item.itemTypeDisplayName : '');
     if (testTypeDisplayName.includes('Defaults')) { return false }
     if (testTypeDisplayName.includes('Glow')) { return false }
-    if ([2, 22, 24].includes(item.itemType)) { return true }
+    if ([2, 21, 22, 24].includes(item.itemType)) { return true }
     if (item.defaultDamageType > 0) { return true }
     if (item.itemType === 19 && [20, 21].includes(item.itemSubType)) { return true }
 }

@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFile } = require('child_process');
 const { ipcRenderer } = require('electron');
-const os = require('os');
+// const os = require('os');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
@@ -96,6 +96,7 @@ function createItemTile(item, game) {
         }
     });
 
+    // Image div (Icon & Season Badge)
     let imgDiv = $('<div></div>', {
         style: 'display: grid; position: relative;'
     });
@@ -118,6 +119,7 @@ function createItemTile(item, game) {
         }));
     }
 
+    // Item text (Name & Type)
     let textDiv = $('<div></div>', {
         class: 'tile-text d-inline-flex px-2'
     });
@@ -128,15 +130,31 @@ function createItemTile(item, game) {
         class: 'm-0',
         style: `color: var(--${item.inventory.tierTypeName.toLowerCase()}-color)`
     }));
-    textContainer.append($(`<i></i>`, {
+    textContainer.append($('<i></i>', {
         text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
         class: 'fs-5 item-type',
         // style: 'font-size: 110%'
     }));
 
+    // Mass action div
+    let checkboxDiv = $('<div></div>', {
+        class: 'form-check',
+    });
+    checkboxDiv.append($('<input></input>', {
+        class: 'form-check-input',
+        type: 'checkbox',
+        value: '',
+        on: {
+            click: (event) => {
+                event.stopPropagation();
+            }
+        }
+    }));
+
     textDiv.append(textContainer);
     tileRoot.append(imgDiv);
     tileRoot.append(textDiv);
+    tileRoot.append(checkboxDiv);
 
     return tileRoot;
 }

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -16,14 +16,42 @@ const createWindow = () => {
         }
     });
 
+    // Menu items
+    const menu = new Menu();
+    menu.append(new MenuItem({
+        label: 'File',
+        submenu: [{
+            role: 'reload',
+            accelerator: 'CmdOrCtrl+R',
+            click: () => { mainWindow.webContents.send('reload', true) }
+        },
+        {
+            role: 'forceReload',
+            accelerator: 'CmdOrCtrl+Shift+R',
+            click: () => { mainWindow.webContents.send('force-reload', true) }
+        },
+        {
+            role: 'toggleDevTools',
+            accelerator: 'CmdOrCtrl+Shift+I',
+            click: () => { mainWindow.BrowserWindow.openDevTools() }
+        },
+        {
+            role: 'quit',
+            accelerator: 'CmdOrCtrl+Q',
+            click: () => { app.quit() }
+        }]
+    }));
+
+    Menu.setApplicationMenu(menu);
+
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     // Hide menubar
-    mainWindow.removeMenu();
+    // mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

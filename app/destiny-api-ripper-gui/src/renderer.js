@@ -294,6 +294,18 @@ ipcRenderer.on('selectToolPath-reply', (_, args) => {
     }
 });
 
+ipcRenderer.on('reload', (_, args) => {
+    if (args) {
+        loadItems();
+    }
+});
+
+ipcRenderer.on('force-reload', (_, args) => {
+    if (args) {
+        document.location.reload();
+    }
+});
+
 // Not implemented
 document.getElementById('sort-rules-button').addEventListener('click', notImplemented);
 document.getElementById('filter-button').addEventListener('click', notImplemented);

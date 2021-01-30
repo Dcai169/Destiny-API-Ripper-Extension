@@ -303,7 +303,6 @@ document.getElementById('search-box').addEventListener('input', searchBoxUpdate)
 document.getElementById('queue-add-button').addEventListener('click', addSelectedButtonClickHandler);
 document.getElementById('queue-deselect-button').addEventListener('click', deselectButtonClickHandler);
 
-
 // Features implemented using IPCs
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });

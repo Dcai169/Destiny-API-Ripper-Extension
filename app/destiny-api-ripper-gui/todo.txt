@@ -2,7 +2,6 @@ TODO
 In order of priority (mostly)
 
 UI/UX
-* Prevent user from clicking button again if child process is already running
 * Add console out
 * Implement filters
     * Armor
@@ -21,11 +20,9 @@ UI/UX
     * Rarity
 * Add a locale picker (de, en, es, es-mx, fr, it, ja, ko, pl, pt-br, ru, zh-cht, zh-chs)
 * Add button to reload item_definitions.json from Bnet API
-* Check internet connection before ripping
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
-* Implement user supplied hash (USP) queue items
 * Restore previous session (Queue, Active filters, Search Query, etc)
-* Add mass selection mode
+
 
 Ripping
 * Handle errors (Invalid hash, etc)
@@ -55,3 +52,7 @@ DONE
 * Implement API Ripping
     * Call CGT with proper command line arguments
 * Add User Preferences (Default output path, Sorting order, Show folder after rip)
+* Prevent user from clicking button again if child process is already running
+* Check internet connection before ripping
+* Keyboard shortcuts
+* Add mass selection mode

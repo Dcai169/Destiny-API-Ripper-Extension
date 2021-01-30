@@ -43,12 +43,16 @@
     </div>
     <!-- Queue -->
     <div class="container" style="height: 100vh; background-color: #7b8896;">
+      <!-- Buttons -->
       <div class="container p-2 d-flex justify-content-center">
         <div class="d-inline p-1">
           <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
         </div>
         <div class="d-inline p-1">
-          <button type="button" class="btn btn-info" id="queue-add-button">Add Hash</button>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-info" id="queue-deselect-button">Deselect All</button>
+            <button type="button" class="btn btn-info" id="queue-add-button">Add Selected</button>
+          </div>
         </div>
         <div class="d-inline p-1">
           <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
@@ -57,6 +61,7 @@
           <div class="spinner-border" role="status"></div>
         </div>
       </div>
+      <!-- Container -->
       <div class="container p-2" tabindex="-1" disabled="disabled">
         <div id="extract-queue" style="overflow: auto; height:90vh;" tabindex="-1" disabled="disabled">
   

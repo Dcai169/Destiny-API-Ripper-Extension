@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFile } = require('child_process');
 const { ipcRenderer } = require('electron');
-const os = require('os');
+// const os = require('os');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
@@ -39,6 +39,7 @@ if (!userPreferences.outputPath) {
 let destiny1ItemDefinitions = {};
 let destiny2ItemDefinitions = {};
 let searchDebounceTimeout;
+let selectedItems = [];
 
 const baseUrl = 'https://bungie.net';
 const apiRoot = baseUrl + '/Platform';
@@ -47,7 +48,7 @@ function itemFilter(item) {
     let testTypeDisplayName = (item.itemTypeDisplayName ? item.itemTypeDisplayName : '');
     if (testTypeDisplayName.includes('Defaults')) { return false }
     if (testTypeDisplayName.includes('Glow')) { return false }
-    if ([2, 22, 24].includes(item.itemType)) { return true }
+    if ([2, 21, 22, 24].includes(item.itemType)) { return true }
     if (item.defaultDamageType > 0) { return true }
     if (item.itemType === 19 && [20, 21].includes(item.itemSubType)) { return true }
 }
@@ -87,7 +88,7 @@ function closest(searchTarget, targetList) {
 function createItemTile(item, game) {
     let tileRoot = $('<div></div>', {
         class: 'item-tile d-flex align-items-center p-1',
-        // style: 'content-visibility: visible;',
+        style: 'position: relative;',
         id: item.hash,
         'data-index': item.index,
         name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
@@ -96,6 +97,7 @@ function createItemTile(item, game) {
         }
     });
 
+    // Image div (Icon & Season Badge)
     let imgDiv = $('<div></div>', {
         style: 'display: grid; position: relative;'
     });
@@ -118,6 +120,7 @@ function createItemTile(item, game) {
         }));
     }
 
+    // Item text (Name & Type)
     let textDiv = $('<div></div>', {
         class: 'tile-text d-inline-flex px-2'
     });
@@ -128,15 +131,30 @@ function createItemTile(item, game) {
         class: 'm-0',
         style: `color: var(--${item.inventory.tierTypeName.toLowerCase()}-color)`
     }));
-    textContainer.append($(`<i></i>`, {
+    textContainer.append($('<i></i>', {
         text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
         class: 'fs-5 item-type',
         // style: 'font-size: 110%'
     }));
 
+    // Mass action div
+    let checkboxDiv = $('<div></div>', {
+        class: 'form-check',
+        style: 'float: right; margin: 0 0 auto auto;'
+    });
+    checkboxDiv.append($('<input></input>', {
+        class: 'form-check-input item-checkbox',
+        type: 'checkbox',
+        value: '',
+        on: {
+            click: checkBoxClickHandler,
+        }
+    }));
+
     textDiv.append(textContainer);
     tileRoot.append(imgDiv);
     tileRoot.append(textDiv);
+    tileRoot.append(checkboxDiv);
 
     return tileRoot;
 }
@@ -159,9 +177,32 @@ function itemTileClickHandler(event) {
     if (tileLocation === 'item-container') {
         queue.append($(event.currentTarget).detach());
     } else if (tileLocation === 'extract-queue') {
-        //TODO: Put the item back in the correct spot
         addItemToContainer($(event.currentTarget).detach());
     }
+}
+
+function checkBoxClickHandler(event) {
+    event.stopPropagation();
+    let itemId = event.target.parentElement.parentElement.id;
+    if (selectedItems.includes(itemId)) {
+        let index = selectedItems.indexOf(itemId);
+        if (index > -1) {
+            selectedItems.splice(index, 1);
+        }
+    } else {
+        selectedItems.push(itemId);
+    }
+}
+
+function deselectButtonClickHandler(event) {
+    $('.item-checkbox:checked').prop('checked', false);
+}
+
+function addSelectedButtonClickHandler(event) {
+    $('div#item-container .item-checkbox:checked').each((_, checkbox) => {
+        queue.append($(checkbox.parentElement.parentElement).detach());
+        $(checkbox).prop('checked', false);
+    });
 }
 
 function setVisibility(jqueryObj, state) {
@@ -202,23 +243,34 @@ function loadItems() {
 }
 
 function executeQueue() {
-    // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
-    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-    let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
-    console.log(`Hashes: ${itemHashes}`);
-    setVisibility($('#loading-indicator'), true);
-    let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
-        if (err) {
-            throw err;
-        }
-        // console.log(stdout);
-        // console.log(stderr);
+    if (navigator.onLine) {
+        // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
+        let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+        let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
+        console.log(`Hashes: ${itemHashes}`);
 
-    });
-    console.log(child);
-    child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
-    child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
-    child.on('exit', (code) => { setVisibility($('#loading-indicator'), false); });
+        // change DOM to reflect program state
+        setVisibility($('#loading-indicator'), true);
+        $('#queue-execute-button').attr('disabled', 'disabled');
+
+        let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
+            if (err) {
+                throw err;
+            }
+            // console.log(stdout);
+            // console.log(stderr);
+
+        });
+        console.log(child);
+        child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
+        child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
+        child.on('exit', (code) => { 
+            setVisibility($('#loading-indicator'), false);
+            $('#queue-execute-button').removeAttr('disabled');
+        });
+    } else {
+        console.log('No internet connection detected');
+    }
 }
 
 function propogateUserPreferences() {
@@ -248,6 +300,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
 document.getElementById('search-box').addEventListener('input', searchBoxUpdate);
+document.getElementById('queue-add-button').addEventListener('click', addSelectedButtonClickHandler);
+document.getElementById('queue-deselect-button').addEventListener('click', deselectButtonClickHandler);
 
 // Features implemented using IPCs
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
@@ -265,7 +319,18 @@ ipcRenderer.on('selectToolPath-reply', (_, args) => {
     }
 });
 
+ipcRenderer.on('reload', (_, args) => {
+    if (args) {
+        loadItems();
+    }
+});
+
+ipcRenderer.on('force-reload', (_, args) => {
+    if (args) {
+        document.location.reload();
+    }
+});
+
 // Not implemented
 document.getElementById('sort-rules-button').addEventListener('click', notImplemented);
 document.getElementById('filter-button').addEventListener('click', notImplemented);
-document.getElementById('queue-add-button').addEventListener('click', notImplemented)

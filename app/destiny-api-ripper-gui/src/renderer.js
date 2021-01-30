@@ -39,6 +39,7 @@ if (!userPreferences.outputPath) {
 let destiny1ItemDefinitions = {};
 let destiny2ItemDefinitions = {};
 let searchDebounceTimeout;
+let selectedItems = [];
 
 const baseUrl = 'https://bungie.net';
 const apiRoot = baseUrl + '/Platform';
@@ -87,7 +88,7 @@ function closest(searchTarget, targetList) {
 function createItemTile(item, game) {
     let tileRoot = $('<div></div>', {
         class: 'item-tile d-flex align-items-center p-1',
-        // style: 'content-visibility: visible;',
+        style: 'position: relative;',
         id: item.hash,
         'data-index': item.index,
         name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
@@ -139,15 +140,14 @@ function createItemTile(item, game) {
     // Mass action div
     let checkboxDiv = $('<div></div>', {
         class: 'form-check',
+        style: 'float: right; margin: 0 0 auto auto;'
     });
     checkboxDiv.append($('<input></input>', {
-        class: 'form-check-input',
+        class: 'form-check-input item-checkbox',
         type: 'checkbox',
         value: '',
         on: {
-            click: (event) => {
-                event.stopPropagation();
-            }
+            click: checkBoxClickHandler,
         }
     }));
 
@@ -177,9 +177,32 @@ function itemTileClickHandler(event) {
     if (tileLocation === 'item-container') {
         queue.append($(event.currentTarget).detach());
     } else if (tileLocation === 'extract-queue') {
-        //TODO: Put the item back in the correct spot
         addItemToContainer($(event.currentTarget).detach());
     }
+}
+
+function checkBoxClickHandler(event) {
+    event.stopPropagation();
+    let itemId = event.target.parentElement.parentElement.id;
+    if (selectedItems.includes(itemId)) {
+        let index = selectedItems.indexOf(itemId);
+        if (index > -1) {
+            selectedItems.splice(index, 1);
+        }
+    } else {
+        selectedItems.push(itemId);
+    }
+}
+
+function deselectButtonClickHandler(event) {
+    $('.item-checkbox:checked').prop('checked', false);
+}
+
+function addSelectedButtonClickHandler(event) {
+    $('div#item-container .item-checkbox:checked').each((_, checkbox) => {
+        queue.append($(checkbox.parentElement.parentElement).detach());
+        $(checkbox).prop('checked', false);
+    });
 }
 
 function setVisibility(jqueryObj, state) {
@@ -277,6 +300,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
 document.getElementById('search-box').addEventListener('input', searchBoxUpdate);
+document.getElementById('queue-add-button').addEventListener('click', addSelectedButtonClickHandler);
+document.getElementById('queue-deselect-button').addEventListener('click', deselectButtonClickHandler);
+
 
 // Features implemented using IPCs
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
@@ -309,4 +335,3 @@ ipcRenderer.on('force-reload', (_, args) => {
 // Not implemented
 document.getElementById('sort-rules-button').addEventListener('click', notImplemented);
 document.getElementById('filter-button').addEventListener('click', notImplemented);
-document.getElementById('queue-add-button').addEventListener('click', notImplemented)

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -48,10 +48,10 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     // Hide menubar
-    mainWindow.setMenuBarVisibility(false);
+    // mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -84,4 +84,10 @@ ipcMain.on('selectOutputPath', (event) => {
 
 ipcMain.on('selectToolPath', (event) => {
     event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+});
+
+ipcMain.on('openExplorer', (_, args) => {
+    if (args) {
+        shell.openPath(args[0]);
+    }
 });

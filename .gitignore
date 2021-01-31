@@ -259,3 +259,4 @@ app/destiny-api-ripper-gui/bin/
 tests/
 output/
 user_preferences.json
+patch_notes.md

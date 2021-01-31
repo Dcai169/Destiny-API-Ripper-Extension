@@ -56,18 +56,7 @@ try {
     userPreferences = defaultPreferences;
     for (const [key, property] of Object.entries(userPreferences)) {
         property.ifUndefined(key);
-        switch (typeof property.value) {
-            case 'string':
-                $(`#${key}`).val(property.value);
-                break;
-
-            case 'number':
-                $(`#${key}`).prop('checked', !!property.value);
-                break;
-
-            default:
-                break;
-        }
+        
     }
     propogateUserPreferences();
     // fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
@@ -292,12 +281,27 @@ function executeQueue() {
     }
 }
 
+function updateUIInput(elementId, value) {
+    switch (typeof value) {
+        case 'string':
+            $(`#${elementId}`).val(value);
+            break;
+
+        case 'boolean':
+            $(`#${elementId}`).prop('checked', !!value);
+            break;
+
+        default:
+            break;
+    }
+}
+
 function propogateUserPreferences(key) {
     if (key) {
-        $(`#${key}`).val(userPreferences[key].value);
+        updateUIInput(key, userPreferences[key].value);
     } else {
         for (const [key, property] of Object.entries(userPreferences)) {
-            $(`#${key}`).val(property.value);
+            updateUIInput(key, property.value);
         }
     }
     fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
@@ -323,6 +327,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
 document.getElementById('search-box').addEventListener('input', searchBoxUpdate);
+document.getElementById('aggregateOutput').addEventListener('input', () => { updateUserPreference('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 
 // Features implemented using IPCs
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });

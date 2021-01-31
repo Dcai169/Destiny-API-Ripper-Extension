@@ -22,7 +22,7 @@ UI/UX
 * Add button to reload item_definitions.json from Bnet API
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Restore previous session (Queue, Active filters, Search Query, etc)
-
+* Export into several .dae files
 
 Ripping
 * Handle errors (Invalid hash, etc)
@@ -55,4 +55,3 @@ DONE
 * Prevent user from clicking button again if child process is already running
 * Check internet connection before ripping
 * Keyboard shortcuts
-* Add mass selection mode

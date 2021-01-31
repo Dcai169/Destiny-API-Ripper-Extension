@@ -49,10 +49,7 @@
           <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
         </div>
         <div class="d-inline p-1">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-info" id="queue-deselect-button">Deselect All</button>
-            <button type="button" class="btn btn-info" id="queue-add-button">Add Selected</button>
-          </div>
+          <button type="button" class="btn btn-info" id="open-output">Open Output Folder</button>
         </div>
         <div class="d-inline p-1">
           <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
@@ -86,6 +83,12 @@
             <div class="mb-3">
               <label class="form-label" for="toolPath">Tool path</label>
               <input class="form-control" type="text" name="tool-path" id="toolPath" readonly>
+            </div>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
+                <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
+              </div>
             </div>
           </div>
         </div>

@@ -7,6 +7,44 @@ const { execFile } = require('child_process');
 const { ipcRenderer } = require('electron');
 // const os = require('os');
 
+const defaultPreferences = {
+    "outputPath": {
+        value: null,
+        defaultValue: '',
+        ifUndefined: (key) => {
+            let defaultPath = path.join(process.cwd(), 'output');
+            try {
+                fs.mkdirSync(defaultPath);
+            } catch (error) {
+                // Let the error go wild and free
+            }
+            userPreferences[key].value = defaultPath;
+        }
+    },
+    "toolPath": {
+        value: null,
+        defaultValue: '',
+        ifUndefined: () => {
+            alert('Please select your Destiny Collada Generator executable. Must be at least version 1.5.1.');
+            ipcRenderer.send('selectToolPath');
+        }
+    },
+    "locale": {
+        value: null,
+        defaultValue: "EN",
+        ifUndefined: (key) => {
+            userPreferences[key].value = userPreferences[key].defaultValue;
+        }
+    },
+    "aggregateOutput": {
+        value: null,
+        defaultValue: true,
+        ifUndefined: (key) => {
+            userPreferences[key].value = userPreferences[key].defaultValue;
+        }
+    }
+};
+
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 
@@ -15,25 +53,24 @@ try {
     userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 } catch (error) {
     // default preferences
-    userPreferences = {
-        "outputPath": null,
-        "toolPath": null,
-        "locale": "en"
-    };
-    fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-}
+    userPreferences = defaultPreferences;
+    for (const [key, property] of Object.entries(userPreferences)) {
+        property.ifUndefined(key);
+        switch (typeof property.value) {
+            case 'string':
+                $(`#${key}`).val(property.value);
+                break;
 
-if (!userPreferences.toolPath) {
-    alert('Please select your Destiny Collada Generator executable. Must be at least version 1.5.1.');
-    ipcRenderer.send('selectToolPath');
-}
+            case 'number':
+                $(`#${key}`).prop('checked', !!property.value);
+                break;
 
-if (!userPreferences.outputPath) {
-    let defaultPath = path.join(process.cwd(), 'output');
-    if (defaultPath) {
-        fs.mkdirSync(defaultPath);
+            default:
+                break;
+        }
     }
-    userPreferences.outputPath = defaultPath
+    propogateUserPreferences();
+    // fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
 }
 
 let destiny1ItemDefinitions = {};
@@ -56,7 +93,7 @@ function itemFilter(item) {
 function getDestiny2ItemDefinitions(callback) {
     axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
         .then((res) => {
-            axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[userPreferences.locale].DestinyInventoryItemDefinition)
+            axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[userPreferences.locale.value].DestinyInventoryItemDefinition)
                 .then((res) => {
                     for (let [hash, item] of Object.entries(res.data)) {
                         if (itemFilter(item)) {
@@ -73,7 +110,6 @@ function sortItemDefinitions(callback) {
     destiny2ItemDefinitions = new Map();
     items.forEach((item) => {
         destiny2ItemDefinitions.set(item.hash, item);
-        // console.log(item.displayProperties.name)
     });
     callback();
 }
@@ -137,24 +173,9 @@ function createItemTile(item, game) {
         // style: 'font-size: 110%'
     }));
 
-    // Mass action div
-    let checkboxDiv = $('<div></div>', {
-        class: 'form-check',
-        style: 'float: right; margin: 0 0 auto auto;'
-    });
-    checkboxDiv.append($('<input></input>', {
-        class: 'form-check-input item-checkbox',
-        type: 'checkbox',
-        value: '',
-        on: {
-            click: checkBoxClickHandler,
-        }
-    }));
-
     textDiv.append(textContainer);
     tileRoot.append(imgDiv);
     tileRoot.append(textDiv);
-    tileRoot.append(checkboxDiv);
 
     return tileRoot;
 }
@@ -179,30 +200,6 @@ function itemTileClickHandler(event) {
     } else if (tileLocation === 'extract-queue') {
         addItemToContainer($(event.currentTarget).detach());
     }
-}
-
-function checkBoxClickHandler(event) {
-    event.stopPropagation();
-    let itemId = event.target.parentElement.parentElement.id;
-    if (selectedItems.includes(itemId)) {
-        let index = selectedItems.indexOf(itemId);
-        if (index > -1) {
-            selectedItems.splice(index, 1);
-        }
-    } else {
-        selectedItems.push(itemId);
-    }
-}
-
-function deselectButtonClickHandler(event) {
-    $('.item-checkbox:checked').prop('checked', false);
-}
-
-function addSelectedButtonClickHandler(event) {
-    $('div#item-container .item-checkbox:checked').each((_, checkbox) => {
-        queue.append($(checkbox.parentElement.parentElement).detach());
-        $(checkbox).prop('checked', false);
-    });
 }
 
 function setVisibility(jqueryObj, state) {
@@ -242,48 +239,74 @@ function loadItems() {
     console.log(`${destiny2ItemDefinitions.size} items loaded.`)
 }
 
+function runTool(hashes) {
+    let commandArgs = ['2', '-o', userPreferences.outputPath.value].concat(hashes);
+    let child = execFile(userPreferences.toolPath.value, commandArgs, (err, stdout, stderr) => {
+        if (err) {
+            throw err;
+        }
+    });
+    child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
+    child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
+
+    return child;
+}
+
 function executeQueue() {
     if (navigator.onLine) {
         // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
         let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-        let commandArgs = ['2', '-o', userPreferences.outputPath].concat(itemHashes);
         console.log(`Hashes: ${itemHashes}`);
 
         // change DOM to reflect program state
         setVisibility($('#loading-indicator'), true);
         $('#queue-execute-button').attr('disabled', 'disabled');
 
-        let child = execFile(userPreferences.toolPath, commandArgs, (err, stdout, stderr) => {
-            if (err) {
-                throw err;
-            }
-            // console.log(stdout);
-            // console.log(stderr);
+        if (userPreferences.aggregateOutput.value) {
+            let child = runTool(itemHashes);
+            child.on('exit', (code) => {
+                setVisibility($('#loading-indicator'), false);
+                $('#queue-execute-button').removeAttr('disabled');
+            });
+        } else {
+            let children = {};
+            itemHashes.forEach((hash) => {
+                let child = runTool([hash]);
+                child.on('exit', (code) => {
+                    children[hash].done = true;
+                    if (!Object.values(children).map((childObj) => { childObj.done }).includes(false)) {
+                        // All children are complete
+                        setVisibility($('#loading-indicator'), false);
+                        $('#queue-execute-button').removeAttr('disabled');
+                    }
+                });
+                children[hash] = {
+                    childProcess: child,
+                    done: false
+                };
+            });
 
-        });
-        console.log(child);
-        child.stdout.on('data', (data) => { console.log(`stdout: ${data}`) });
-        child.stderr.on('data', (data) => { console.log(`stderr: ${data}`) });
-        child.on('exit', (code) => { 
-            setVisibility($('#loading-indicator'), false);
-            $('#queue-execute-button').removeAttr('disabled');
-        });
+        }
     } else {
         console.log('No internet connection detected');
     }
 }
 
-function propogateUserPreferences() {
-    $('#outputPath').val(userPreferences.outputPath);
-    $('#toolPath').val(userPreferences.toolPath);
-
+function propogateUserPreferences(key) {
+    if (key) {
+        $(`#${key}`).val(userPreferences[key].value);
+    } else {
+        for (const [key, property] of Object.entries(userPreferences)) {
+            $(`#${key}`).val(property.value);
+        }
+    }
     fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
 }
 
 function updateUserPreference(key, value) {
-    if (userPreferences[key] !== value) {
-        userPreferences[key] = value;
-        propogateUserPreferences();
+    if (userPreferences[key].value !== value) {
+        userPreferences[key].value = value;
+        propogateUserPreferences(key);
     }
 }
 
@@ -300,12 +323,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
 document.getElementById('queue-clear-button').addEventListener('click', clearQueue);
 document.getElementById('queue-execute-button').addEventListener('click', executeQueue);
 document.getElementById('search-box').addEventListener('input', searchBoxUpdate);
-document.getElementById('queue-add-button').addEventListener('click', addSelectedButtonClickHandler);
-document.getElementById('queue-deselect-button').addEventListener('click', deselectButtonClickHandler);
 
 // Features implemented using IPCs
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
 
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {

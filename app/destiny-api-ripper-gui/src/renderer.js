@@ -56,7 +56,7 @@ try {
     userPreferences = defaultPreferences;
     for (const [key, property] of Object.entries(userPreferences)) {
         property.ifUndefined(key);
-        
+
     }
     propogateUserPreferences();
     // fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
@@ -241,6 +241,16 @@ function runTool(hashes) {
     return child;
 }
 
+function runToolRecursive(itemHashes) {
+    if (itemHashes.length > 0) {
+        let child = runTool([itemHashes.pop()]);
+        child.on('exit', (code) => { runToolRecursive(itemHashes) });
+    } else {
+        setVisibility($('#loading-indicator'), false);
+        $('#queue-execute-button').removeAttr('disabled');
+    }
+}
+
 function executeQueue() {
     if (navigator.onLine) {
         // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
@@ -258,23 +268,7 @@ function executeQueue() {
                 $('#queue-execute-button').removeAttr('disabled');
             });
         } else {
-            let children = {};
-            itemHashes.forEach((hash) => {
-                let child = runTool([hash]);
-                child.on('exit', (code) => {
-                    children[hash].done = true;
-                    if (!Object.values(children).map((childObj) => { childObj.done }).includes(false)) {
-                        // All children are complete
-                        setVisibility($('#loading-indicator'), false);
-                        $('#queue-execute-button').removeAttr('disabled');
-                    }
-                });
-                children[hash] = {
-                    childProcess: child,
-                    done: false
-                };
-            });
-
+            runToolRecursive(itemHashes);
         }
     } else {
         console.log('No internet connection detected');

@@ -82,7 +82,7 @@ function itemFilter(item) {
 function getDestiny2ItemDefinitions(callback) {
     axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
         .then((res) => {
-            axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[userPreferences.locale.value].DestinyInventoryItemDefinition)
+            axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[userPreferences.locale.value.toLowerCase()].DestinyInventoryItemDefinition)
                 .then((res) => {
                     for (let [hash, item] of Object.entries(res.data)) {
                         if (itemFilter(item)) {

@@ -19,17 +19,28 @@
     <div style="background-color: #858b90;">
       <!-- Header -->
       <div class="d-flex">
-        <div class="container d-flex justify-content-end p-2">
-          <div class="d-inline p-1 dropdown">
-            <button class="btn btn-secondary" id="sort-rules-button">Sort By</button>
+        <div class="container d-flex" style="position: relative;">
+          <div class="d-flex p-2" style="float: left; margin: 0 auto 0 0;">
+            <div class="d-inline p-1">
+              <select class="custom-select" id="gameSelector">
+                <option value="1">Destiny 1</option>
+                <option value="2" selected>Destiny 2</option>
+              </select>
+            </div>
           </div>
-          <div class="d-inline p-1 dropdown">
-            <button class="btn btn-secondary" id="filter-button">Filters</button>
-          </div>
-          <div class="d-inline p-1">
-            <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
+          <div class="d-flex p-2" style="float: right; margin: 0 0 0 auto;">
+            <div class="d-inline p-1">
+              <button class="btn btn-secondary" id="sort-rules-button">Sort By</button>
+            </div>
+            <div class="d-inline p-1">
+              <button class="btn btn-secondary" id="filter-button">Filters</button>
+            </div>
+            <div class="d-inline p-1">
+              <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
+            </div>
           </div>
         </div>
+        
         <div class="d-flex p-2">
           <div class="d-inline p-1">
             <button class="btn btn-info" id="settings-button" data-toggle="modal" data-target="#settingsModal">Settings</button>
@@ -89,6 +100,23 @@
                 <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
                 <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
               </div>
+            </div>
+            <div class="mb-3">
+              <select class="custom-select" id="localeSelector">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="es-mx">Español de Mexico</option>
+                <option value="fr">Français</option>
+                <option value="it">Italiano</option>
+                <option value="ja">日本語</option>
+                <option value="ko">한국어</option>
+                <option value="pl">Polszczyzna</option>
+                <option value="pt-br">Português Brasileiro</option>
+                <option value="ru">Русский</option>
+                <option value="zh-cht">繁體中文</option>
+                <option value="zh-chs">简体中文</option>
+              </select>
             </div>
           </div>
         </div>

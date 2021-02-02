@@ -1,0 +1,85 @@
+function createItemTile(item, game) {
+    let tileRoot = $('<div></div>', {
+        class: 'item-tile d-flex align-items-center p-1',
+        style: 'position: relative;',
+        id: item.hash,
+        'data-index': item.index,
+        name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
+        on: {
+            click: itemTileClickHandler
+        }
+    });
+
+    // Image div (Icon & Season Badge)
+    let imgDiv = $('<div></div>', {
+        style: 'display: grid; position: relative;'
+    });
+
+    imgDiv.append($('<img></img>', {
+        src: `https://bungie.net${item.displayProperties.icon}`,
+        referrerpolicy: 'no-referrer',
+        crossorigin: 'None',
+        loading: 'lazy',
+        style: 'grid-row: 1; grid-column: 1;'
+    }));
+
+    if (item.iconWatermark) {
+        imgDiv.append($('<img></img>', {
+            src: `https://bungie.net${item.iconWatermark}`,
+            referrerpolicy: 'no-referrer',
+            crossorigin: 'None',
+            loading: 'lazy',
+            style: 'grid-row: 1; grid-column: 1; z-index: 1;'
+        }));
+    }
+
+    // Item text (Name & Type)
+    let textDiv = $('<div></div>', {
+        class: 'tile-text d-inline-flex px-2'
+    });
+
+    let textContainer = $('<div></div>', {});
+    textContainer.append($(`<h6></h6>`, {
+        text: (item.displayProperties.name ? item.displayProperties.name : undefined),
+        class: 'm-0',
+        style: `color: var(--${item.inventory.tierTypeName.toLowerCase()}-color)`
+    }));
+    textContainer.append($('<i></i>', {
+        text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
+        class: 'fs-5 item-type',
+        // style: 'font-size: 110%'
+    }));
+
+    textDiv.append(textContainer);
+    tileRoot.append(imgDiv);
+    tileRoot.append(textDiv);
+
+    return tileRoot;
+}
+
+function itemTileClickHandler(event) {
+    let tileLocation = $(event.currentTarget).eq(0).parents().attr('id');
+    if (tileLocation === 'item-container') {
+        queue.append($(event.currentTarget).detach());
+    } else if (tileLocation === 'extract-queue') {
+        addItemToContainer($(event.currentTarget).detach());
+    }
+}
+
+function addItemToContainer(item) {
+    let containerContents = [...itemContainer.eq(0).children()].map(item => { return item.dataset.index });
+    if (item.data('index') < Math.min(...containerContents)) {
+        $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
+    } else {
+        $(`[data-index='${closest(item.data('index'), containerContents)}']`).after(item);
+    }
+}
+
+// function that finds the closest value in a list of numbers
+function closest(searchTarget, targetList) {
+    return targetList.reduce((prev, curr) => {
+        return (Math.abs(curr - searchTarget) < Math.abs(prev - searchTarget) ? curr : prev);
+    });
+}
+
+module.exports = { createItemTile, addItemToContainer };

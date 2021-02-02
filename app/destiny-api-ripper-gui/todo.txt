@@ -22,7 +22,7 @@ UI/UX
 * Add button to reload item_definitions.json from Bnet API
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Restore previous session (Queue, Active filters, Search Query, etc)
-* Export into several .dae files
+* Add darkmode
 
 Ripping
 * Handle errors (Invalid hash, etc)
@@ -47,7 +47,6 @@ Maintainance/Updates
 DONE
 * Put items back into #item-container in the correct order by using .after() instead of .append()
 * Implement search
-* Add darkmode
 * Add season badges to icons
 * Implement API Ripping
     * Call CGT with proper command line arguments
@@ -55,3 +54,4 @@ DONE
 * Prevent user from clicking button again if child process is already running
 * Check internet connection before ripping
 * Keyboard shortcuts
+* Export into several .dae files

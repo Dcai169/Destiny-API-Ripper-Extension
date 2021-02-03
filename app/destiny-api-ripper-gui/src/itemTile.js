@@ -42,7 +42,7 @@ function createItemTile(item, game) {
     textContainer.append($(`<h6></h6>`, {
         text: (item.displayProperties.name ? item.displayProperties.name : undefined),
         class: 'm-0',
-        style: `color: var(--${item.inventory.tierTypeName.toLowerCase()}-color)`
+        style: `color: var(--${hashToRarityName(item.inventory.tierTypeHash)}-color)`
     }));
     textContainer.append($('<i></i>', {
         text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
@@ -72,6 +72,28 @@ function addItemToContainer(item) {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
     } else {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).after(item);
+    }
+}
+
+function hashToRarityName(hash) {
+    switch (hash) {
+        case 2759499571:
+            return 'exotic';
+        
+        case 4008398120:
+            return 'legendary';
+        
+        case 2127292149:
+            return 'rare';
+
+        case 2395677314:
+            return 'uncommon';
+
+        case 3340296461:
+            return 'common';
+        
+        default:
+            break;
     }
 }
 

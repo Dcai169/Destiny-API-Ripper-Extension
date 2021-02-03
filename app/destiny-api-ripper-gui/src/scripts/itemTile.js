@@ -60,7 +60,7 @@ function createItemTile(item, game) {
             class: 'item-tile d-flex align-items-center p-1',
             style: 'position: relative;',
             id: item.hash,
-            'data-index': item.index,
+            'data-index': item.hash,
             name: (item.itemName ? item.itemName : 'Classified'),
             on: {
                 click: itemTileClickHandler

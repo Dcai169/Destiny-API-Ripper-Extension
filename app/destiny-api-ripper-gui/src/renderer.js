@@ -10,11 +10,10 @@ const { ipcRenderer } = require('electron');
 // const os = require('os');
 
 // Script imports
-const defaultPreferences = require('./defaultPreferences');
-const createItemTile = require('./itemTile.js').createItemTile;
-const addItemToContainer = require('./itemTile.js').addItemToContainer;
-const execute = require('./extractor.js');
-// const evaluateReplace = require('./evaluateReplace.js');
+const defaultPreferences = require('./scripts/defaultPreferences');
+const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
+const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
+const execute = require('./scripts/extractor.js');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
@@ -31,7 +30,6 @@ try {
 
     }
     propogateUserPreferences();
-    // fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
 }
 
 let destiny1ItemDefinitions = {};
@@ -61,24 +59,13 @@ function getDestiny2ItemDefinitions(callback) {
                             destiny2ItemDefinitions[hash] = item;
                         }
                     }
-                    sortItemDefinitions(callback);
+                    destiny2ItemDefinitions = new Map();
+                    [...Object.values(destiny2ItemDefinitions)].sort((a, b) => { return a.index - b.index }).forEach((item) => {
+                        destiny2ItemDefinitions.set(item.hash, item);
+                    });
+                    callback();
                 });
         });
-}
-
-function sortItemDefinitions(callback) {
-    let items = [...Object.values(destiny2ItemDefinitions)].sort((a, b) => { return a.index - b.index });
-    destiny2ItemDefinitions = new Map();
-    items.forEach((item) => {
-        destiny2ItemDefinitions.set(item.hash, item);
-    });
-    callback();
-}
-
-function setVisibility(jqueryObj, state) {
-    // true -> visible
-    // false -> hidden
-    jqueryObj.removeClass((state ? 'hidden' : 'p-1')).addClass((state ? 'p-1' : 'hidden'))
 }
 
 function searchBoxInputHandler(event) {
@@ -124,21 +111,6 @@ function executeButtonClickHandler() {
         execute(gameSelector.value, itemHashes);
     } else {
         console.log('No internet connection detected');
-    }
-}
-
-function updateUIInput(elementId, value) {
-    switch (typeof value) {
-        case 'string':
-            $(`#${elementId}`).val(value);
-            break;
-
-        case 'boolean':
-            $(`#${elementId}`).prop('checked', !!value);
-            break;
-
-        default:
-            break;
     }
 }
 

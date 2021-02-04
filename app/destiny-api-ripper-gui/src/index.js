@@ -50,10 +50,10 @@ const createWindow = () => {
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 
     // Hide menubar
-    // mainWindow.setMenuBarVisibility(false);
+    mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

@@ -1,5 +1,5 @@
 {
-  "name": "destiny-api-ripper-gui",
+  "name": "destiny-api-ripper-extension",
   "productName": "Destiny API Ripper Extension",
   "version": "1.1.0",
   "description": "An extension for the Destiny Collada Generator",
@@ -24,22 +24,32 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "destiny_api_ripper_gui"
+            "name": "destiny_api_ripper_extension"
           }
         },
         {
           "name": "@electron-forge/maker-zip",
           "platforms": [
             "darwin"
-          ]
+          ],
+          "config": {
+            "name": "destiny_api_ripper_extension"
+          }
         },
         {
           "name": "@electron-forge/maker-deb",
-          "config": {}
+          "platforms": [
+            "linux"
+          ],
+          "config": {
+            "name": "destiny_api_ripper_extension"
+          }
         },
         {
           "name": "@electron-forge/maker-rpm",
-          "config": {}
+          "config": {
+            "name": "destiny_api_ripper_extension"
+          }
         }
       ]
     }

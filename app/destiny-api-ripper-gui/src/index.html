@@ -23,7 +23,7 @@
           <div class="d-flex p-2" style="float: left; margin: 0 auto 0 0;">
             <div class="d-inline p-1">
               <select class="custom-select" id="gameSelector">
-                <option value="1" >Destiny 1</option>
+                <option value="1">Destiny 1</option>
                 <option value="2" selected>Destiny 2</option>
               </select>
             </div>
@@ -40,39 +40,58 @@
             </div>
           </div>
         </div>
-        
+
         <div class="d-flex p-2">
           <div class="d-inline p-1">
-            <button class="btn btn-info" id="settings-button" data-toggle="modal" data-target="#settingsModal">Settings</button>
+            <button class="btn btn-info" id="settings-button" data-toggle="modal"
+              data-target="#settingsModal">Settings</button>
           </div>
         </div>
       </div>
       <!-- Body -->
-      <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;" id="item-container" tabindex="-1" disabled="disabled">
-  
+      <div class="m-2"
+        style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;"
+        id="item-container" tabindex="-1" disabled="disabled">
+
       </div>
     </div>
-    <!-- Queue -->
-    <div class="container" style="height: 100vh; background-color: #7b8896;">
-      <!-- Buttons -->
-      <div class="container p-2 d-flex justify-content-center">
-        <div class="d-inline p-1">
-          <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
+    <div id="right-panel" style="display: grid; grid-template-rows: 70% 1fr;">
+      <!-- Queue -->
+      <div class="container" style="background-color: #7b8896;">
+        <!-- Buttons -->
+        <div class="container p-2 d-flex justify-content-center">
+          <div class="d-inline p-1">
+            <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
+          </div>
+          <div class="d-inline p-1">
+            <button type="button" class="btn btn-info" id="open-output">Open Output Folder</button>
+          </div>
+          <div class="d-inline p-1">
+            <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
+          </div>
+          <div class="d-inline hidden" id="loading-indicator">
+            <div class="spinner-border" role="status"></div>
+          </div>
         </div>
-        <div class="d-inline p-1">
-          <button type="button" class="btn btn-info" id="open-output">Open Output Folder</button>
-        </div>
-        <div class="d-inline p-1">
-          <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
-        </div>
-        <div class="d-inline hidden" id="loading-indicator">
-          <div class="spinner-border" role="status"></div>
+        <!-- Container -->
+        <div class="container p-2" tabindex="-1" disabled="disabled">
+          <div id="extract-queue" style="overflow: auto; height:90vh;" tabindex="-1" disabled="disabled">
+
+          </div>
         </div>
       </div>
-      <!-- Container -->
-      <div class="container p-2" tabindex="-1" disabled="disabled">
-        <div id="extract-queue" style="overflow: auto; height:90vh;" tabindex="-1" disabled="disabled">
-  
+      <div id="console" style="background-color: black;">
+        <!-- Console Buttons -->
+        <div class="container p-2 d-flex justify-content-end">
+          <div class="d-inline p-1">
+            <button type="button" class="btn btn-link" id="console-clear">Clear Console</button>
+          </div>
+          <div class="d-inline p-1">
+            <button type="button" class="btn btn-link" id="console-save">Save Console Output</button>
+          </div>
+        </div>
+        <div class="container">
+          <code id="console-text" style="overflow-y: scroll; white-space: pre-line;"></code>
         </div>
       </div>
     </div>

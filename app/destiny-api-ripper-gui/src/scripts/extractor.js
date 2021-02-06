@@ -1,3 +1,5 @@
+const { execFile } = require('child_process');
+
 function runTool(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.outputPath.value].concat(hashes);

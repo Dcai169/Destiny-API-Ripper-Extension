@@ -45,33 +45,29 @@ const blacklistedDestiny2Hashes = [4248210736] + // Default Shader
     [3807544519, 834178986, 839740147, 577345565, 574694085, 2039333456, 60802325, 3031612900, 2449203932, 242730894, 3735037521, 558870048, 2419910641, 2552954151, 2251060291, 3692806198]; // More Glows
 
 function getDestiny1ItemDefinitions(callback) {
-    fs.readFile(`./data/d1_item_definitions/${userPreferences.locale.value}.json`, (err, data) => {
-        if (err) {
-            throw err;
-        }
-
-        for (const [hash, item] of Object.entries(JSON.parse(data))) {
-            if (((item) => {
-                if (blacklistedDestiny1Hashes.includes(item.hash)) { return false }
-                if (arrayEquals(item.itemCategoryHashes, [23, 38, 20])) { return false } // Hunter Artifacts
-                if (arrayEquals(item.itemCategoryHashes, [22, 38, 20])) { return false } // Titan Artifacts
-                if (arrayEquals(item.itemCategoryHashes, [21, 38, 20])) { return false } // Warlock Artifacts
-                if (item.itemCategoryHashes && item.itemCategoryHashes.includes(1) && item.itemCategoryHashes.length === 2) { return false } // Reforge Weapon
-                if (arrayEquals(item.itemCategoryHashes, [41, 52])) { return true } // Shaders
-                if (arrayEquals(item.itemCategoryHashes, [42, 52])) { return true } // Ships
-                if ([2, 3].includes(item.itemType)) { return true } // Armor and Weapons
-                // return true;
-            })(item)) {
-                destiny1ItemDefinitions[hash] = item;
+    axios.get(`https://dare-manifest-server.herokuapp.com/manifest?locale=${userPreferences.locale.value}`)
+        .then((res) => {
+            for (const [hash, item] of Object.entries(res.data)) {
+                if (((item) => {
+                    if (blacklistedDestiny1Hashes.includes(item.hash)) { return false }
+                    if (arrayEquals(item.itemCategoryHashes, [23, 38, 20])) { return false } // Hunter Artifacts
+                    if (arrayEquals(item.itemCategoryHashes, [22, 38, 20])) { return false } // Titan Artifacts
+                    if (arrayEquals(item.itemCategoryHashes, [21, 38, 20])) { return false } // Warlock Artifacts
+                    if (item.itemCategoryHashes && item.itemCategoryHashes.includes(1) && item.itemCategoryHashes.length === 2) { return false } // Reforge Weapon
+                    if (arrayEquals(item.itemCategoryHashes, [41, 52])) { return true } // Shaders
+                    if (arrayEquals(item.itemCategoryHashes, [42, 52])) { return true } // Ships
+                    if ([2, 3].includes(item.itemType)) { return true } // Armor and Weapons
+                })(item)) {
+                    destiny1ItemDefinitions[hash] = item;
+                }
             }
-        }
-        let items = Object.values(destiny1ItemDefinitions);
-        destiny1ItemDefinitions = new Map();
-        items.forEach((item) => {
-            destiny1ItemDefinitions.set(item.hash, item);
+            let items = Object.values(destiny1ItemDefinitions);
+            destiny1ItemDefinitions = new Map();
+            items.forEach((item) => {
+                destiny1ItemDefinitions.set(item.hash, item);
+            });
+            callback();
         });
-        callback();
-    });
 }
 
 function getDestiny2ItemDefinitions(callback) {

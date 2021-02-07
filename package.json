@@ -19,21 +19,30 @@
   "license": "MIT",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "make_targets": {
+        "win32": ["zip"],
+        "darwin": ["dmg", "zip"],
+        "linux": ["deb", "rpm"]
+      },
+      "electronPackagerConfig": {
+        "packageManager": "npm",
+        "executableName": "destiny-api-ripper-extension"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "destiny_api_ripper_extension"
+            "name": "destiny-api-ripper-extension"
           }
         },
         {
           "name": "@electron-forge/maker-zip",
           "platforms": [
+            "win32",
             "darwin"
           ],
           "config": {
-            "name": "destiny_api_ripper_extension"
+            "name": "destiny-api-ripper-extension"
           }
         },
         {
@@ -42,13 +51,13 @@
             "linux"
           ],
           "config": {
-            "name": "destiny_api_ripper_extension"
+            "name": "destiny-api-ripper-extension"
           }
         },
         {
           "name": "@electron-forge/maker-rpm",
           "config": {
-            "name": "destiny_api_ripper_extension"
+            "name": "destiny-api-ripper-extension"
           }
         }
       ]

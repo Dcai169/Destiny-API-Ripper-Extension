@@ -25,6 +25,11 @@ body {
   background-color: gray;
 }
 
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+  transform: translate(99%, -47%);
+}
+
 :root {
   --common-color: #C3BCB4;
   --uncommon-color: #366F42;

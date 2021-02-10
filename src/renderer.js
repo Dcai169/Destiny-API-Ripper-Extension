@@ -17,6 +17,8 @@ const execute = require('./scripts/extractor.js');
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
+let uiConsole = document.getElementById('console-text');
+let consoleContainer = document.getElementById('console-container');
 
 let userPreferences;
 try {
@@ -140,13 +142,22 @@ function searchBoxInputHandler(event) {
 function executeButtonClickHandler() {
     if (navigator.onLine) {
         let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-        console.log(`Hashes: ${itemHashes}`);
+        uiConsolePrint(`Hashes: ${itemHashes}`);
 
         execute(gameSelector.value, itemHashes);
     } else {
-        console.log('No internet connection detected');
+        uiConsolePrint('No internet connection detected');
     }
 }
+
+function uiConsolePrint(text) {
+    uiConsole.innerText += `${text}\n `;
+
+    if (document.getElementById("console-autoscroll-toggle").checked) {
+        consoleContainer.scrollTop = consoleContainer.scrollHeight;
+    }
+}
+
 
 function propogateUserPreferences(key) {
     if (key) {
@@ -188,11 +199,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
     propogateUserPreferences()
 });
 
-// Features implemented in this file
+// Navbar items
 gameSelector.addEventListener('change', loadItems);
 document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); console.log('Queue cleared.'); });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
+
+// Console
+document.getElementById('console-clear').addEventListener('click', () => {uiConsole.textContent = ''});
+document.getElementById('console-save').addEventListener('click', notImplemented);
+
+// Settings modal
+document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
+document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { updateUserPreference('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
@@ -206,11 +226,6 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
     }
 });
 
-// Features implemented using IPCs
-document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
-document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
-document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
-
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
         updateUserPreference('outputPath', args[0]);
@@ -223,6 +238,7 @@ ipcRenderer.on('selectToolPath-reply', (_, args) => {
     }
 });
 
+// Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {
     if (args) {
         loadItems();
@@ -236,5 +252,3 @@ ipcRenderer.on('force-reload', (_, args) => {
 });
 
 // Not implemented
-document.getElementById('sort-rules-button').addEventListener('click', notImplemented);
-document.getElementById('filter-button').addEventListener('click', notImplemented);

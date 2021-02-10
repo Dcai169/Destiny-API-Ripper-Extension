@@ -70,7 +70,7 @@ function getDestiny1ItemDefinitions(callback = () => { }) {
         });
 }
 
-function getDestiny2ItemDefinitions(callback) {
+function getDestiny2ItemDefinitions(callback = () => { }) {
     axios.get(apiRoot + '/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
         .then((res) => {
             axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[userPreferences.locale.value.toLowerCase()].DestinyInventoryItemDefinition)

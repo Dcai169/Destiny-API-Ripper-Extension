@@ -44,7 +44,7 @@ const blacklistedDestiny2Hashes = [4248210736] + // Default Shader
     [2965439266, 4236468733, 2699000684, 1702504372, 3344732822, 2912265353, 4143534670, 873770815, 3367964921, 4089988225, 811724212, 3054638345, 463166592, 3507818312, 3835954362, 1339405989] + // Solstice Glows
     [3807544519, 834178986, 839740147, 577345565, 574694085, 2039333456, 60802325, 3031612900, 2449203932, 242730894, 3735037521, 558870048, 2419910641, 2552954151, 2251060291, 3692806198]; // More Glows
 
-function getDestiny1ItemDefinitions(callback) {
+function getDestiny1ItemDefinitions(callback = () => { }) {
     axios.get(`https://dare-manifest-server.herokuapp.com/manifest?locale=${userPreferences.locale.value}`)
         .then((res) => {
             for (const [hash, item] of Object.entries(res.data)) {
@@ -179,10 +179,10 @@ function notImplemented() {
 window.addEventListener('DOMContentLoaded', (event) => {
     if (gameSelector.value === '2') {
         getDestiny2ItemDefinitions(loadItems);
-        getDestiny1ItemDefinitions(() => { });
+        getDestiny1ItemDefinitions();
     } else {
         getDestiny1ItemDefinitions(loadItems);
-        getDestiny2ItemDefinitions(() => { });
+        getDestiny2ItemDefinitions();
     }
 
     propogateUserPreferences()

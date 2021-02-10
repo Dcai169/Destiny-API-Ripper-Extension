@@ -46,6 +46,10 @@ const createWindow = () => {
 
     Menu.setApplicationMenu(menu);
 
+    app.once('browser-window-created', () => {
+        mainWindow.webContents.send('system-locale', [app.getLocale()])
+    });
+
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));
 

@@ -27,7 +27,7 @@ body {
 
 .dropdown-submenu:hover>.dropdown-menu {
   display: block;
-  transform: translate(99%, -47%);
+  transform: translate(calc(100% - 3px), -47%);
 }
 
 :root {

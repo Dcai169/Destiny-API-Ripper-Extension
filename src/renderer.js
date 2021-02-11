@@ -13,6 +13,7 @@ const defaultPreferences = require('./scripts/defaultPreferences');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const execute = require('./scripts/extractor.js');
+const baseFilterClickHandler = require('./scripts/filterMenus.js');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
@@ -201,6 +202,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 // Navbar items
 gameSelector.addEventListener('change', loadItems);
+[...document.getElementsByClassName('base-filter')].forEach((element) => {element.addEventListener('click', baseFilterClickHandler)});
 document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); console.log('Queue cleared.'); });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
@@ -250,5 +252,3 @@ ipcRenderer.on('force-reload', (_, args) => {
         document.location.reload();
     }
 });
-
-// Not implemented

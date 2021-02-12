@@ -12,8 +12,8 @@ const { ipcRenderer } = require('electron');
 const defaultPreferences = require('./scripts/defaultPreferences');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
-const execute = require('./scripts/extractor.js');
-const baseFilterClickHandler = require('./scripts/filterMenus.js');
+const { executeButtonClickHandler } = require('./scripts/extractor.js');
+const { baseFilterClickHandler, compositeFilterClickHandler} = require('./scripts/filterMenus.js');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
@@ -140,26 +140,6 @@ function searchBoxInputHandler(event) {
     }, 500);
 }
 
-function executeButtonClickHandler() {
-    if (navigator.onLine) {
-        let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-        uiConsolePrint(`Hashes: ${itemHashes}`);
-
-        execute(gameSelector.value, itemHashes);
-    } else {
-        uiConsolePrint('No internet connection detected');
-    }
-}
-
-function uiConsolePrint(text) {
-    uiConsole.innerText += `${text}\n `;
-
-    if (document.getElementById("console-autoscroll-toggle").checked) {
-        consoleContainer.scrollTop = consoleContainer.scrollHeight;
-    }
-}
-
-
 function propogateUserPreferences(key) {
     if (key) {
         updateUIInput(key, userPreferences[key].value);
@@ -203,6 +183,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 // Navbar items
 gameSelector.addEventListener('change', loadItems);
 [...document.getElementsByClassName('base-filter')].forEach((element) => {element.addEventListener('click', baseFilterClickHandler)});
+[...document.getElementsByClassName('composite-filter')].forEach((element) => {element.addEventListener('click', compositeFilterClickHandler)});
 document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); console.log('Queue cleared.'); });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);

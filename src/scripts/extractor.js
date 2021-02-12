@@ -44,4 +44,23 @@ function execute(game, hashes) {
     }
 }
 
-module.exports = execute;
+function executeButtonClickHandler() {
+    if (navigator.onLine) {
+        let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+        uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
+
+        execute(gameSelector.value, itemHashes);
+    } else {
+        uiConsolePrint('No internet connection detected');
+    }
+}
+
+function uiConsolePrint(text) {
+    uiConsole.innerText += `${text}\n `;
+
+    if (document.getElementById("console-autoscroll-toggle").checked) {
+        consoleContainer.scrollTop = consoleContainer.scrollHeight;
+    }
+}
+
+module.exports = { executeButtonClickHandler };

@@ -13,7 +13,7 @@ const defaultPreferences = require('./scripts/defaultPreferences');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/extractor.js');
-const { baseFilterClickHandler, compositeFilterClickHandler} = require('./scripts/filterMenus.js');
+const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
 
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');

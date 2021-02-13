@@ -1,26 +1,20 @@
-function convertBase(num, fromBase, toBase) {
-    return parseInt(String(num), fromBase).toString(toBase);
-}
-
 function getFilterState() {
-    let binString = '';
+    let binState = '';
     [...document.getElementsByClassName('base-filter')].forEach((inputElem) => {
-        binString += (inputElem.checked ? '1' : '0');
+        binState += (inputElem.checked ? '1' : '0');
     });
 
-    return convertBase(binString, 2, 16).padStart(8, '0');
+    return binState.padStart(32, '0');
 }
 
-function setFilterState(hexState) {
-    let binState = convertBase(hexState, 16, 2).padStart(32, '0');
+function setFilterState(binState) {
     [...document.getElementsByClassName('base-filter')].forEach((inputElem) => {
         inputElem.checked = (binState.charAt(31 - parseInt(inputElem.dataset.index)) === '1' ? true : false);
     });
-    updateCompositeCheckboxes();
+    updateCompositeCheckboxes(getFilterState());
 }
 
-function updateCompositeCheckboxes() {
-    let binState = convertBase(getFilterState(), 16, 2).padStart(32, '0');
+function updateCompositeCheckboxes(binState) {
     switch (parseInt(binState.slice(0, 5), 2)) { // Rarities
         case 31:
             document.getElementById('filter-rarity').indeterminate = false;
@@ -89,8 +83,8 @@ function updateCompositeCheckboxes() {
             break;
     }
 
-    switch (parseInt(binState.slice(11, 17), 2)) { // Primary Weapons
-        case 63:
+    switch (parseInt(binState.slice(11, 18), 2)) { // Primary Weapons
+        case 127:
             document.getElementById('filter-primary').indeterminate = false;
             document.getElementById('filter-primary').checked = true;
             break;
@@ -106,7 +100,7 @@ function updateCompositeCheckboxes() {
             break;
     }
 
-    switch (parseInt(binState.slice(17, 22), 2)) { // Secondary Weapons
+    switch (parseInt(binState.slice(18, 22), 2)) { // Secondary Weapons
         case 31:
             document.getElementById('filter-secondary').indeterminate = false;
             document.getElementById('filter-secondary').checked = true;
@@ -140,7 +134,7 @@ function updateCompositeCheckboxes() {
             break;
     }
 
-    switch (parseInt(binState.slice(27, 30), 2)) { // Equipment
+    switch (parseInt(binState.slice(28, 31), 2)) { // Equipment
         case 7:
             document.getElementById('filter-equipment').indeterminate = false;
             document.getElementById('filter-equipment').checked = true;
@@ -159,22 +153,12 @@ function updateCompositeCheckboxes() {
 }
 
 function baseFilterClickHandler() {
-    console.log(getFilterState());
-    updateCompositeCheckboxes();
+    console.log(getFilterState())
+    updateCompositeCheckboxes(getFilterState());
 }
 
 function compositeFilterClickHandler(event) {
-    let binState = [...convertBase(getFilterState(), 16, 2).padStart(32, '0')];
-    
-    console.log('Old (Bin):', binState.join(''));
-    console.log('Old (Hex):', getFilterState());
-
-    let newState = binState.fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join('');
-    
-    console.log('New (Bin):', newState);
-    console.log('New (Hex):', convertBase(newState, 2, 16))
-    setFilterState(convertBase(newState, 2, 16));
-    // console.log(getFilterState());
+    setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 
 module.exports = { baseFilterClickHandler, compositeFilterClickHandler, setFilterState };

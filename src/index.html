@@ -36,7 +36,7 @@
                 <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
                   <li class="dropdown-item">
                     <div class="container">
-                      <input class="form-check-input" type="checkbox" id="sort-invert">
+                      <input class="form-check-input" type="checkbox" id="sort-invert" disabled>
                       <label class="form-check-label" for="sort-invert">Invert</label>
                     </div>
                   </li>
@@ -46,8 +46,8 @@
                   <form id="sort-select">
                     <li class="dropdown-item">
                       <div class="container">
-                        <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-original" checked>
-                        <label class="form-check-label" for="sort-rule-original">Original</label>
+                        <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-index" checked>
+                        <label class="form-check-label" for="sort-rule-index">Original</label>
                       </div>
                     </li>
                     <li class="dropdown-item">
@@ -60,6 +60,12 @@
                       <div class="container">
                         <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-rarity" disabled>
                         <label class="form-check-label" for="sort-rule-rarity">Rarity</label>
+                      </div>
+                    </li>
+                    <li class="dropdown-item">
+                      <div class="container">
+                        <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-hash" disabled>
+                        <label class="form-check-label" for="sort-rule-hash">Hash</label>
                       </div>
                     </li>
                   </form>

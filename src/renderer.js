@@ -15,12 +15,13 @@ const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/extractor.js');
 const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
 
+// Document Objects
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 let uiConsole = document.getElementById('console-text');
-let consoleContainer = document.getElementById('console-container');
 
+// Load user preferences
 let userPreferences;
 try {
     userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
@@ -37,13 +38,12 @@ try {
 let destiny1ItemDefinitions = {};
 let destiny2ItemDefinitions = {};
 let searchDebounceTimeout;
-let selectedItems = [];
 let reloadRequired = false;
 
 const baseUrl = 'https://bungie.net';
 const apiRoot = baseUrl + '/Platform';
 const blacklistedDestiny1Hashes = [4248210736]; // Default Shader
-const blacklistedDestiny2Hashes = [4248210736] + // Default Shader
+const blacklistedDestiny2Hashes = [4248210736, 2426387438] + // Default Shader
     [2965439266, 4236468733, 2699000684, 1702504372, 3344732822, 2912265353, 4143534670, 873770815, 3367964921, 4089988225, 811724212, 3054638345, 463166592, 3507818312, 3835954362, 1339405989] + // Solstice Glows
     [3807544519, 834178986, 839740147, 577345565, 574694085, 2039333456, 60802325, 3031612900, 2449203932, 242730894, 3735037521, 558870048, 2419910641, 2552954151, 2251060291, 3692806198]; // More Glows
 
@@ -125,7 +125,7 @@ function searchBoxInputHandler(event) {
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
             itemContainer.eq(0).children().each((_, element) => {
-                let item = $(`#${element.id}`)
+                let item = $(`#${element.id}`);
                 if (item.attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
                     setVisibility(item, true);
                 } else {

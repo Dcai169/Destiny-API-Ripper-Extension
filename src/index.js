@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
 // const userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -57,7 +57,7 @@ const createWindow = () => {
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished

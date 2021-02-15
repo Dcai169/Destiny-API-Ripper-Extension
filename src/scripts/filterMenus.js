@@ -18,7 +18,7 @@ function setFilterState(binState) {
 }
 
 function updateItems(inputElem) {
-    setVisibility($(inputElem.dataset.selector), inputElem.checked);
+    setVisibility($(`#item-container ${inputElem.dataset.selector}`), inputElem.checked);
 }
 
 function updateCompositeCheckboxes(binState) {

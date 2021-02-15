@@ -63,8 +63,10 @@ function createItemTile(item, game) {
             class: 'item-tile d-flex align-items-center p-1',
             style: 'position: relative;',
             id: item.hash,
-            'data-index': item.hash,
             name: (item.itemName ? item.itemName : 'Classified'),
+            'data-index': item.hash,
+            'data-rarity': item.tierType,
+            'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
             on: {
                 click: itemTileClickHandler
             }
@@ -90,7 +92,7 @@ function createItemTile(item, game) {
     
         let textContainer = $('<div></div>', {});
         textContainer.append($(`<h6></h6>`, {
-            text: (item.itemName ? item.itemName : undefined),
+            text: (item.itemName ? item.itemName : `#${item.hash}`),
             class: 'm-0',
             style: `color: var(--${tierNumberToRarityName(item.tierType)}-color)`
         }));

@@ -19,4 +19,4 @@ function updateUIInput(elementId, value) {
     }
 }
 
-module.exports = {setVisibility, updateUIInput};
+module.exports = { setVisibility, updateUIInput };

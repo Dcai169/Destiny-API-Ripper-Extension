@@ -1,3 +1,5 @@
+const { setVisibility } = require('./uiUtils.js');
+
 function getFilterState() {
     let binState = '';
     [...document.getElementsByClassName('base-filter')].forEach((inputElem) => {
@@ -10,8 +12,13 @@ function getFilterState() {
 function setFilterState(binState) {
     [...document.getElementsByClassName('base-filter')].forEach((inputElem) => {
         inputElem.checked = (binState.charAt(31 - parseInt(inputElem.dataset.index)) === '1' ? true : false);
+        updateItems(inputElem);
     });
     updateCompositeCheckboxes(getFilterState());
+}
+
+function updateItems(inputElem) {
+    setVisibility($(inputElem.dataset.selector), inputElem.checked);
 }
 
 function updateCompositeCheckboxes(binState) {
@@ -101,7 +108,7 @@ function updateCompositeCheckboxes(binState) {
     }
 
     switch (parseInt(binState.slice(18, 22), 2)) { // Secondary Weapons
-        case 31:
+        case 15:
             document.getElementById('filter-secondary').indeterminate = false;
             document.getElementById('filter-secondary').checked = true;
             break;
@@ -152,8 +159,8 @@ function updateCompositeCheckboxes(binState) {
     }
 }
 
-function baseFilterClickHandler() {
-    console.log(getFilterState())
+function baseFilterClickHandler(event) {
+    updateItems(event.target);
     updateCompositeCheckboxes(getFilterState());
 }
 

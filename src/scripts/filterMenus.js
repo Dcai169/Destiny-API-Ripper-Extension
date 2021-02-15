@@ -168,4 +168,4 @@ function compositeFilterClickHandler(event) {
     setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 
-module.exports = { baseFilterClickHandler, compositeFilterClickHandler, setFilterState };
+module.exports = { baseFilterClickHandler, compositeFilterClickHandler, updateItems };

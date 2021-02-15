@@ -13,7 +13,7 @@ const defaultPreferences = require('./scripts/defaultPreferences');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/extractor.js');
-const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
+const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -126,16 +126,14 @@ function searchBoxInputHandler(event) {
         if (event.target.value) {
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(`#${element.id}`);
-                if (item.attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
+                if (item.hasClass('m-1') && item.attr('name').toLowerCase().includes(event.target.value.toLowerCase())) {
                     setVisibility(item, true);
                 } else {
                     setVisibility(item, false);
                 }
             });
         } else {
-            itemContainer.eq(0).children().each((_, element) => {
-                setVisibility($(`#${element.id}`), true);
-            });
+            [...document.getElementsByClassName('base-filter')].forEach(updateItems);
         }
     }, 500);
 }

@@ -21,8 +21,12 @@ body {
   scrollbar-color: dark;
 }
 
+#main-content {
+  background-color: #3E4145;
+}
+
 .item-tile:hover {
-  background-color: gray;
+  filter: brightness(80%) !important;
 }
 
 .dropdown-submenu:hover>.dropdown-menu {
@@ -40,8 +44,4 @@ body {
 
 .hidden {
   content-visibility: hidden;
-}
-
-.item-type {
-  color:black;
 }

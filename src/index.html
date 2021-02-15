@@ -16,9 +16,9 @@
 <body style="height: 100vh;">
   <!-- Page Content -->
   <div style="display: grid; grid-template-columns: 1fr minmax(0px, 27.5%); height: inherit; overflow: hidden;">
-    <div style="background-color: #858b90;">
+    <div id="main-content">
       <!-- Header -->
-      <div class="d-flex">
+      <div class="d-flex bg-dark">
         <div class="container d-flex" style="position: relative;">
           <div class="d-flex p-2" style="float: left; margin: 0 auto 0 0;">
             <!-- Game Selector -->
@@ -403,13 +403,11 @@
         </div>
       </div>
       <!-- Body -->
-      <div class="m-2"
-        style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;"
-        id="item-container" tabindex="-1" disabled="disabled"></div>
+      <div class="m-2" style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;" id="item-container" tabindex="-1" disabled="disabled"></div>
     </div>
     <!-- Queue -->
     <div id="right-panel" style="display: grid; grid-template-rows: 70% 1fr; height: 100vh;">
-      <div class="container" style="background-color: #7b8896;">
+      <div class="container">
         <!-- Buttons -->
         <div class="container p-2 d-flex justify-content-center">
           <div class="d-inline p-1">
@@ -463,18 +461,18 @@
         <div class="modal-body">
           <div class="container">
             <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
+                <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
+              </div>
+            </div>
+            <div class="mb-3">
               <label class="form-label" for="outputPath">Output path</label>
               <input class="form-control" type="text" name="output-path" id="outputPath" readonly>
             </div>
             <div class="mb-3">
               <label class="form-label" for="toolPath">Tool path</label>
               <input class="form-control" type="text" name="tool-path" id="toolPath" readonly>
-            </div>
-            <div class="mb-3">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
-                <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
-              </div>
             </div>
             <div class="mb-3">
               <label for="locale">Language</label>

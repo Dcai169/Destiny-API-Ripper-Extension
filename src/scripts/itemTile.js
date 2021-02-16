@@ -46,7 +46,6 @@ function createItemTile(item, game) {
         let textContainer = $('<div></div>', {});
         textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
             text: (item.displayProperties.name ? item.displayProperties.name : `#${item.hash}`),
-            class: 'm-0',
             style: `color: ${(item.inventory.tierType <= 2 ? 'black' : 'white')}`
         })));
         textContainer.append($('<p></p>', { class: 'm-0' }).append($('<i></i>', {
@@ -60,7 +59,7 @@ function createItemTile(item, game) {
         tileRoot.append(textDiv);
     } else if (game === '1') {
         tileRoot = $('<div></div>', {
-            class: 'item-tile d-flex align-items-center p-1',
+            class: 'item-tile d-flex align-items-center m-1',
             style: `position: relative; background-color: var(--${tierNumberToRarityName(item.tierType)}-color)`,
             id: item.hash,
             name: (item.itemName ? item.itemName : 'Classified'),
@@ -91,16 +90,16 @@ function createItemTile(item, game) {
         });
     
         let textContainer = $('<div></div>', {});
-        textContainer.append($(`<b></b>`, {
+        textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
             text: (item.itemName ? item.itemName : `#${item.hash}`),
             class: 'm-0',
             style: `color: ${(item.tierType <= 2 ? 'black' : 'white')}`
-        }));
-        textContainer.append($('<i></i>', {
+        })));
+        textContainer.append($('<p></p>', { class: 'm-0' }).append($('<i></i>', {
             text: (item.itemTypeName ? item.itemTypeName : undefined),
             class: 'fs-5 item-type',
             style: `color: ${(item.tierType <= 2 ? '#707070' : '#DDD')}`
-        }));
+        })));
     
         textDiv.append(textContainer);
         tileRoot.append(imgDiv);

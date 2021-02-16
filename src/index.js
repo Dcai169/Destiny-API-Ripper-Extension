@@ -1,6 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
 // const userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -45,6 +45,10 @@ const createWindow = () => {
     }));
 
     Menu.setApplicationMenu(menu);
+
+    app.once('browser-window-created', () => {
+        mainWindow.webContents.send('system-locale', [app.getLocale()])
+    });
 
     // and load the index.html of the app.
     mainWindow.loadFile(path.join(__dirname, 'index.html'));

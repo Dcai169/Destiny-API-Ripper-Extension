@@ -1,7 +1,7 @@
 {
   "name": "destiny-api-ripper-extension",
   "productName": "Destiny API Ripper Extension",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "An extension for the Destiny Collada Generator",
   "main": "src/index.js",
   "scripts": {
@@ -23,6 +23,10 @@
         "win32": ["zip"],
         "darwin": ["dmg", "zip"],
         "linux": ["deb", "rpm"]
+      },
+      "packagerConfig": {
+        "packageManager": "npm",
+        "executableName": "destiny-api-ripper-extension"
       },
       "electronPackagerConfig": {
         "packageManager": "npm",

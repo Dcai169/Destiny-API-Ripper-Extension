@@ -9,9 +9,11 @@ const blacklistedDestiny2Hashes = [4248210736, 2426387438, 2931483505, 195964845
 function getDestiny1ItemDefinitions(locale='en') {
     return new Promise((resolve, reject) => {
         let destiny1ItemDefinitions = {};
+        // Send GET request to manifest server
         axios.get(`https://dare-manifest-server.herokuapp.com/manifest?locale=${locale}`)
             .then((res) => {
                 for (const [hash, item] of Object.entries(res.data)) {
+                    // Filter items in the manifest
                     if (((item) => {
                         if (blacklistedDestiny1Hashes.includes(item.hash)) { return false }
                         if (arrayEquals(item.itemCategoryHashes, [23, 38, 20])) { return false } // Hunter Artifacts
@@ -25,6 +27,7 @@ function getDestiny1ItemDefinitions(locale='en') {
                         destiny1ItemDefinitions[hash] = item;
                     }
                 }
+                // Sort into a Map Object
                 let items = Object.values(destiny1ItemDefinitions);
                 destiny1ItemDefinitions = new Map();
                 items.forEach((item) => {
@@ -38,8 +41,10 @@ function getDestiny1ItemDefinitions(locale='en') {
 function getDestiny2ItemDefinitions(locale='en') {
     return new Promise((resolve, reject) => {
         let destiny2ItemDefinitions = {};
+        // Send GET request to manifest server
         axios.get(baseUrl + '/Platform/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
             .then((res) => {
+                // Send GET for item definitions
                 axios.get(baseUrl + res.data.Response.jsonWorldComponentContentPaths[locale].DestinyInventoryItemDefinition)
                     .then((res) => {
                         for (let [hash, item] of Object.entries(res.data)) {

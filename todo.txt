@@ -10,7 +10,6 @@ UI/UX
 * Add button to reload item_definitions.json from Bnet API
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Restore previous session (Queue, Active filters, Search Query, etc)
-* Add darkmode
 
 Maintainance/Updates
 * CGT
@@ -50,3 +49,4 @@ DONE
         * Weapon Type (Shotty, LMG, Auto, Pulse, etc)
     * Rarity
 * Add a locale picker (de, en, es, es-mx, fr, it, ja, ko, pl, pt-br, ru, zh-cht, zh-chs)
+* Add darkmode

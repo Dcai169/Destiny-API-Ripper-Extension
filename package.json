@@ -24,6 +24,10 @@
         "darwin": ["dmg", "zip"],
         "linux": ["deb", "rpm"]
       },
+      "packagerConfig": {
+        "packageManager": "npm",
+        "executableName": "destiny-api-ripper-extension"
+      },
       "electronPackagerConfig": {
         "packageManager": "npm",
         "executableName": "destiny-api-ripper-extension"

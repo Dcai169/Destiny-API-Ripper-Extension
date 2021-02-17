@@ -20,9 +20,17 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": ["zip"],
-        "darwin": ["dmg", "zip"],
-        "linux": ["deb", "rpm"]
+        "win32": [
+          "zip"
+        ],
+        "darwin": [
+          "dmg",
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
       },
       "packagerConfig": {
         "packageManager": "npm",
@@ -49,13 +57,9 @@
             "linux"
           ],
           "config": {
-            "name": "destiny-api-ripper-extension"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {
-            "name": "destiny-api-ripper-extension"
+            "name": "destiny-api-ripper-extension",
+            "maintainer": "Daniel Cai",
+            "homepage": "https://github.com/Dcai169/Destiny-API-Ripper-Extension"
           }
         }
       ]

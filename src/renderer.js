@@ -12,14 +12,13 @@ const defaultPreferences = require('./scripts/defaultPreferences');
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
-const { executeButtonClickHandler } = require('./scripts/extractor.js');
+const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 
 // Document Objects
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
-let uiConsole = document.getElementById('console-text');
 
 // Load user preferences
 let userPreferences;
@@ -133,7 +132,7 @@ document.getElementById('queue-execute-button').addEventListener('click', execut
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
 // Console
-document.getElementById('console-clear').addEventListener('click', () => { uiConsole.textContent = '' });
+document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').textContent = '' });
 document.getElementById('console-save').addEventListener('click', notImplemented);
 
 // Settings modal

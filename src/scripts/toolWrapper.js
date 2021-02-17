@@ -6,10 +6,28 @@ function updateUiDone(code) {
     uiConsolePrint(`Done (Exit code ${code})`);
 }
 
+function checkTool(toolPath) {
+    return new Promise((resolve, reject) => {
+        let child = execFile(toolPath, ['-v'], (err, stdout, stderr) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+
+            if (stderr) {
+                reject(stderr);
+                return;
+            }
+
+            resolve(stdout.split('.').map((v) => { parseInt(v) }));
+        });
+    });
+}
+
 function runTool(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.outputPath.value].concat(hashes);
-    let child = execFile(userPreferences.toolPath.value, commandArgs, (err, stdout, stderr) => {
+    let child = execFile(userPreferences.toolPath.value, commandArgs, (err) => {
         if (err) {
             throw err;
         }
@@ -56,11 +74,11 @@ function executeButtonClickHandler() {
 }
 
 function uiConsolePrint(text) {
-    uiConsole.innerText += `${text}\n `;
+    document.getElementById('console-text').innerText += `${text}\n `;
 
     if (document.getElementById("console-autoscroll-toggle").checked) {
-        consoleContainer.scrollTop = consoleContainer.scrollHeight;
+        document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
     }
 }
 
-module.exports = { executeButtonClickHandler };
+module.exports = { executeButtonClickHandler, checkTool };

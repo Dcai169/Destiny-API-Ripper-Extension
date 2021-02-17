@@ -34,12 +34,6 @@
       },
       "makers": [
         {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "destiny-api-ripper-extension"
-          }
-        },
-        {
           "name": "@electron-forge/maker-zip",
           "platforms": [
             "win32",

@@ -20,9 +20,17 @@
   "config": {
     "forge": {
       "make_targets": {
-        "win32": ["zip"],
-        "darwin": ["dmg", "zip"],
-        "linux": ["deb", "rpm"]
+        "win32": [
+          "zip"
+        ],
+        "darwin": [
+          "dmg",
+          "zip"
+        ],
+        "linux": [
+          "deb",
+          "rpm"
+        ]
       },
       "packagerConfig": {
         "packageManager": "npm",
@@ -68,11 +76,13 @@
     }
   },
   "dependencies": {
+    "7zip-bin": "^5.1.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "dotenv": "^8.2.0",
     "electron-squirrel-startup": "^1.0.0",
     "jquery": "^3.5.1",
+    "node-7z": "^2.1.2",
     "popper.js": "^1.16.1"
   },
   "devDependencies": {

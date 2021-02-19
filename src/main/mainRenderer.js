@@ -8,12 +8,12 @@ const { ipcRenderer } = require('electron');
 // const os = require('os');
 
 // Script imports
-const defaultPreferences = require('./scripts/defaultPreferences');
-const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
-const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
-const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
+const defaultPreferences = require('../scripts/defaultPreferences');
+const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('../scripts/destinyManifest.js');
+const { createItemTile, addItemToContainer } = require('../scripts/itemTile.js');
+const { setVisibility, updateUIInput } = require('../scripts/uiUtils.js');
+const { executeButtonClickHandler } = require('../scripts/toolWrapper.js');
+const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('../scripts/filterMenus.js');
 
 // Document Objects
 let itemContainer = $('#item-container');

@@ -8,18 +8,18 @@ function updateUiDone(code) {
 
 function checkTool(toolPath) {
     return new Promise((resolve, reject) => {
-        let child = execFile(toolPath, ['-v'], (err, stdout, stderr) => {
-            if (err) {
-                reject(err);
-                return;
-            }
+        let child = execFile(toolPath, ['--version'], (err, stdout, stderr) => {
+            // if (err) {
+            //     reject(err);
+            //     return;
+            // }
 
             if (stderr) {
                 reject(stderr);
                 return;
             }
 
-            resolve(stdout.split('.').map((v) => { parseInt(v) }));
+            resolve(stdout.split('.').map((v) => { return parseInt(v.trim()) }));
         });
     });
 }

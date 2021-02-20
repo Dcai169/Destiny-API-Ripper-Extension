@@ -10,11 +10,23 @@
   <script>require('popper.js');</script>
   <script>require('bootstrap');</script>
   <script defer src="loadingRenderer.js"></script>
-  <link rel="stylesheet" href="../styles/index.css">
+  <link rel="stylesheet" href="./index.css">
 </head>
 
 <body>
-  <p>Loading</p>
+  <div class="container box">
+    <div>
+      <h4>
+        <span class="h3">D</span>estiny <span class="h3">A</span>PI <span class="h3">R</span>ipper <span class="h3">E</span>xtension
+      </h4>
+    </div>
+    <div class="progress">
+      <div class="progress-bar bg-info" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div>
+      <small id="loading-summary" style="color: #AAA;"></small>
+    </div>
+  </div>
 </body>
 
 </html>

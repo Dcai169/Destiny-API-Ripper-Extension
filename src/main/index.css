@@ -1,18 +1,18 @@
 @font-face {
   font-family: "Neue Haas Grotesk Display";
-  src: url("./fonts/NHaasGroteskDSPro-55Rg.woff2") format('woff2');
+  src: url("../styles/fonts/NHaasGroteskDSPro-55Rg.woff2") format('woff2');
   font-style: normal;
 }
 
 @font-face {
   font-family: "Neue Haas Grotesk Display";
-  src: url("./fonts/NHaasGroteskDSPro-56It.woff2") format('woff2');
+  src: url("../styles/fonts/NHaasGroteskDSPro-56It.woff2") format('woff2');
   font-style: italic;
 }
 
 @font-face {
   font-family: "Neue Haas Grotesk Display";
-  src: url("./fonts/NHaasGroteskDSPro-65Md.woff2") format('woff2');
+  src: url("../styles/fonts/NHaasGroteskDSPro-65Md.woff2") format('woff2');
   font-weight: bold;
 }
 

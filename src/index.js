@@ -98,6 +98,7 @@ const createLoadingWindow = () => {
     const loadingWindow = new BrowserWindow({
         width: 400,
         height: 250,
+        frame: false,
         webPreferences: {
             nodeIntegration: true
         }
@@ -120,6 +121,10 @@ const createLoadingWindow = () => {
     }));
 
     Menu.setApplicationMenu(loadingMenu);
+
+    // Set window as non resizable and non closeable
+    loadingWindow.setResizable(false);
+    loadingWindow.setClosable(false);
 
     // and load the index.html of the app.
     loadingWindow.loadFile(path.join(__dirname, 'loading', 'index.html'));

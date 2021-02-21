@@ -1,41 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { checkTool } = require('./scripts/toolWrapper.js');
-
-let toolStatus = (() => {
-    try {
-        const userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
-        if (userPreferences.toolPath.value) {
-            checkTool(userPreferences.toolPath.value).then(
-                (fulfilled) => { return fulfilled }, 
-                // Not found / not working
-                (rejected) => { return [1] }
-            );
-        } else {
-            // Tool path is falsey
-            return [2];
-        }
-    } catch (error) {
-        // First launch
-        if (fs.existsSync(path.join(process.cwd(), 'bin'))) {
-            let executables = fs.readdirSync(path.join(process.cwd(), 'bin'), { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' });
-            if (executables.length === 1) {
-                checkTool(path.join(process.cwd(), 'bin', executables[0].name)).then(
-                    (fulfilled) => { return fulfilled }, 
-                    (rejected) => { return [3] }
-                );
-            } else {
-                // Multiple exes
-                return [4]
-            }
-        } else {
-            // ./bin does not exist
-            fs.mkdirSync(path.join(process.cwd(), 'bin'));
-
-        }
-    }
-})();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -131,6 +96,9 @@ const createLoadingWindow = () => {
 
     // Hide menubar
     loadingWindow.setMenuBarVisibility(false);
+
+    // Open the DevTools.
+    loadingWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -157,6 +125,11 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+ipcMain.on('loadingDone', (event) => {
+    createMainWindow();
+    BrowserWindow.fromId(event.frameId).destroy();
+});
+
 ipcMain.on('selectOutputPath', (event) => {
     event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
 });

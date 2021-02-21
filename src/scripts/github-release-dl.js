@@ -38,8 +38,14 @@ async function downloadFile(dlUrl, dlPath) {
     });
 }
 
-function extract7zip(archivePath) {
-    const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, {$bin: sevenBin.path7za, recursive: true})
+async function extract7zip(archivePath) {
+    return new Promise((resolve, reject) => {
+        const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, {$bin: sevenBin.path7za, recursive: true});
+
+        extractorStream.on('progress', (progress) => {});
+        extractorStream.on('error', reject);
+        extractorStream.on('end', resolve);
+    });
 }
 
 // downloadFile(downloadUrl, path.join(dlPath, path.parse(downloadUrl).base)).then(() => {});

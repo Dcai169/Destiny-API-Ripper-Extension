@@ -2,14 +2,9 @@ const fs = require('fs');
 const path = require('path');
 const { downloadAndExtractTool } = require('./githubReleaseDler.js');
 
-function useDefault(key) {
-    userPreferences[key].value = userPreferences[key].defaultValue;
-}
-
-module.exports = {
+let defaultPreferences = {
     "outputPath": {
         value: '',
-        defaultValue: '',
         ifUndefined: (key) => {
             let defaultPath = path.join(process.cwd(), 'output');
             try {
@@ -17,33 +12,37 @@ module.exports = {
             } catch (error) {
                 // Let the error go wild and free
             }
-            userPreferences[key].value = defaultPath;
+            defaultPreferences.outputPath.value = defaultPath;
+            return Promise.resolve(defaultPath);
         }
     },
     "toolPath": {
         value: '',
-        defaultValue: '',
         ifUndefined: () => {
-            try {
-                fs.mkdirSync(path.join(process.cwd(), 'bin'));
-            } catch (error) {
-                // Let the error go wild and free
-            }
+            return new Promise((resolve, reject) => {
+                try {
+                    fs.mkdirSync(path.join(process.cwd(), 'bin'));
+                } catch (error) {
+                    // Let the error go wild and free
+                }
                 downloadAndExtractTool(path.join(process.cwd(), 'bin'))
-                .then((info) => {
-                    console.log(path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' })[0].name))
-                    userPreferences['toolPath'].value = path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' })[0].name)
-                });
+                    .then((info) => {
+                        defaultPreferences.toolPath.value = path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === (process.platform === 'win32' ? 'exe' : '') })[0].name)
+                        return resolve(defaultPreferences.toolPath.value);
+                    })
+                    .catch(reject);
+            });
+            
         }
     },
     "locale": {
-        value: '',
-        defaultValue: "en",
-        ifUndefined: useDefault
+        value: 'en',
+        ifUndefined: () => { return Promise.resolve('en'); }
     },
     "aggregateOutput": {
-        value: '',
-        defaultValue: true,
-        ifUndefined: useDefault
+        value: true,
+        ifUndefined: () => { return Promise.resolve(true); }
     }
 }
+
+module.exports = { defaultPreferences };

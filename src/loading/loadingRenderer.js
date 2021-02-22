@@ -3,7 +3,7 @@ const fs = require('fs');
 const { ipcRenderer } = require('electron');
 
 const { toolVersion } = require('./scripts/toolChecker.js');
-const defaultPreferences = require('./scripts/defaultPreferences');
+const { defaultPreferences } = require('./scripts/defaultPreferences');
 
 let userPreferences;
 let toolDownloadedFlag = false;
@@ -44,7 +44,7 @@ function setUiState({ stateString, mainPercent, subPercent }) {
                 subBar.style.width = '0%';
             }
 
-            resolve();
+            resolve(stateString);
         } catch (err) {
             reject(err);
         }
@@ -54,21 +54,22 @@ function setUiState({ stateString, mainPercent, subPercent }) {
 
 function loadUserPreferences() {
     return new Promise((resolve, reject) => {
-        try {
-            userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
+        let preferencesPath = path.join(process.cwd(), 'user_preferences.json');
+
+        if (fs.existsSync(preferencesPath)) {
+            userPreferences = JSON.parse(fs.readFileSync(preferencesPath, 'utf-8'));
             resolve(userPreferences);
-        } catch (err) {
-            if (err.code === -4058) {
+        } else {
+            try {
                 // default preferences/first launch
                 userPreferences = defaultPreferences;
-                let preferenceEntries = Object.entries(userPreferences);
-                for (const [key, property] of preferenceEntries) {
-                    property.ifUndefined(key);
-                }
-                toolDownloadedFlag = true;
-                fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-                resolve(userPreferences);
-            } else {
+                Promise.all(Object.entries(userPreferences).map(([_, value]) => { return value.ifUndefined(); }))
+                    .then((res) => {
+                        toolDownloadedFlag = true;
+                        fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
+                        resolve(userPreferences);
+                    });
+            } catch (err) {
                 reject(err);
             }
         }
@@ -78,13 +79,13 @@ function loadUserPreferences() {
 function checkToolIntegrity() {
     return new Promise((resolve, reject) => {
         if (toolDownloadedFlag) {
-            resolve();
+            resolve(toolDownloadedFlag);
         } else {
             toolVersion(userPreferences.toolPath.value)
                 .then(resolve)
-                .catch(reject);
+                .catch(reject); // Will be called if tool is broken
             if (!typeof toolStatus === Array) {
-                reject('Unable to determine tool version.');
+                reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
             } else {
                 resolve();
             }
@@ -99,4 +100,15 @@ let loadingTasks = [
     setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
 ];
 
-Promise.all(loadingTasks).then((res) => { ipcRenderer.send('loadingDone', res) });
+Promise.all(loadingTasks)
+    .then((res) => {
+        // Settle timeout
+        setTimeout(() => {
+            console.log(userPreferences)
+            ipcRenderer.send('mainPrint', JSON.parse(JSON.stringify(userPreferences)));
+            ipcRenderer.send('loadingDone');
+        }, 1000);
+    })
+    .catch((err) => {
+        console.log(err);
+    });

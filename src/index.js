@@ -98,7 +98,7 @@ const createLoadingWindow = () => {
     loadingWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    loadingWindow.webContents.openDevTools();
+    // loadingWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -125,7 +125,12 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.on('loadingDone', (event) => {
+ipcMain.on('mainPrint', (event, args) => {
+    console.log(event);
+    console.log(args);
+});
+
+ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
 });

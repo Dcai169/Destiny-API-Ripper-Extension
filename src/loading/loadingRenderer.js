@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
+const { downloadAndExtractTool } = require('./scripts/githubReleaseDler.js');
 
 const { toolVersion } = require('./scripts/toolChecker.js');
 const { defaultPreferences } = require('./scripts/defaultPreferences');
@@ -23,7 +24,7 @@ function parsePercent(widthPercent) {
     return parseInt(widthPercent.slice(0, -1).trim())
 }
 
-function setUiState({ stateString, mainPercent, subPercent }) {
+function setUiState({ stateString, mainPercent, subPercent }, resolveDelay = 0) {
     return new Promise((resolve, reject) => {
         try {
             let mainBar = document.getElementById('main-bar');
@@ -44,9 +45,9 @@ function setUiState({ stateString, mainPercent, subPercent }) {
                 subBar.style.width = '0%';
             }
 
-            resolve(stateString);
+            setTimeout(() => { resolve(stateString) }, resolveDelay);
         } catch (err) {
-            reject(err);
+            reject(err); // If this is called something has really gone wrong.
         }
     });
 
@@ -70,7 +71,7 @@ function loadUserPreferences() {
                         resolve(userPreferences);
                     });
             } catch (err) {
-                reject(err);
+                reject(err); // Will call if program cannot write files.
             }
         }
     });
@@ -83,7 +84,18 @@ function checkToolIntegrity() {
         } else {
             toolVersion(userPreferences.toolPath.value)
                 .then(resolve)
-                .catch(reject); // Will be called if tool is broken
+                .catch(() => { // Will be called if tool is broken
+                    // Try to redownload
+                    try {
+                        fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
+                        fs.mkdirSync(path.join(process.cwd(), 'bin'));
+                        downloadAndExtractTool(path.join(process.cwd(), 'bin'))
+                            .then(resolve)
+                            .catch(reject);
+                    } catch (err) {
+                        reject(err)
+                    }
+                }); 
             if (!typeof toolStatus === Array) {
                 reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
             } else {
@@ -94,10 +106,10 @@ function checkToolIntegrity() {
 }
 
 let loadingTasks = [
-    setUiState({ stateString: 'Initalizing' }),
-    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }).then(loadUserPreferences),
-    setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 }).then(checkToolIntegrity),
-    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
+    setUiState({ stateString: 'Initalizing' }, 250),
+    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }, 250).then(loadUserPreferences),
+    setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 }, 250).then(checkToolIntegrity),
+    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 }, 250)
 ];
 
 Promise.all(loadingTasks)

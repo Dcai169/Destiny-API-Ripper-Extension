@@ -1,7 +1,8 @@
 const path = require('path');
+const fs = require('fs');
 const { ipcRenderer } = require('electron');
 
-const { checkTool } = require('../main/scripts/toolWrapper.js');
+const { checkTool } = require('./scripts/toolChecker.js');
 const defaultPreferences = require('./scripts/defaultPreferences');
 
 let mainBar = document.getElementById('main-bar');
@@ -10,6 +11,7 @@ let loadingSummary = document.getElementById('loading-summary');
 
 let userPreferences;
 let toolDownloadedFlag = false;
+let toolStatus;
 
 function parsePercent(widthPercent) {
     return parseInt(widthPercent.slice(0, -1).trim())
@@ -42,50 +44,35 @@ try {
         }, 100);
     }
     toolDownloadedFlag = true;
-    propogateUserPreferences();
+    fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
 } finally {
     subBar.style.width = '100%'
-    mainBar.style.width = '20%'
+    mainBar.style.width = '50%'
 }
 
-loadingSummary.innerText = 'Checking tool integrity';
-subBar.style.width = '0%'
-let toolStatus = (() => {
-    try {
-        if (userPreferences.toolPath.value) {
-            checkTool(userPreferences.toolPath.value).then(
-                (fulfilled) => { return fulfilled }, 
-                // Not found / not working
-                (rejected) => { return [1] }
-            );
-        } else {
-            // Tool path is falsey
-            return [2];
-        }
-    } catch (error) {
-        // First launch
-        if (fs.existsSync(path.join(process.cwd(), 'bin'))) {
-            let executables = fs.readdirSync(path.join(process.cwd(), 'bin'), { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' });
-            if (executables.length === 1) {
-                checkTool(path.join(process.cwd(), 'bin', executables[0].name)).then(
-                    (fulfilled) => { return fulfilled }, 
-                    (rejected) => { return [3] }
-                );
-            } else {
-                // Multiple exes
-                return [4]
-            }
-        } else {
-            // ./bin does not exist
-            
+setTimeout(() => {
+    loadingSummary.innerText = 'Checking tool integrity';
+    subBar.style.width = '0%';
+}, 500);
 
-        }
+
+if (toolDownloadedFlag) {
+    subBar.style.widthPercent = '100%';
+} else {
+    checkTool(userPreferences.toolPath.value)
+        .then((fulfilled) => { 
+            toolStatus = fulfilled;
+        })
+        .catch((err) => {
+            throw err;
+        });
+    if (!typeof toolStatus === Array) {
+        throw Error('Unable to determine tool version.');
+    } else {
+        subBar.style.widthPercent = '100%';
+        mainBar.style.width = '100%'
     }
-})();
+}
 
-console.log(process.cwd());
-console.log(...toolStatus);
-
-// let testBar = setInterval();
-ipcRenderer.send('loadingDone');
-
+loadingSummary.innerText = 'Done';
+// setTimeout(() => { ipcRenderer.send('loadingDone') }, 1000);

@@ -8,11 +8,11 @@ const { ipcRenderer } = require('electron');
 // const os = require('os');
 
 // Script imports
-const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js.js');
-const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js.js');
+const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
+const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js.js');
+const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -20,7 +20,7 @@ let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
 // Load user preferences
-let userPreferences;
+let userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 let searchDebounceTimeout;
 let reloadRequired = false;

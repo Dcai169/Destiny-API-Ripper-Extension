@@ -48,4 +48,20 @@ async function extract7zip(archivePath) {
     });
 }
 
-// downloadFile(downloadUrl, path.join(dlPath, path.parse(downloadUrl).base)).then(() => {});
+function downloadAndExtractTool(dlPath) {
+    downloadFile(getDownloadUrl(), dlPath)
+        .then(() => {
+            extract7zip(...fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' }))
+                .then((res) => {
+                    return res;
+                })
+                .catch((err) => {
+                    throw err;
+            });
+        })
+        .catch((err) => {
+            throw err;
+    });
+}
+
+module.exports = { downloadAndExtractTool };

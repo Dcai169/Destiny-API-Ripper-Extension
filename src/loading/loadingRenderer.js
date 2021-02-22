@@ -117,10 +117,9 @@ Promise.all(loadingTasks)
         // Settle timeout
         setTimeout(() => {
             console.log(userPreferences)
-            ipcRenderer.send('mainPrint', JSON.parse(JSON.stringify(userPreferences)));
             ipcRenderer.send('loadingDone');
         }, 1000);
     })
     .catch((err) => {
-        console.log(err);
+        ipcRenderer.send('mainPrint', err);
     });

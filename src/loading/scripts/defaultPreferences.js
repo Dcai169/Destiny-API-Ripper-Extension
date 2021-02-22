@@ -8,7 +8,7 @@ function useDefault(key) {
 
 module.exports = {
     "outputPath": {
-        value: null,
+        value: '',
         defaultValue: '',
         ifUndefined: (key) => {
             let defaultPath = path.join(process.cwd(), 'output');
@@ -21,20 +21,28 @@ module.exports = {
         }
     },
     "toolPath": {
-        value: null,
+        value: '',
         defaultValue: '',
         ifUndefined: () => {
-            fs.mkdirSync(path.join(process.cwd(), 'bin'));
-            downloadAndExtractTool(path.join(process.cwd(), 'bin'));
+            try {
+                fs.mkdirSync(path.join(process.cwd(), 'bin'));
+            } catch (error) {
+                // Let the error go wild and free
+            }
+                downloadAndExtractTool(path.join(process.cwd(), 'bin'))
+                .then((info) => {
+                    console.log(path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' })[0].name))
+                    userPreferences['toolPath'].value = path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === 'exe' })[0].name)
+                });
         }
     },
     "locale": {
-        value: null,
+        value: '',
         defaultValue: "en",
         ifUndefined: useDefault
     },
     "aggregateOutput": {
-        value: null,
+        value: '',
         defaultValue: true,
         ifUndefined: useDefault
     }

@@ -3,7 +3,7 @@ const fs = require('fs');
 const { resolve } = require('path');
 // Basically promisifying some callback-based functions.
 
-function checkTool(toolPath) {
+function toolVersion(toolPath) {
     return new Promise((resolve, reject) => {
         let child = execFile(toolPath, ['--version'], (err, stdout, stderr) => {
             // if (err) {
@@ -39,4 +39,4 @@ function promiseReadFile(path) {
     });
 }
 
-module.exports = { checkTool }
+module.exports = { toolVersion }

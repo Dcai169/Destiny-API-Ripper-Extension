@@ -2,22 +2,12 @@ const path = require('path');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
 
-const { checkTool } = require('./scripts/toolChecker.js');
+const { toolVersion } = require('./scripts/toolChecker.js');
 const defaultPreferences = require('./scripts/defaultPreferences');
-
-let mainBar = document.getElementById('main-bar');
-let subBar = document.getElementById('sub-bar');
-let loadingSummary = document.getElementById('loading-summary');
 
 let userPreferences;
 let toolDownloadedFlag = false;
 let toolStatus;
-
-function parsePercent(widthPercent) {
-    return parseInt(widthPercent.slice(0, -1).trim())
-}
-
-loadingSummary.innerText = 'Initializing';
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
@@ -29,50 +19,84 @@ setInterval(() => {
     }
 }, 400);
 
-loadingSummary.innerText = 'Loading user preferences';
-subBar.style.width = '0%'
-try {
-    userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
-} catch (error) {
-    // default preferences/first launch
-    userPreferences = defaultPreferences;
-    let preferenceEntries = Object.entries(userPreferences);
-    for (const [key, property] of preferenceEntries) {
-        property.ifUndefined(key);
-        setTimeout(() => {
-            subBar.style.width = (parsePercent(subBar.style.width) + Math.floor(100/preferenceEntries.length));
-        }, 100);
-    }
-    toolDownloadedFlag = true;
-    fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-} finally {
-    subBar.style.width = '100%'
-    mainBar.style.width = '50%'
+function parsePercent(widthPercent) {
+    return parseInt(widthPercent.slice(0, -1).trim())
 }
 
-setTimeout(() => {
-    loadingSummary.innerText = 'Checking tool integrity';
-    subBar.style.width = '0%';
-}, 500);
+function setUiState({ stateString, mainPercent, subPercent }) {
+    return new Promise((resolve, reject) => {
+        try {
+            let mainBar = document.getElementById('main-bar');
+            let subBar = document.getElementById('sub-bar');
 
+            if (stateString) {
+                document.getElementById('loading-summary').innerText = stateString;
+            }
+            if (mainPercent) {
+                mainBar.style.width = `${parsePercent(mainBar.style.width) + mainPercent}%`;
+            } else if (typeof mainPercent === 'number') {
+                mainBar.style.width = '0%';
+            }
 
-if (toolDownloadedFlag) {
-    subBar.style.widthPercent = '100%';
-} else {
-    checkTool(userPreferences.toolPath.value)
-        .then((fulfilled) => { 
-            toolStatus = fulfilled;
-        })
-        .catch((err) => {
-            throw err;
-        });
-    if (!typeof toolStatus === Array) {
-        throw Error('Unable to determine tool version.');
-    } else {
-        subBar.style.widthPercent = '100%';
-        mainBar.style.width = '100%'
-    }
+            if (subPercent) {
+                subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
+            } else if (typeof subPercent === 'number') {
+                subBar.style.width = '0%';
+            }
+
+            resolve();
+        } catch (err) {
+            reject(err);
+        }
+    });
+
 }
 
-loadingSummary.innerText = 'Done';
-// setTimeout(() => { ipcRenderer.send('loadingDone') }, 1000);
+function loadUserPreferences() {
+    return new Promise((resolve, reject) => {
+        try {
+            userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
+            resolve(userPreferences);
+        } catch (err) {
+            if (err.code === -4058) {
+                // default preferences/first launch
+                userPreferences = defaultPreferences;
+                let preferenceEntries = Object.entries(userPreferences);
+                for (const [key, property] of preferenceEntries) {
+                    property.ifUndefined(key);
+                }
+                toolDownloadedFlag = true;
+                fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
+                resolve(userPreferences);
+            } else {
+                reject(err);
+            }
+        }
+    });
+}
+
+function checkToolIntegrity() {
+    return new Promise((resolve, reject) => {
+        if (toolDownloadedFlag) {
+            resolve();
+        } else {
+            toolVersion(userPreferences.toolPath.value)
+                .then(resolve)
+                .catch(reject);
+            if (!typeof toolStatus === Array) {
+                reject('Unable to determine tool version.');
+            } else {
+                resolve();
+            }
+        }
+    });
+}
+
+let loadingTasks = [
+    setUiState({ stateString: 'Initalizing' }),
+    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }).then(loadUserPreferences),
+    setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 }).then(checkToolIntegrity),
+    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
+];
+
+Promise.all(loadingTasks).then((res) => { ipcRenderer.send('loadingDone', res) });

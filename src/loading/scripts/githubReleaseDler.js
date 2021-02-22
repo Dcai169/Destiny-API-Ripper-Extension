@@ -40,15 +40,19 @@ async function extract7zip(archivePath) {
 }
 
 function downloadAndExtractTool(dlPath) {
-    return new Promise(async (resolve, reject) => {
-        new dler({
-            url: await getDownloadUrl(), 
-            directory: dlPath,
-            cloneFiles: false
-        }).download()
-            .then(() => {
-                extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
-                    .then(resolve)
+    return new Promise((resolve, reject) => {
+        getDownloadUrl()
+            .then((res) => {
+                new dler({
+                    url: res, 
+                    directory: dlPath,
+                    cloneFiles: false
+                }).download()
+                    .then(() => {
+                        extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
+                            .then(resolve)
+                            .catch(reject);
+                    })
                     .catch(reject);
             })
             .catch(reject);

@@ -1,3 +1,11 @@
+const fs = require('fs');
+const path = require('path');
+const { downloadAndExtractTool } = require('./githubReleaseDler.js');
+
+function useDefault(key) {
+    userPreferences[key].value = userPreferences[key].defaultValue;
+}
+
 module.exports = {
     "outputPath": {
         value: null,
@@ -16,22 +24,18 @@ module.exports = {
         value: null,
         defaultValue: '',
         ifUndefined: () => {
-            alert('Please select your Destiny Collada Generator executable. Must be at least version 1.5.1.');
-            ipcRenderer.send('selectToolPath');
+            fs.mkdirSync(path.join(process.cwd(), 'bin'));
+            downloadAndExtractTool(path.join(process.cwd(), 'bin'));
         }
     },
     "locale": {
         value: null,
         defaultValue: "en",
-        ifUndefined: (key) => {
-            userPreferences[key].value = userPreferences[key].defaultValue;
-        }
+        ifUndefined: useDefault
     },
     "aggregateOutput": {
         value: null,
         defaultValue: true,
-        ifUndefined: (key) => {
-            userPreferences[key].value = userPreferences[key].defaultValue;
-        }
+        ifUndefined: useDefault
     }
 }

@@ -1,9 +1,8 @@
-const fs = require('fs');
 const path = require('path');
 const { ipcRenderer } = require('electron');
 
-const { checkTool } = require('../scripts/toolWrapper.js');
-const defaultPreferences = require('../scripts/defaultPreferences');
+const { checkTool } = require('../main/scripts/toolWrapper.js');
+const defaultPreferences = require('./scripts/defaultPreferences');
 
 let mainBar = document.getElementById('main-bar');
 let subBar = document.getElementById('sub-bar');
@@ -42,6 +41,7 @@ try {
             subBar.style.width = (parsePercent(subBar.style.width) + Math.floor(100/preferenceEntries.length));
         }, 100);
     }
+    toolDownloadedFlag = true;
     propogateUserPreferences();
 } finally {
     subBar.style.width = '100%'
@@ -77,7 +77,7 @@ let toolStatus = (() => {
             }
         } else {
             // ./bin does not exist
-            fs.mkdirSync(path.join(process.cwd(), 'bin'));
+            
 
         }
     }

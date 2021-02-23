@@ -1,29 +1,18 @@
 TODO
 In order of priority (mostly)
 
+Maintainance/Updates
+* CGT
+    * Check CGT hash
+
 UI/UX
 * Sorting
     * Name
-    * Item Type
-    * Ammo/Class
+    * Hash
+    * Original
     * Rarity
-* Add button to reload item_definitions.json from Bnet API
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Restore previous session (Queue, Active filters, Search Query, etc)
-
-Maintainance/Updates
-* CGT
-    * Check for update (probably on startup)
-    * Aquire Collada Generator Tool (CGT) from GitHub API 
-    * Check CGT hash
-    * Unpack CGT
-    * Update CGT Path
-* Cache
-    * Keep local copy of item_definitions.json
-* Destiny Manifest
-    * Read manifest from Bnet API (Once every three monthsish)
-    * Filter manifest to only rippable items (NO Default shader/ornament/solstice glows/event items)
-    * Update local copy
 
 DONE
 * Put items back into #item-container in the correct order by using .after() instead of .append()
@@ -50,3 +39,7 @@ DONE
     * Rarity
 * Add a locale picker (de, en, es, es-mx, fr, it, ja, ko, pl, pt-br, ru, zh-cht, zh-chs)
 * Add darkmode
+* Aquire Collada Generator Tool (CGT) from GitHub API
+* Unpack CGT
+* Update CGT Path
+* Check for update (probably on startup)

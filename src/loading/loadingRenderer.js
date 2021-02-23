@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
-const { downloadAndExtractTool } = require('./scripts/githubReleaseDler.js');
+const { downloadAndExtractTool, getReleaseAsset } = require('./scripts/githubReleaseDler.js');
 
 const { toolVersion } = require('./scripts/toolChecker.js');
 const { defaultPreferences } = require('./scripts/defaultPreferences');
@@ -18,13 +18,27 @@ setInterval(() => {
     } else {
         loadingDots.innerText = '';
     }
-}, 400);
+}, 500);
 
 function parsePercent(widthPercent) {
     return parseInt(widthPercent.slice(0, -1).trim())
 }
 
-function setUiState({ stateString, mainPercent, subPercent }, resolveDelay = 0) {
+function redownloadTool() {
+    return new Promise((resolve, reject) => {
+        try {
+            fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
+            fs.mkdirSync(path.join(process.cwd(), 'bin'));
+            downloadAndExtractTool(path.join(process.cwd(), 'bin'))
+                .then(resolve)
+                .catch(reject); // No internet or no r/w permission
+        } catch (err) {
+            reject(err); // No r/w permission
+        }
+    });
+}
+
+function setUiState({ stateString, mainPercent, subPercent }) {
     return new Promise((resolve, reject) => {
         try {
             let mainBar = document.getElementById('main-bar');
@@ -45,7 +59,7 @@ function setUiState({ stateString, mainPercent, subPercent }, resolveDelay = 0) 
                 subBar.style.width = '0%';
             }
 
-            setTimeout(() => { resolve(stateString) }, resolveDelay);
+            setTimeout(() => { resolve(stateString) }, 500);
         } catch (err) {
             reject(err); // If this is called something has really gone wrong.
         }
@@ -65,7 +79,7 @@ function loadUserPreferences() {
                 // default preferences/first launch
                 userPreferences = defaultPreferences;
                 Promise.all(Object.entries(userPreferences).map(([_, value]) => { return value.ifUndefined(); }))
-                    .then((res) => {
+                    .then(() => {
                         toolDownloadedFlag = true;
                         fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
                         resolve(userPreferences);
@@ -83,18 +97,25 @@ function checkToolIntegrity() {
             resolve(toolDownloadedFlag);
         } else {
             toolVersion(userPreferences.toolPath.value)
-                .then(resolve)
+                .then((version) => {
+                    getReleaseAsset()
+                        .then((res) => {
+                            // check for updates
+                            if (path.parse(userPreferences.toolPath.value).name === path.parse(res.browser_download_url).name) {
+                                resolve(version);
+                            } else {
+                                redownloadTool()
+                                    .then(resolve)
+                                    .catch(reject);
+                            }
+                        })
+                        .catch(reject);
+                })
                 .catch(() => { // Will be called if tool is broken
                     // Try to redownload
-                    try {
-                        fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
-                        fs.mkdirSync(path.join(process.cwd(), 'bin'));
-                        downloadAndExtractTool(path.join(process.cwd(), 'bin'))
-                            .then(resolve)
-                            .catch(reject);
-                    } catch (err) {
-                        reject(err)
-                    }
+                    redownloadTool()
+                        .then(resolve)
+                        .catch(reject);
                 }); 
             if (!typeof toolStatus === Array) {
                 reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
@@ -106,17 +127,15 @@ function checkToolIntegrity() {
 }
 
 let loadingTasks = [
-    setUiState({ stateString: 'Initalizing' }, 250),
-    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }, 250).then(loadUserPreferences),
-    setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 }, 250).then(checkToolIntegrity),
-    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 }, 250)
+    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }),
+    loadUserPreferences().then(setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 })),
+    checkToolIntegrity().then(setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 }))
 ];
 
 Promise.all(loadingTasks)
     .then((res) => {
         // Settle timeout
         setTimeout(() => {
-            console.log(userPreferences)
             ipcRenderer.send('loadingDone');
         }, 1000);
     })

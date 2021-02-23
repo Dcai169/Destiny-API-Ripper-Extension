@@ -96,10 +96,6 @@ function updateUserPreference(key, value) {
     }
 }
 
-function notImplemented() {
-    alert('This feature has not been implemented yet.');
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {
     let locale = userPreferences.locale.value.toLowerCase();
     if (!itemMap[gameSelector.value].items) {
@@ -121,7 +117,6 @@ document.getElementById('search-box').addEventListener('input', searchBoxInputHa
 
 // Console
 document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').textContent = '' });
-document.getElementById('console-save').addEventListener('click', notImplemented);
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });

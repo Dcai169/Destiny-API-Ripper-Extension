@@ -5,7 +5,7 @@ const fs = require('fs');
 const sevenBin = require('7zip-bin');
 const { extractFull } = require('node-7z');
 
-async function getDownloadUrl() {
+async function getReleaseAsset() {
     // Get releases
     return new Promise((resolve, reject) => {
         axios.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
@@ -21,7 +21,7 @@ async function getDownloadUrl() {
                 axios.get(res.data[0].assets_url).then((res) => {
                     res.data.forEach((i) => {
                         if (i.name.toLowerCase().includes((process.platform === 'darwin' ? 'osx' : process.platform.substring(0, 3)))) {
-                            resolve(i.browser_download_url);
+                            resolve(i);
                         }
                     });
                 }).catch(reject);
@@ -41,10 +41,10 @@ async function extract7zip(archivePath) {
 
 function downloadAndExtractTool(dlPath) {
     return new Promise((resolve, reject) => {
-        getDownloadUrl()
+        getReleaseAsset()
             .then((res) => {
                 new dler({
-                    url: res, 
+                    url: res.browser_download_url, 
                     directory: dlPath,
                     cloneFiles: false
                 }).download()
@@ -59,4 +59,4 @@ function downloadAndExtractTool(dlPath) {
     });
 }
 
-module.exports = { downloadAndExtractTool };
+module.exports = { downloadAndExtractTool, getReleaseAsset };

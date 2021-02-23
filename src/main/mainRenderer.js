@@ -67,7 +67,7 @@ function searchBoxInputHandler(event) {
     }, 500);
 }
 
-function gameSelectorChangeListener(){
+function gameSelectorChangeListener() {
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {

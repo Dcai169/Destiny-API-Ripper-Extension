@@ -14,12 +14,12 @@ function createItemTile(item, game) {
                 click: itemTileClickHandler
             }
         });
-    
+
         // Image div (Icon & Season Badge)
         let imgDiv = $('<div></div>', {
             style: 'display: grid; position: relative;'
         });
-    
+
         imgDiv.append($('<img></img>', {
             src: `https://bungie.net${item.displayProperties.icon}`,
             referrerpolicy: 'no-referrer',
@@ -27,7 +27,7 @@ function createItemTile(item, game) {
             loading: 'lazy',
             style: 'grid-row: 1; grid-column: 1;'
         }));
-    
+
         if (item.iconWatermark) {
             imgDiv.append($('<img></img>', {
                 src: `https://bungie.net${item.iconWatermark}`,
@@ -37,12 +37,12 @@ function createItemTile(item, game) {
                 style: 'grid-row: 1; grid-column: 1; z-index: 1;'
             }));
         }
-    
+
         // Item text (Name & Type)
         let textDiv = $('<div></div>', {
             class: 'tile-text d-inline-flex px-2'
         });
-    
+
         let textContainer = $('<div></div>', {});
         textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
             text: (item.displayProperties.name ? item.displayProperties.name : `#${item.hash}`),
@@ -53,7 +53,7 @@ function createItemTile(item, game) {
             class: 'fs-5 item-type',
             style: `color: ${(item.inventory.tierType <= 2 ? '#707070' : '#DDD')}`
         })));
-    
+
         textDiv.append(textContainer);
         tileRoot.append(imgDiv);
         tileRoot.append(textDiv);
@@ -70,12 +70,12 @@ function createItemTile(item, game) {
                 click: itemTileClickHandler
             }
         });
-    
+
         // Image div (Icon & Season Badge)
         let imgDiv = $('<div></div>', {
             style: 'display: grid; position: relative;'
         });
-    
+
         imgDiv.append($('<img></img>', {
             src: `https://bungie.net${(item.icon ? item.icon : '/img/misc/missing_icon.png')}`,
             referrerpolicy: 'no-referrer',
@@ -83,12 +83,12 @@ function createItemTile(item, game) {
             loading: 'lazy',
             style: 'grid-row: 1; grid-column: 1;'
         }));
-    
+
         // Item text (Name & Type)
         let textDiv = $('<div></div>', {
             class: 'tile-text d-inline-flex px-2'
         });
-    
+
         let textContainer = $('<div></div>', {});
         textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
             text: (item.itemName ? item.itemName : `#${item.hash}`),
@@ -100,7 +100,7 @@ function createItemTile(item, game) {
             class: 'fs-5 item-type',
             style: `color: ${(item.tierType <= 2 ? '#707070' : '#DDD')}`
         })));
-    
+
         textDiv.append(textContainer);
         tileRoot.append(imgDiv);
         tileRoot.append(textDiv);
@@ -133,10 +133,10 @@ function hashToRarityName(hash) {
     switch (hash) {
         case 2759499571:
             return 'exotic';
-        
+
         case 4008398120:
             return 'legendary';
-        
+
         case 2127292149:
             return 'rare';
 
@@ -145,7 +145,7 @@ function hashToRarityName(hash) {
 
         case 3340296461:
             return 'common';
-        
+
         default:
             break;
     }
@@ -155,10 +155,10 @@ function tierNumberToRarityName(tierType) {
     switch (tierType) {
         case 6:
             return 'exotic';
-        
+
         case 5:
             return 'legendary';
-        
+
         case 4:
             return 'rare';
 
@@ -167,7 +167,7 @@ function tierNumberToRarityName(tierType) {
 
         case 2:
             return 'common';
-        
+
         default:
             break;
     }

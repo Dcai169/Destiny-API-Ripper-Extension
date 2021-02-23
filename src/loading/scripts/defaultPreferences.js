@@ -32,7 +32,7 @@ let defaultPreferences = {
                     })
                     .catch(reject);
             });
-            
+
         }
     },
     "locale": {

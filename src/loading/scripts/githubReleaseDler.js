@@ -10,14 +10,6 @@ async function getReleaseAsset() {
     return new Promise((resolve, reject) => {
         axios.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
             .then((res) => {
-                // This is broken and idk why
-                // Determine which release to use
-                // let targetRelease = 0;
-                // if (!acceptPrerelease) {
-                //     res.data.some((v, i) => { targetRelease = i; return !v.prerelease; });
-                // }
-                // get asset definitions
-
                 axios.get(res.data[0].assets_url).then((res) => {
                     res.data.forEach((i) => {
                         if (i.name.toLowerCase().includes((process.platform === 'darwin' ? 'osx' : process.platform.substring(0, 3)))) {
@@ -44,7 +36,7 @@ function downloadAndExtractTool(dlPath) {
         getReleaseAsset()
             .then((res) => {
                 new dler({
-                    url: res.browser_download_url, 
+                    url: res.browser_download_url,
                     directory: dlPath,
                     cloneFiles: false
                 }).download()

@@ -1,6 +1,4 @@
 const { execFile } = require('child_process');
-const fs = require('fs');
-const { resolve } = require('path');
 // Basically promisifying some callback-based functions.
 
 function toolVersion(toolPath) {
@@ -18,24 +16,6 @@ function toolVersion(toolPath) {
 
             resolve(stdout.split('.').map((v) => { return parseInt(v.trim()) }));
         });
-    });
-}
-
-function promiseifTruthy(i) {
-    return new Promise((resolve, reject) => {
-        (!!i ? resolve(true) : reject(false));
-    });
-}
-
-function promiseReadFile(path) {
-    return new Promise((resolve, reject) => {
-        let fileText;
-        try {
-            fileText = fs.readFileSync(path);
-        } catch (err) {
-            reject(err);
-        }
-        resolve(fileText);
     });
 }
 

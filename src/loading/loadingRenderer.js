@@ -21,7 +21,7 @@ setInterval(() => {
 }, 500);
 
 function parsePercent(widthPercent) {
-    return parseInt(widthPercent.slice(0, -1).trim())
+    return parseInt(widthPercent.slice(0, -1).trim());
 }
 
 function redownloadTool() {
@@ -116,7 +116,7 @@ function checkToolIntegrity() {
                     redownloadTool()
                         .then(resolve)
                         .catch(reject);
-                }); 
+                });
             if (!typeof toolStatus === Array) {
                 reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
             } else {

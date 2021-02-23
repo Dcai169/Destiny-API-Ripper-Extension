@@ -8,7 +8,6 @@ const { ipcRenderer } = require('electron');
 // const os = require('os');
 
 // Script imports
-const defaultPreferences = require('./scripts/defaultPreferences');
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
@@ -21,18 +20,7 @@ let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
 // Load user preferences
-let userPreferences;
-try {
-    userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
-} catch (error) {
-    // default preferences
-    userPreferences = defaultPreferences;
-    for (const [key, property] of Object.entries(userPreferences)) {
-        property.ifUndefined(key);
-
-    }
-    propogateUserPreferences();
-}
+let userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 let searchDebounceTimeout;
 let reloadRequired = false;
@@ -79,7 +67,7 @@ function searchBoxInputHandler(event) {
     }, 500);
 }
 
-function gameSelectorChangeListener(){
+function gameSelectorChangeListener() {
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
@@ -108,10 +96,6 @@ function updateUserPreference(key, value) {
     }
 }
 
-function notImplemented() {
-    alert('This feature has not been implemented yet.');
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {
     let locale = userPreferences.locale.value.toLowerCase();
     if (!itemMap[gameSelector.value].items) {
@@ -133,7 +117,6 @@ document.getElementById('search-box').addEventListener('input', searchBoxInputHa
 
 // Console
 document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').textContent = '' });
-document.getElementById('console-save').addEventListener('click', notImplemented);
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });

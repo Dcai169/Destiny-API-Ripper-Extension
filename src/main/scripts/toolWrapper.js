@@ -6,24 +6,6 @@ function updateUiDone(code) {
     uiConsolePrint(`Done (Exit code ${code})`);
 }
 
-function checkTool(toolPath) {
-    return new Promise((resolve, reject) => {
-        let child = execFile(toolPath, ['-v'], (err, stdout, stderr) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            if (stderr) {
-                reject(stderr);
-                return;
-            }
-
-            resolve(stdout.split('.').map((v) => { parseInt(v) }));
-        });
-    });
-}
-
 function runTool(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.outputPath.value].concat(hashes);
@@ -81,4 +63,4 @@ function uiConsolePrint(text) {
     }
 }
 
-module.exports = { executeButtonClickHandler, checkTool };
+module.exports = { executeButtonClickHandler };

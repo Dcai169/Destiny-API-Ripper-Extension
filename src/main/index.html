@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
   <title>Destiny API Ripper Extension</title>
   <!-- <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css"> -->
-  <link rel="stylesheet" href="darkly_bootstrap.min.css">
+  <link rel="stylesheet" href="../styles/darkly_bootstrap.min.css">
   <script>const $ = require('jquery');</script>
   <script>require('popper.js');</script>
   <script>require('bootstrap');</script>
-  <script defer src="renderer.js"></script>
-  <link rel="stylesheet" href="index.css">
+  <script defer src="mainRenderer.js"></script>
+  <link rel="stylesheet" href="./index.css">
 </head>
 
 <body style="height: 100vh;">
@@ -438,9 +438,6 @@
           </div>
           <div class="d-inline p-1">
             <button type="button" class="btn btn-link" id="console-clear">Clear Console</button>
-          </div>
-          <div class="d-inline p-1">
-            <button type="button" class="btn btn-link" id="console-save">Save Console Output</button>
           </div>
         </div>
         <div class="container" id="console-container" style="overflow-y: auto; height: 22vh; width: 25vw;">

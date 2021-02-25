@@ -1,7 +1,6 @@
 function setVisibility(jqueryObj, state) {
     // true -> visible
     // false -> hidden
-    
     if (jqueryObj.hasClass((state ? 'hidden' : 'm-1'))) {
         jqueryObj.removeClass((state ? 'hidden' : 'm-1')).addClass((state ? 'm-1' : 'hidden'));
     }

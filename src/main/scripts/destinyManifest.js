@@ -1,5 +1,8 @@
 const axios = require('axios');
 
+// Read API Key
+require('dotenv').config({ path: 'api.env' });
+
 const baseUrl = 'https://bungie.net';
 const blacklistedDestiny1Hashes = [4248210736]; // Default Shader
 const blacklistedDestiny2Hashes = [4248210736, 2426387438, 2931483505, 1959648454, 702981643, 2325217837] + // Default Shader

@@ -1,6 +1,3 @@
-// Read API Key
-require('dotenv').config({ path: 'api.env' });
-
 // Module imports
 const fs = require('fs');
 const path = require('path');

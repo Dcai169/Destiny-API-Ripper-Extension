@@ -12,9 +12,8 @@ let toolStatus;
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
-    let dot = '.';
     if (loadingDots.innerText.length < 3) {
-        loadingDots.innerText += dot;
+        loadingDots.innerText += '.';
     } else {
         loadingDots.innerText = '';
     }

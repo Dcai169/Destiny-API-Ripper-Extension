@@ -47,7 +47,8 @@ function loadItems(itemMap) {
 
 function searchBoxInputHandler(event) {
     clearTimeout(searchDebounceTimeout);
-
+    
+    // There's a bug in here; probably some sort of race condition issue
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
             itemContainer.eq(0).children().each((_, element) => {
@@ -61,7 +62,7 @@ function searchBoxInputHandler(event) {
         } else {
             [...document.getElementsByClassName('base-filter')].forEach(updateItems);
         }
-    }, 500);
+    }, 300);
 }
 
 function gameSelectorChangeListener() {

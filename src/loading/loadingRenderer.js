@@ -42,7 +42,7 @@ function setUiState({ stateString, mainPercent, subPercent }) {
     return new Promise((resolve, reject) => {
         try {
             let mainBar = document.getElementById('main-bar');
-            let subBar = document.getElementById('sub-bar');
+            // let subBar = document.getElementById('sub-bar');
 
             if (stateString) {
                 document.getElementById('loading-summary').innerText = stateString;
@@ -53,11 +53,11 @@ function setUiState({ stateString, mainPercent, subPercent }) {
                 mainBar.style.width = '0%';
             }
 
-            if (subPercent) {
-                subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
-            } else if (typeof subPercent === 'number') {
-                subBar.style.width = '0%';
-            }
+            // if (subPercent) {
+            //     subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
+            // } else if (typeof subPercent === 'number') {
+            //     subBar.style.width = '0%';
+            // }
 
             setTimeout(() => { resolve(stateString) }, 500);
         } catch (err) {

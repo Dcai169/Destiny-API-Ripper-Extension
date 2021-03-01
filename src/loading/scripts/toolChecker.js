@@ -14,7 +14,7 @@ function toolVersion(toolPath) {
                 return;
             }
 
-            resolve(stdout.split('.').map((v) => { return parseInt(v.trim()) }));
+            resolve(stdout);
         });
     });
 }

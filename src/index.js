@@ -1,38 +1,38 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater } = require('electron');
-const isDev = require('electron-is-dev');
+// const isDev = require('electron-is-dev');
 const path = require('path');
 // const fs = require('fs');
 
-// Update stuff
-const updateServer = 'https://hazel-six-omega.vercel.app'
-const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
+// // Update stuff
+// const updateServer = 'https://hazel-six-omega.vercel.app'
+// const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
 
-autoUpdater.setFeedURL({ updateUrl });
+// autoUpdater.setFeedURL({ updateUrl });
 
-autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    const dialogOpts = {
-        type: 'info',
-        buttons: ['Restart', 'Later'],
-        title: 'Application Update',
-        message: (process.platform === 'win32' ? releaseNotes : releaseName),
-        detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    }
+// autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+//     const dialogOpts = {
+//         type: 'info',
+//         buttons: ['Restart', 'Later'],
+//         title: 'Application Update',
+//         message: (process.platform === 'win32' ? releaseNotes : releaseName),
+//         detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+//     }
 
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-        if (returnValue.response === 0) { autoUpdater.quitAndInstall() }
-    });
-});
+//     dialog.showMessageBox(dialogOpts).then((returnValue) => {
+//         if (returnValue.response === 0) { autoUpdater.quitAndInstall() }
+//     });
+// });
 
-autoUpdater.on('error', (err) => {
-    console.error('There was a problem updating the application');
-    console.error(err);
-})
+// autoUpdater.on('error', (err) => {
+//     console.error('There was a problem updating the application');
+//     console.error(err);
+// })
 
-if (!isDev) {
-    setInterval(() => {
-        autoUpdater.checkForUpdates();
-    }, 60000);
-}
+// if (!isDev) {
+//     setInterval(() => {
+//         autoUpdater.checkForUpdates();
+//     }, 60000);
+// }
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -159,7 +159,7 @@ app.on('activate', () => {
 // code. You can also put them in separate files and import them here.
 
 ipcMain.on('mainPrint', (event, args) => {
-    console.log(event);
+    // console.log(event);
     console.log(args);
 });
 

@@ -24,6 +24,7 @@ function parsePercent(widthPercent) {
 }
 
 function redownloadTool() {
+    ipcRenderer.send('mainPrint', 'Redownload initated');
     return new Promise((resolve, reject) => {
         try {
             fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
@@ -97,10 +98,11 @@ function checkToolIntegrity() {
         } else {
             toolVersion(userPreferences.toolPath.value)
                 .then((version) => {
+                    ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
                     getReleaseAsset()
                         .then((res) => {
                             // check for updates
-                            if (path.parse(userPreferences.toolPath.value).name === path.parse(res.browser_download_url).name) {
+                            if (version.substring(0, 5) === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
                                 resolve(version);
                             } else {
                                 redownloadTool()

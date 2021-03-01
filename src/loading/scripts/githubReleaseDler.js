@@ -10,13 +10,11 @@ async function getReleaseAsset() {
     return new Promise((resolve, reject) => {
         axios.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
             .then((res) => {
-                axios.get(res.data[0].assets_url).then((res) => {
-                    res.data.forEach((i) => {
-                        if (i.name.toLowerCase().includes((process.platform === 'darwin' ? 'osx' : process.platform.substring(0, 3)))) {
-                            resolve(i);
-                        }
-                    });
-                }).catch(reject);
+                res.data[0].assets.forEach((i) => {
+                    if (i.name.toLowerCase().includes((process.platform === 'darwin' ? 'osx' : process.platform.substring(0, 3)))) {
+                        resolve(i);
+                    }
+                });
             }).catch(reject);
     });
 }

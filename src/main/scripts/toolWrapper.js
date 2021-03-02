@@ -33,8 +33,7 @@ function execute(game, hashes) {
     $('#queue-execute-button').attr('disabled', 'disabled');
 
     if (userPreferences.aggregateOutput.value) {
-        let child = runTool(game, hashes);
-        child.on('exit', (code) => {
+        runTool(game, hashes).on('exit', (code) => {
             updateUiDone();
         });
     } else {

@@ -53,26 +53,28 @@ const createMainWindow = () => {
     const mainMenu = new Menu();
     mainMenu.append(new MenuItem({
         label: 'File',
-        submenu: [{
-            role: 'reload',
-            accelerator: 'CmdOrCtrl+R',
-            click: () => { mainWindow.webContents.send('reload', true) }
-        },
-        {
-            role: 'forceReload',
-            accelerator: 'CmdOrCtrl+Shift+R',
-            click: () => { mainWindow.webContents.send('force-reload', true) }
-        },
-        {
-            role: 'toggleDevTools',
-            accelerator: 'CmdOrCtrl+Shift+I',
-            click: () => { mainWindow.BrowserWindow.openDevTools() }
-        },
-        {
-            role: 'quit',
-            accelerator: 'CmdOrCtrl+Q',
-            click: () => { app.quit() }
-        }]
+        submenu: [
+            {
+                role: 'reload',
+                accelerator: 'CmdOrCtrl+R',
+                click: () => { mainWindow.webContents.send('reload', true) }
+            },
+            {
+                role: 'forceReload',
+                accelerator: 'CmdOrCtrl+Shift+R',
+                click: () => { mainWindow.webContents.send('force-reload', true) }
+            },
+            {
+                role: 'toggleDevTools',
+                accelerator: 'CmdOrCtrl+Shift+I',
+                click: () => { mainWindow.BrowserWindow.openDevTools() }
+            },
+            {
+                role: 'quit',
+                accelerator: 'CmdOrCtrl+Q',
+                click: () => { app.quit() }
+            }
+        ]
     }));
 
     Menu.setApplicationMenu(mainMenu);

@@ -3,11 +3,11 @@ const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater 
 const path = require('path');
 // const fs = require('fs');
 
-// // Update stuff
+// Update stuff
 // const updateServer = 'https://hazel-six-omega.vercel.app'
 // const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
 
-// autoUpdater.setFeedURL({ updateUrl });
+// autoUpdater.setFeedURL({ url: updateUrl });
 
 // autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
 //     const dialogOpts = {

@@ -1,3 +1,5 @@
+const { setVisibility } = require('./uiUtils.js');
+
 function createItemTile(item, game) {
     let tileRoot;
     if (game === '2') {
@@ -110,13 +112,20 @@ function createItemTile(item, game) {
 }
 
 function itemTileClickHandler(event) {
-    let tileLocation = $(event.currentTarget).eq(0).parents().attr('id');
-    if (tileLocation === 'item-container') {
-        console.log(`${$(event.currentTarget).eq(0).attr('id')} added to queue.`);
-        queue.append($(event.currentTarget).detach());
-    } else if (tileLocation === 'extract-queue') {
-        console.log(`${$(event.currentTarget).eq(0).attr('id')} returned to container.`);
-        addItemToContainer($(event.currentTarget).detach());
+    let clicked = $(event.currentTarget);
+    switch ($(event.currentTarget).eq(0).parents().attr('id')) {
+        case 'item-container':
+            console.log(`${clicked.eq(0).attr('id')} added to queue.`);
+            queue.append(clicked.detach());
+            break;
+
+        case 'extract-queue':
+            setVisibility(clicked, clicked.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
+            console.log(`${clicked.eq(0).attr('id')} returned to container.`);
+            addItemToContainer(clicked.detach());
+    
+        default:
+            break;
     }
 }
 

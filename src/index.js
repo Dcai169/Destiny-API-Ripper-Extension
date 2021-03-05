@@ -1,6 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater } = require('electron');
 const path = require('path');
-const fs = require('fs');
+// const fs = require('fs');
+
+// Update stuff
+// const updateServer = 'https://hazel-six-omega.vercel.app'
+// const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -21,26 +25,28 @@ const createMainWindow = () => {
     const mainMenu = new Menu();
     mainMenu.append(new MenuItem({
         label: 'File',
-        submenu: [{
-            role: 'reload',
-            accelerator: 'CmdOrCtrl+R',
-            click: () => { mainWindow.webContents.send('reload', true) }
-        },
-        {
-            role: 'forceReload',
-            accelerator: 'CmdOrCtrl+Shift+R',
-            click: () => { mainWindow.webContents.send('force-reload', true) }
-        },
-        {
-            role: 'toggleDevTools',
-            accelerator: 'CmdOrCtrl+Shift+I',
-            click: () => { mainWindow.BrowserWindow.openDevTools() }
-        },
-        {
-            role: 'quit',
-            accelerator: 'CmdOrCtrl+Q',
-            click: () => { app.quit() }
-        }]
+        submenu: [
+            {
+                role: 'reload',
+                accelerator: 'CmdOrCtrl+R',
+                click: () => { mainWindow.webContents.send('reload', true) }
+            },
+            {
+                role: 'forceReload',
+                accelerator: 'CmdOrCtrl+Shift+R',
+                click: () => { mainWindow.webContents.send('force-reload', true) }
+            },
+            {
+                role: 'toggleDevTools',
+                accelerator: 'CmdOrCtrl+Shift+I',
+                click: () => { mainWindow.BrowserWindow.openDevTools() }
+            },
+            {
+                role: 'quit',
+                accelerator: 'CmdOrCtrl+Q',
+                click: () => { app.quit() }
+            }
+        ]
     }));
 
     Menu.setApplicationMenu(mainMenu);
@@ -125,8 +131,9 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+
 ipcMain.on('mainPrint', (event, args) => {
-    console.log(event);
+    // console.log(event);
     console.log(args);
 });
 

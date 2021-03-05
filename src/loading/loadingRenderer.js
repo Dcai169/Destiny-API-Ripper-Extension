@@ -12,9 +12,8 @@ let toolStatus;
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
-    let dot = '.';
     if (loadingDots.innerText.length < 3) {
-        loadingDots.innerText += dot;
+        loadingDots.innerText += '.';
     } else {
         loadingDots.innerText = '';
     }
@@ -25,6 +24,7 @@ function parsePercent(widthPercent) {
 }
 
 function redownloadTool() {
+    ipcRenderer.send('mainPrint', 'Redownload initated');
     return new Promise((resolve, reject) => {
         try {
             fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
@@ -42,7 +42,7 @@ function setUiState({ stateString, mainPercent, subPercent }) {
     return new Promise((resolve, reject) => {
         try {
             let mainBar = document.getElementById('main-bar');
-            let subBar = document.getElementById('sub-bar');
+            // let subBar = document.getElementById('sub-bar');
 
             if (stateString) {
                 document.getElementById('loading-summary').innerText = stateString;
@@ -53,11 +53,11 @@ function setUiState({ stateString, mainPercent, subPercent }) {
                 mainBar.style.width = '0%';
             }
 
-            if (subPercent) {
-                subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
-            } else if (typeof subPercent === 'number') {
-                subBar.style.width = '0%';
-            }
+            // if (subPercent) {
+            //     subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
+            // } else if (typeof subPercent === 'number') {
+            //     subBar.style.width = '0%';
+            // }
 
             setTimeout(() => { resolve(stateString) }, 500);
         } catch (err) {
@@ -98,10 +98,11 @@ function checkToolIntegrity() {
         } else {
             toolVersion(userPreferences.toolPath.value)
                 .then((version) => {
+                    ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
                     getReleaseAsset()
                         .then((res) => {
                             // check for updates
-                            if (path.parse(userPreferences.toolPath.value).name === path.parse(res.browser_download_url).name) {
+                            if (version.substring(0, 5) === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
                                 resolve(version);
                             } else {
                                 redownloadTool()

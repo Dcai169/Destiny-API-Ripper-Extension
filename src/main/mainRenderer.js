@@ -9,7 +9,7 @@ const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./sc
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
+const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -54,7 +54,7 @@ function searchBoxInputHandler(event) {
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);
-                setVisibility(item, item.hasClass('m-1') && item.attr('name').toLowerCase().includes(event.target.value.toLowerCase()));
+                setVisibility(item);
             });
         } else {
             [...document.getElementsByClassName('base-filter')].forEach(updateItems);

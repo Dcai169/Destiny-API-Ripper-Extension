@@ -1,4 +1,5 @@
 const { setVisibility } = require('./uiUtils.js');
+const { elementNameIncludes, calcFilterVisibility } = require('./filterMenus.js');
 
 function createItemTile(item, game) {
     let tileRoot;
@@ -120,9 +121,10 @@ function itemTileClickHandler(event) {
             break;
 
         case 'extract-queue':
-            setVisibility(clicked, clicked.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
+            setVisibility(clicked);
             console.log(`${clicked.eq(0).attr('id')} returned to container.`);
             addItemToContainer(clicked.detach());
+            break;
     
         default:
             break;

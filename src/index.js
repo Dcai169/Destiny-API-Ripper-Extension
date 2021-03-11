@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater } = require('electron');
 const path = require('path');
+const { download } = require('electron-dl');
 // const fs = require('fs');
 
 // Update stuff
@@ -52,7 +53,8 @@ const createMainWindow = () => {
     Menu.setApplicationMenu(mainMenu);
 
     app.once('browser-window-created', () => {
-        mainWindow.webContents.send('system-locale', [app.getLocale()])
+        mainWindow.webContents.send('system-locale', app.getLocale());
+        mainWindow.webContents.send('app-version', app.getVersion());
     });
 
     // and load the index.html of the app.
@@ -154,4 +156,9 @@ ipcMain.on('openExplorer', (_, args) => {
     if (args) {
         shell.openPath(args[0]);
     }
+});
+
+ipcMain.on('downloadFile', (event, args) => {
+    console.log('downloadFile')
+    event.reply('downloadFile-reply', download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }));
 });

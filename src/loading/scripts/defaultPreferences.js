@@ -27,7 +27,10 @@ let defaultPreferences = {
                 }
                 downloadAndExtractTool(path.join(process.cwd(), 'bin'))
                     .then((info) => {
-                        defaultPreferences.toolPath.value = path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === (process.platform === 'win32' ? 'exe' : '') })[0].name)
+                        defaultPreferences.toolPath.value = path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true })
+                            .filter((i) => { 
+                                return i.isFile() && (process.platform === 'win32' ? i.name.split('.').reverse()[0] === 'exe' : true) 
+                            })[0].name);
                         resolve(defaultPreferences.toolPath.value);
                     })
                     .catch(reject);

@@ -1,9 +1,9 @@
 const axios = require('axios');
-const dler = require('nodejs-file-downloader');
 const path = require('path');
 const fs = require('fs');
 const sevenBin = require('7zip-bin');
 const { extractFull } = require('node-7z');
+const { ipcRenderer } = require('electron');
 
 async function getReleaseAsset() {
     // Get releases
@@ -33,17 +33,19 @@ function downloadAndExtractTool(dlPath) {
     return new Promise((resolve, reject) => {
         getReleaseAsset()
             .then((res) => {
-                new dler({
-                    url: res.browser_download_url,
-                    directory: dlPath,
-                    cloneFiles: false
-                }).download()
-                    .then(() => {
-                        extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
-                            .then(resolve)
-                            .catch(reject);
-                    })
-                    .catch(reject);
+                ipcRenderer.send('downloadFile', { url: res, path: dlPath });
+                ipcRenderer.on('downloadFile-reply', (_, args) => {
+                    if (args) {
+                        console.log(args);
+                        console.log(typeof args);
+                    }
+                });
+                    // .then(() => {
+                    //     extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
+                    //         .then(resolve)
+                    //         .catch(reject);
+                    // })
+                    // .catch(reject);
             })
             .catch(reject);
     });

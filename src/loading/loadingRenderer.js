@@ -10,6 +10,8 @@ let userPreferences;
 let toolDownloadedFlag = false;
 let toolStatus;
 
+ipcRenderer.send('mainPrint', 'Initialization');
+
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
     if (loadingDots.innerText.length < 3) {
@@ -68,6 +70,7 @@ function setUiState({ stateString, mainPercent, subPercent }) {
 }
 
 function loadUserPreferences() {
+    ipcRenderer.send('mainPrint', 'Loading User Preferences');
     return new Promise((resolve, reject) => {
         let preferencesPath = path.join(process.cwd(), 'user_preferences.json');
 
@@ -92,19 +95,26 @@ function loadUserPreferences() {
 }
 
 function checkToolIntegrity() {
+    ipcRenderer.send('mainPrint', 'Checking Tool Integrity');
     return new Promise((resolve, reject) => {
         if (toolDownloadedFlag) {
+            ipcRenderer.send('mainPrint', 'Downloaded tool');
             resolve(toolDownloadedFlag);
         } else {
+            ipcRenderer.send('mainPrint', 'Checking Tool');
             toolVersion(userPreferences.toolPath.value)
                 .then((version) => {
                     ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
+                    ipcRenderer.send('mainPrint', version);
                     getReleaseAsset()
                         .then((res) => {
                             // check for updates
                             if (version.substring(0, 5) === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
+                                ipcRenderer.send('mainPrint', 'DCG is up to date');
                                 resolve(version);
                             } else {
+                                ipcRenderer.send('mainPrint', 'DCG is not the most recent');
+                                ipcRenderer.send('mainPrint', `Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
                                 redownloadTool()
                                     .then(resolve)
                                     .catch(reject);
@@ -113,6 +123,7 @@ function checkToolIntegrity() {
                         .catch(reject);
                 })
                 .catch(() => { // Will be called if tool is broken
+                    ipcRenderer.send('mainPrint', 'Tool version unknown');
                     // Try to redownload
                     redownloadTool()
                         .then(resolve)
@@ -128,18 +139,20 @@ function checkToolIntegrity() {
 }
 
 let loadingTasks = [
-    setUiState({ stateString: 'Loading user preferences', mainPercent: 0, subPercent: 0 }),
-    loadUserPreferences().then(setUiState({ stateString: 'Checking tool intergrity', mainPercent: 50, subPercent: 0 })),
-    checkToolIntegrity().then(setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 }))
+    loadUserPreferences(),
+    checkToolIntegrity(),
+    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
 ];
 
 Promise.all(loadingTasks)
     .then((res) => {
         // Settle timeout
         setTimeout(() => {
-            ipcRenderer.send('loadingDone');
+            // ipcRenderer.send('loadingDone');
         }, 1000);
     })
     .catch((err) => {
         ipcRenderer.send('mainPrint', err);
     });
+
+document.getElementById('launch-button').addEventListener('click', () => {ipcRenderer.send('loadingDone');});

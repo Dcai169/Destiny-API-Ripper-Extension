@@ -1,20 +1,26 @@
 const { execFile } = require('child_process');
 // Basically promisifying some callback-based functions.
 
+let stdOut;
+let stdErr;
+
 function toolVersion(toolPath) {
     return new Promise((resolve, reject) => {
-        let child = execFile(toolPath, ['--version'], (err, stdout, stderr) => {
-            // if (err) {
-            //     reject(err);
-            //     return;
-            // }
-
-            if (stderr) {
-                reject(stderr);
-                return;
+        execFile(toolPath, ['--version'], (_, stdout, stderr) => {
+            stdOut = stdout;
+            stdErr = stderr;
+        }).on('exit', () => {
+            if (stdErr) {
+                reject(stdErr);
             }
 
-            resolve(stdout);
+            if (stdOut) {
+                resolve(stdOut);
+            }
+
+            if (!stdOut && !stdErr) {
+                reject(null);
+            }
         });
     });
 }

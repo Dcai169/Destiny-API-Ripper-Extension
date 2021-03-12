@@ -1,8 +1,9 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
 const { download } = require('electron-dl');
-// const fs = require('fs');
+const store = require('electron-store');
 
+store.initRenderer();
 // Update stuff
 // const updateServer = 'https://hazel-six-omega.vercel.app'
 // const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
@@ -18,7 +19,8 @@ const createMainWindow = () => {
         width: 1600,
         height: 1000,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
 
@@ -64,7 +66,7 @@ const createMainWindow = () => {
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 };
 
 const createLoadingWindow = () => {
@@ -73,7 +75,8 @@ const createLoadingWindow = () => {
         height: 250,
         frame: false,
         webPreferences: {
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
 
@@ -106,7 +109,7 @@ const createLoadingWindow = () => {
     loadingWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // loadingWindow.webContents.openDevTools();
+    loadingWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -160,5 +163,8 @@ ipcMain.on('openExplorer', (_, args) => {
 
 ipcMain.on('downloadFile', (event, args) => {
     console.log('downloadFile')
-    event.reply('downloadFile-reply', download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }));
+    download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }).then((dl) => {
+        console.log(dl.getSavePath())
+        event.reply('downloadFile-reply', dl.getSavePath());
+    });
 });

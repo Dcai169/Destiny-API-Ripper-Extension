@@ -10,6 +10,7 @@ const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
+const { userPreferences } = require('../userPreferences');
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -17,7 +18,6 @@ let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
 // Load user preferences
-let userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 let searchDebounceTimeout;
 let reloadRequired = false;
@@ -73,33 +73,20 @@ function gameSelectorChangeListener() {
     }
 }
 
-function propogateUserPreferences(key) {
-    if (key) {
-        updateUIInput(key, userPreferences[key].value);
-    } else {
-        for (const [key, property] of Object.entries(userPreferences)) {
-            updateUIInput(key, property.value);
-        }
-    }
-    fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-}
-
-function updateUserPreference(key, value) {
-    if (userPreferences[key].value !== value) {
-        userPreferences[key].value = value;
-        propogateUserPreferences(key);
-    }
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {
-    let locale = userPreferences.locale.value.toLowerCase();
+    // Load userPreferences
+    for (p of userPreferences) {
+        console.log(p);
+    } 
+
+    // Load items
+    let locale = userPreferences.get('locale').toLowerCase();
     if (!itemMap[gameSelector.value].items) {
         itemMap[gameSelector.value].get(locale).then((res) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });
     }
-    propogateUserPreferences();
 });
 
 // Navbar items
@@ -117,11 +104,11 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
-document.getElementById('aggregateOutput').addEventListener('input', () => { updateUserPreference('aggregateOutput', document.getElementById('aggregateOutput').checked) });
+document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
     $('#modal-close-button').text('Reload');
-    updateUserPreference('locale', document.getElementById('locale').value);
+    userPreferences.set('locale', document.getElementById('locale').value);
 });
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
@@ -132,13 +119,13 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
-        updateUserPreference('outputPath', args[0]);
+        userPreferences.set('outputPath', args[0]);
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
-        updateUserPreference('toolPath', args[0]);
+        userPreferences.set('toolPath', args[0]);
     }
 });
 

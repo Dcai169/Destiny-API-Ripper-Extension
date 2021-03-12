@@ -1,12 +1,12 @@
 const path = require('path');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
+const { api, is } = require('electron-util');
 const { downloadAndExtractTool, getReleaseAsset } = require('./scripts/githubReleaseDler.js');
 
 const { toolVersion } = require('./scripts/toolChecker.js');
-const { defaultPreferences } = require('./scripts/defaultPreferences');
+const { userPreferences } = require('../userPreferences');
 
-let userPreferences;
 let toolDownloadedFlag = false;
 let toolStatus;
 
@@ -139,9 +139,9 @@ function checkToolIntegrity() {
 }
 
 let loadingTasks = [
-    loadUserPreferences(),
-    checkToolIntegrity(),
-    setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
+    // loadUserPreferences(),
+    // checkToolIntegrity(),
+    // setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
 ];
 
 Promise.all(loadingTasks)

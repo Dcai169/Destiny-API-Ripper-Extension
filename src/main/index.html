@@ -457,12 +457,18 @@
         <div class="modal-body">
           <div class="container">
             <div class="mb-3">
-              <label class="form-label" for="outputPath">Output path</label>
-              <input class="form-control" type="text" name="output-path" id="outputPath" readonly>
-            </div>
-            <div class="mb-3">
               <label class="form-label" for="toolPath">Tool path</label>
               <input class="form-control" type="text" name="tool-path" id="toolPath" readonly>
+            </div>
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="autoUpdate-tool" id="autoUpdateTool">
+                <label class="form-check-label" for="autoUpdateTool">Auto Update</label>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="outputPath">Output path</label>
+              <input class="form-control" type="text" name="output-path" id="outputPath" readonly>
             </div>
             <div class="mb-3">
               <div class="form-check form-switch">

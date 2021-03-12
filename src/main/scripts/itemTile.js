@@ -1,5 +1,4 @@
 const { setVisibility } = require('./uiUtils.js');
-const { elementNameIncludes, calcFilterVisibility } = require('./filterMenus.js');
 
 function createItemTile(item, game) {
     let tileRoot;

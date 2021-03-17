@@ -1,6 +1,4 @@
 // Module imports
-const fs = require('fs');
-const path = require('path');
 const { ipcRenderer } = require('electron');
 // const os = require('os');
 
@@ -16,8 +14,6 @@ const { userPreferences } = require('../userPreferences');
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
-
-// Load user preferences
 
 let searchDebounceTimeout;
 let reloadRequired = false;
@@ -75,8 +71,8 @@ function gameSelectorChangeListener() {
 
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
-    for (p of userPreferences) {
-        console.log(p);
+    for ([key, value] of userPreferences) {
+        updateUIInput(key, value);
     } 
 
     // Load items

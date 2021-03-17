@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('
 const path = require('path');
 const { download } = require('electron-dl');
 const store = require('electron-store');
+const { userPreferences } = require('./userPreferences.js');
 
 store.initRenderer();
 // Update stuff
@@ -11,6 +12,10 @@ store.initRenderer();
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
     app.quit();
+}
+
+for ([key, value] of userPreferences) {
+    console.log(`${key}: ${value} (${typeof value})`);
 }
 
 const createMainWindow = () => {
@@ -115,7 +120,9 @@ const createLoadingWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createLoadingWindow);
+app.on('ready', () => {
+    createLoadingWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -136,7 +143,6 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-
 ipcMain.on('mainPrint', (event, args) => {
     // console.log(event);
     console.log(args);
@@ -163,8 +169,8 @@ ipcMain.on('openExplorer', (_, args) => {
 
 ipcMain.on('downloadFile', (event, args) => {
     console.log('downloadFile')
-    download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }).then((dl) => {
-        console.log(dl.getSavePath())
-        event.reply('downloadFile-reply', dl.getSavePath());
-    });
+    // download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }).then((dl) => {
+    //     console.log(dl.getSavePath())
+    //     event.reply('downloadFile-reply', dl.getSavePath());
+    // });
 });

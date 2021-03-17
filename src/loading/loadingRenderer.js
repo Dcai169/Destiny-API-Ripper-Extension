@@ -29,9 +29,9 @@ function redownloadTool() {
     ipcRenderer.send('mainPrint', 'Redownload initated');
     return new Promise((resolve, reject) => {
         try {
-            fs.rmdirSync(path.parse(userPreferences.toolPath.value).dir, { recursive: true });
-            fs.mkdirSync(path.join(process.cwd(), 'bin'));
-            downloadAndExtractTool(path.join(process.cwd(), 'bin'))
+            fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
+            fs.mkdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
+            downloadAndExtractTool(path.parse(userPreferences.get('toolPath')).dir)
                 .then(resolve)
                 .catch(reject); // No internet or no r/w permission
         } catch (err) {
@@ -69,45 +69,17 @@ function setUiState({ stateString, mainPercent, subPercent }) {
 
 }
 
-function loadUserPreferences() {
-    ipcRenderer.send('mainPrint', 'Loading User Preferences');
-    return new Promise((resolve, reject) => {
-        let preferencesPath = path.join(process.cwd(), 'user_preferences.json');
-
-        if (fs.existsSync(preferencesPath)) {
-            userPreferences = JSON.parse(fs.readFileSync(preferencesPath, 'utf-8'));
-            resolve(userPreferences);
-        } else {
-            try {
-                // default preferences/first launch
-                userPreferences = defaultPreferences;
-                Promise.all(Object.entries(userPreferences).map(([_, value]) => { return value.ifUndefined(); }))
-                    .then(() => {
-                        toolDownloadedFlag = true;
-                        fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-                        resolve(userPreferences);
-                    });
-            } catch (err) {
-                reject(err); // Will call if program cannot write files.
-            }
-        }
-    });
-}
-
 function checkToolIntegrity() {
     ipcRenderer.send('mainPrint', 'Checking Tool Integrity');
     return new Promise((resolve, reject) => {
-        if (toolDownloadedFlag) {
-            ipcRenderer.send('mainPrint', 'Downloaded tool');
-            resolve(toolDownloadedFlag);
-        } else {
-            ipcRenderer.send('mainPrint', 'Checking Tool');
-            toolVersion(userPreferences.toolPath.value)
-                .then((version) => {
-                    ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
-                    ipcRenderer.send('mainPrint', version);
-                    getReleaseAsset()
-                        .then((res) => {
+        ipcRenderer.send('mainPrint', 'Checking Tool');
+        toolVersion(userPreferences.get('toolPath'))
+            .then((version) => {
+                ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
+                ipcRenderer.send('mainPrint', version);
+                getReleaseAsset()
+                    .then((res) => {
+                        if (userPreferences.get('autoUpdateTool')) {
                             // check for updates
                             if (version.substring(0, 5) === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
                                 ipcRenderer.send('mainPrint', 'DCG is up to date');
@@ -119,21 +91,23 @@ function checkToolIntegrity() {
                                     .then(resolve)
                                     .catch(reject);
                             }
-                        })
-                        .catch(reject);
-                })
-                .catch(() => { // Will be called if tool is broken
-                    ipcRenderer.send('mainPrint', 'Tool version unknown');
-                    // Try to redownload
-                    redownloadTool()
-                        .then(resolve)
-                        .catch(reject);
-                });
-            if (!typeof toolStatus === Array) {
-                reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
-            } else {
-                resolve();
-            }
+                        } else {
+                            resolve(version)
+                        }
+                    })
+                    .catch(reject);
+            })
+            .catch(() => { // Will be called if tool is broken
+                ipcRenderer.send('mainPrint', 'Tool version unknown');
+                // Try to redownload
+                redownloadTool()
+                    .then(resolve)
+                    .catch(reject);
+            });
+        if (!typeof toolStatus === Array) {
+            reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
+        } else {
+            resolve();
         }
     });
 }
@@ -155,4 +129,4 @@ Promise.all(loadingTasks)
         ipcRenderer.send('mainPrint', err);
     });
 
-document.getElementById('launch-button').addEventListener('click', () => {ipcRenderer.send('loadingDone');});
+document.getElementById('launch-button').addEventListener('click', () => { ipcRenderer.send('loadingDone'); });

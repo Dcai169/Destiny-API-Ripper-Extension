@@ -7,7 +7,7 @@ const { downloadAndExtractTool } = require('./loading/scripts/githubReleaseDler.
 let schema = {
     "outputPath": {
         type: 'string',
-        default: ((key) => {
+        default: (() => {
             let defaultPath = path.join(api.app.getPath('documents'), 'DARE_Output');
             try {
                 fs.mkdirSync(defaultPath);
@@ -18,6 +18,7 @@ let schema = {
                     throw err;
                 }
             }
+            console.log('d0');
         })()
     },
     "toolPath": {
@@ -31,12 +32,13 @@ let schema = {
                     throw err;
                 }
             } finally {
-                downloadAndExtractTool(path.join(api.app.getPath('userData'), 'bin'))
-                    .then((info) => {
-                        return path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => {return i.isFile() && (is.windows ? i.name.split('.').reverse()[0] === 'exe' : true)})[0].name);
-                    })
-                    .catch((err) => { throw err });
+                // downloadAndExtractTool(path.join(api.app.getPath('userData'), 'bin'))
+                //     .then((info) => {
+                //         return path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => {return i.isFile() && (is.windows ? i.name.split('.').reverse()[0] === 'exe' : true)})[0].name);
+                //     })
+                //     .catch((err) => { throw err });
             }
+            console.log('d1');
         })()
     },
     "locale": {

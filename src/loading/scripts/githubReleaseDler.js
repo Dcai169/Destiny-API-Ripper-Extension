@@ -33,13 +33,15 @@ function downloadAndExtractTool(dlPath) {
     return new Promise((resolve, reject) => {
         getReleaseAsset()
             .then((res) => {
-                ipcRenderer.send('downloadFile', { url: res, path: dlPath });
-                ipcRenderer.once('downloadFile-reply', (_, args) => {
-                    if (args) {
-                        console.log(args);
-                        console.log(typeof args);
-                    }
-                });
+                resolve(res)
+                // ipcRenderer.send('downloadFile', { url: res, path: dlPath });
+                // ipcRenderer.once('downloadFile-reply', (_, args) => {
+                //     if (args) {
+                //         console.log(args);
+                //         console.log(typeof args);
+                //         resolve(args)
+                //     }
+                // });
                     // .then(() => {
                     //     extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
                     //         .then(resolve)

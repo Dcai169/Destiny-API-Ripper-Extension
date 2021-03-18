@@ -14,9 +14,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
     app.quit();
 }
 
-for ([key, value] of userPreferences) {
-    console.log(`${key}: ${value} (${typeof value})`);
-}
+// for ([key, value] of userPreferences) {
+//     console.log(`${key}: ${value} (${typeof value})`);
+// }
 
 const createMainWindow = () => {
     // Create the browser window.

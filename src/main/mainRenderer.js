@@ -72,13 +72,13 @@ function gameSelectorChangeListener() {
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
+        console.log(`${key}: ${value} (${typeof value})`);
         updateUIInput(key, value);
     } 
 
     // Load items
-    let locale = userPreferences.get('locale').toLowerCase();
     if (!itemMap[gameSelector.value].items) {
-        itemMap[gameSelector.value].get(locale).then((res) => {
+        itemMap[gameSelector.value].get(userPreferences.get('locale').toLowerCase()).then((res) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });
@@ -99,7 +99,7 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
-document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
@@ -115,12 +115,14 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
+        console.log(args);
         userPreferences.set('outputPath', args[0]);
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
+        console.log(args);
         userPreferences.set('toolPath', args[0]);
     }
 });

@@ -34,14 +34,14 @@ function downloadAndExtractTool(dlPath) {
         getReleaseAsset()
             .then((res) => {
                 resolve(res)
-                // ipcRenderer.send('downloadFile', { url: res, path: dlPath });
-                // ipcRenderer.once('downloadFile-reply', (_, args) => {
-                //     if (args) {
-                //         console.log(args);
-                //         console.log(typeof args);
-                //         resolve(args)
-                //     }
-                // });
+                ipcRenderer.send('downloadFile', { url: res, path: dlPath });
+                ipcRenderer.once('downloadFile-reply', (_, args) => {
+                    if (args) {
+                        console.log(args);
+                        console.log(typeof args);
+                        resolve(args)
+                    }
+                });
                     // .then(() => {
                     //     extract7zip(path.join(dlPath, fs.readdirSync(dlPath, { withFileTypes: true }).filter((i) => { return i.isFile() && i.name.split('.').reverse()[0] === '7z' })[0].name))
                     //         .then(resolve)

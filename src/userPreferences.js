@@ -12,33 +12,36 @@ let schema = {
             try {
                 fs.mkdirSync(defaultPath);
             } catch (err) {
-                if (err.errno === -17) {
+                if (err.code === "EEXIST") {
+                    console.log('d0');
                     return defaultPath;
                 } else {
                     throw err;
                 }
             }
-            console.log('d0');
         })()
     },
     "toolPath": {
         type: 'string',
         default: (() => {
-            let toolPath;
+            let toolPath = path.join(api.app.getPath('userData'), 'bin');
             try {
-                fs.mkdirSync(path.join(api.app.getPath('userData'), 'bin'));
+                fs.mkdirSync(toolPath);
             } catch (err) {
-                if (err.errno !== -17) {
+                if (err.code === "EEXIST") {
+                    // Do nothing
+                } else {
                     throw err;
                 }
             } finally {
-                // downloadAndExtractTool(path.join(api.app.getPath('userData'), 'bin'))
-                //     .then((info) => {
-                //         return path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => {return i.isFile() && (is.windows ? i.name.split('.').reverse()[0] === 'exe' : true)})[0].name);
-                //     })
-                //     .catch((err) => { throw err });
+                downloadAndExtractTool(path.join(api.app.getPath('userData'), 'bin'))
+                    .then((info) => {
+                        console.log('d1');
+                        return path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => {return i.isFile() && (is.windows ? i.name.split('.').reverse()[0] === 'exe' : true)})[0].name);
+                    })
+                    .catch((err) => { throw err });
+                // return toolPath;
             }
-            console.log('d1');
         })()
     },
     "locale": {
@@ -52,7 +55,7 @@ let schema = {
     },
     "autoUpdateTool": {
         type: 'boolean',
-        default: true
+        default: false
     }
 }
 

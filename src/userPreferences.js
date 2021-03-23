@@ -1,19 +1,20 @@
-const { api, is } = require('electron-util');
+const { BrowserWindow } = require('electron');
+const { api } = require('electron-util');
 const Store = require('electron-store');
 const fs = require('fs');
 const path = require('path');
-const { downloadAndExtractTool } = require('./loading/scripts/githubReleaseDler.js');
+const { download } = require('electron-dl');
+const { getReleaseAsset, extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
 
 let schema = {
     "outputPath": {
         type: 'string',
         default: (() => {
-            let defaultPath = path.join(api.app.getPath('documents'), 'DARE_Output');
+            let defaultPath = path.join(api.app.getPath('documents'), 'DARE Output');
             try {
                 fs.mkdirSync(defaultPath);
             } catch (err) {
                 if (err.code === "EEXIST") {
-                    console.log('d0');
                     return defaultPath;
                 } else {
                     throw err;
@@ -29,19 +30,29 @@ let schema = {
                 fs.mkdirSync(toolPath);
             } catch (err) {
                 if (err.code === "EEXIST") {
-                    // Do nothing
+                    return path.join(toolPath, findExecutable(toolPath).name);
                 } else {
                     throw err;
                 }
-            } finally {
-                downloadAndExtractTool(path.join(api.app.getPath('userData'), 'bin'))
-                    .then((info) => {
-                        console.log('d1');
-                        return path.join(path.parse(info.get('Path')).dir, fs.readdirSync(path.parse(info.get('Path')).dir, { withFileTypes: true }).filter((i) => {return i.isFile() && (is.windows ? i.name.split('.').reverse()[0] === 'exe' : true)})[0].name);
-                    })
-                    .catch((err) => { throw err });
-                // return toolPath;
             }
+            getReleaseAsset()
+                .then((res) => {
+                    console.log('pbB1');
+                    download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolPath })
+                        .then((res) => {
+                            console.log('pbB2');
+                            extract7zip(res.getSavePath()).then((res) => {
+                                fs.unlinkSync(res.get('Path'));
+                                console.log('pbB3');
+                                setTimeout(() => {
+                                    console.log('pbB4');
+                                    return path.join(toolPath, findExecutable(toolPath).name);
+                                }, 100);
+                            }).catch(console.error);
+                        }).catch((err) => {
+                            console.log(JSON.stringify(err));
+                        });
+                }).catch(console.error);
         })()
     },
     "locale": {

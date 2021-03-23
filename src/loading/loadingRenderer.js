@@ -1,10 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const { ipcRenderer } = require('electron');
-const { api, is } = require('electron-util');
-const { downloadAndExtractTool, getReleaseAsset } = require('./scripts/githubReleaseDler.js');
+const { api, is, isFirstAppLaunch } = require('electron-util');
+const { getReleaseAsset, toolVersion } = require('./scripts/loadingScripts.js');
 
-const { toolVersion } = require('./scripts/toolChecker.js');
 const { userPreferences } = require('../userPreferences');
 
 let toolDownloadedFlag = false;
@@ -29,11 +28,8 @@ function redownloadTool() {
     ipcRenderer.send('mainPrint', 'Redownload initated');
     return new Promise((resolve, reject) => {
         try {
-            fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
-            fs.mkdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
-            downloadAndExtractTool(path.parse(userPreferences.get('toolPath')).dir)
-                .then(resolve)
-                .catch(reject); // No internet or no r/w permission
+            // fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
+            // fs.mkdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
         } catch (err) {
             reject(err); // No r/w permission
         }
@@ -87,9 +83,9 @@ function checkToolIntegrity() {
                             } else {
                                 ipcRenderer.send('mainPrint', 'DCG is not the most recent');
                                 ipcRenderer.send('mainPrint', `Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
-                                redownloadTool()
-                                    .then(resolve)
-                                    .catch(reject);
+                                // redownloadTool()
+                                //     .then(resolve)
+                                //     .catch(reject);
                             }
                         } else {
                             resolve(version)
@@ -100,9 +96,9 @@ function checkToolIntegrity() {
             .catch(() => { // Will be called if tool is broken
                 ipcRenderer.send('mainPrint', 'Tool version unknown');
                 // Try to redownload
-                redownloadTool()
-                    .then(resolve)
-                    .catch(reject);
+                // redownloadTool()
+                //     .then(resolve)
+                //     .catch(reject);
             });
         if (!typeof toolStatus === Array) {
             reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
@@ -113,15 +109,14 @@ function checkToolIntegrity() {
 }
 
 let loadingTasks = [
-    // loadUserPreferences(),
-    // checkToolIntegrity(),
-    // setUiState({ stateString: 'Done', mainPercent: 50, subPercent: 0 })
+    checkToolIntegrity()
 ];
 
 Promise.all(loadingTasks)
     .then((res) => {
         // Settle timeout
         setTimeout(() => {
+            ipcRenderer.send('mainPrint', res);
             // ipcRenderer.send('loadingDone');
         }, 1000);
     })

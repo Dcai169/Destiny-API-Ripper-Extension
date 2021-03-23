@@ -1,10 +1,11 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
 const path = require('path');
-const { download } = require('electron-dl');
 const store = require('electron-store');
 const { userPreferences } = require('./userPreferences.js');
 
 store.initRenderer();
+// console.log(`p0: v${app.getVersion()}`);
+
 // Update stuff
 // const updateServer = 'https://hazel-six-omega.vercel.app'
 // const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
@@ -24,10 +25,13 @@ const createMainWindow = () => {
         width: 1600,
         height: 1000,
         webPreferences: {
+            contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
         }
     });
+
+    mainWindow.maximize();
 
     // Menu items
     const mainMenu = new Menu();
@@ -80,6 +84,7 @@ const createLoadingWindow = () => {
         height: 250,
         frame: false,
         webPreferences: {
+            contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
         }
@@ -169,6 +174,7 @@ ipcMain.on('openExplorer', (_, args) => {
 
 ipcMain.on('downloadFile', (event, args) => {
     console.log('downloadFile')
+    console.log(JSON.stringify(args))
     // download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }).then((dl) => {
     //     console.log(dl.getSavePath())
     //     event.reply('downloadFile-reply', dl.getSavePath());

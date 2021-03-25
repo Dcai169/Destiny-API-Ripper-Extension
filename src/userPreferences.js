@@ -26,16 +26,22 @@ let schema = {
         type: 'string',
         default: (() => {
             let toolPath = path.join(api.app.getPath('userData'), 'bin');
+            let toolPresent = false;
             try {
                 fs.mkdirSync(toolPath);
             } catch (err) {
                 if (err.code === "EEXIST") {
-                    return path.join(toolPath, findExecutable(toolPath).name);
+                    if (findExecutable(toolPath)) {
+                        toolPresent = true;
+                        return path.join(toolPath, findExecutable(toolPath).name);
+                    }
                 } else {
                     throw err;
                 }
             }
-            getReleaseAsset()
+            
+            if (!toolPresent) {
+                getReleaseAsset()
                 .then((res) => {
                     console.log('pbB1');
                     download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolPath })
@@ -49,10 +55,9 @@ let schema = {
                                     return path.join(toolPath, findExecutable(toolPath).name);
                                 }, 100);
                             }).catch(console.error);
-                        }).catch((err) => {
-                            console.log(JSON.stringify(err));
-                        });
+                        }).catch(console.error);
                 }).catch(console.error);
+            }
         })()
     },
     "locale": {

@@ -1,11 +1,11 @@
-const { api } = require('electron-util');
+const { api, is } = require('electron-util');
 const log = require('electron-log');
 const Store = require('electron-store');
 const fs = require('fs');
 const path = require('path');
 const { download } = require('electron-dl');
 const { getReleaseAsset, extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
-const { ipcRenderer, BrowserWindow } = require('electron');
+const { ipcRenderer, BrowserWindow, remote } = require('electron');
 
 function logError(err) {
     console.error(err);
@@ -48,6 +48,11 @@ let schema = {
             }
 
             if (!toolPath) {
+                ipcRenderer.send('dlPing');
+                ipcRenderer.once('dlPing-reply', (event, args) => {
+                    // log.debug(event.sender);
+                });
+                
                 getReleaseAsset()
                     .then((res) => {
                         log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);

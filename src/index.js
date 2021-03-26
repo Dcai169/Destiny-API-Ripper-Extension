@@ -149,10 +149,6 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-ipcMain.on('mainPrint', (event, args) => {
-    console.log(args);
-});
-
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
@@ -160,7 +156,7 @@ ipcMain.on('loadingDone', (event, args) => {
 });
 
 ipcMain.on('dlPing', (event, _) => {
-    log.debug(event.sender.getURL())
+    // log.debug(event.sender);
     if (event.sender.getURL().includes('loading')) {
         event.reply('dlPing-reply', event.frameId);
     }

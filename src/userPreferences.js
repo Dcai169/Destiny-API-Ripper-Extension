@@ -1,5 +1,5 @@
 const { BrowserWindow } = require('electron');
-const { api } = require('electron-util');
+const { api, is } = require('electron-util');
 const Store = require('electron-store');
 const fs = require('fs');
 const path = require('path');
@@ -25,38 +25,41 @@ let schema = {
     "toolPath": {
         type: 'string',
         default: (() => {
-            let toolPath = path.join(api.app.getPath('userData'), 'bin');
-            let toolPresent = false;
+            let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
+            let toolPath = "";
             try {
-                fs.mkdirSync(toolPath);
+                fs.mkdirSync(toolDirectory);
             } catch (err) {
                 if (err.code === "EEXIST") {
-                    if (findExecutable(toolPath)) {
-                        toolPresent = true;
-                        return path.join(toolPath, findExecutable(toolPath).name);
+                    if (findExecutable(toolDirectory)) {
+                        toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
                     }
                 } else {
                     throw err;
                 }
             }
             
-            if (!toolPresent) {
+            if (!toolPath) {
+                console.log('pbA0');
                 getReleaseAsset()
                 .then((res) => {
-                    console.log('pbB1');
-                    download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolPath })
+                    console.log('pbA1')
+                    download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory })
                         .then((res) => {
-                            console.log('pbB2');
+                            console.log('pbA2')
                             extract7zip(res.getSavePath()).then((res) => {
+                                console.log('pbA3')
                                 fs.unlinkSync(res.get('Path'));
-                                console.log('pbB3');
                                 setTimeout(() => {
-                                    console.log('pbB4');
-                                    return path.join(toolPath, findExecutable(toolPath).name);
+                                    return path.join(toolDirectory, findExecutable(toolDirectory).name);
                                 }, 100);
                             }).catch(console.error);
                         }).catch(console.error);
                 }).catch(console.error);
+            } else {
+                console.log('pbB0');
+                console.log(toolPath)
+                return toolPath;
             }
         })()
     },

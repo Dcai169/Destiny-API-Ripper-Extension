@@ -68,7 +68,7 @@ function setUiState({ stateString, mainPercent, subPercent }) {
 function checkToolIntegrity() {
     ipcRenderer.send('mainPrint', 'Checking Tool Integrity');
     return new Promise((resolve, reject) => {
-        ipcRenderer.send('mainPrint', 'Checking Tool');
+        ipcRenderer.send('mainPrint', `Checking Tool at ${userPreferences.get('toolPath')}`);
         toolVersion(userPreferences.get('toolPath'))
             .then((version) => {
                 ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);

@@ -172,11 +172,3 @@ ipcMain.on('openExplorer', (_, args) => {
     }
 });
 
-ipcMain.on('downloadFile', (event, args) => {
-    console.log('downloadFile')
-    console.log(JSON.stringify(args))
-    // download(BrowserWindow.fromId(event.frameId), args.url, { directory: args.path }).then((dl) => {
-    //     console.log(dl.getSavePath())
-    //     event.reply('downloadFile-reply', dl.getSavePath());
-    // });
-});

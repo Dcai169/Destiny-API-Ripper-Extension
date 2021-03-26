@@ -30,16 +30,16 @@ let itemMap = {
 };
 
 function loadItems(itemMap) {
-    log.silly('Container cleared.');
+    log.silly('Container cleared');
     itemContainer.empty();
-    log.silly('Queue cleared.');
+    log.silly('Queue cleared');
     queue.empty();
 
-    log.debug(`${itemMap.size} items indexed.`);
+    log.debug(`${itemMap.size} items indexed`);
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });
-    log.debug(`${itemMap.size} items loaded.`);
+    log.debug(`${itemMap.size} items loaded`);
 }
 
 function searchBoxInputHandler(event) {

@@ -70,16 +70,15 @@ function checkToolIntegrity() {
     return new Promise((resolve, reject) => {
         ipcRenderer.send('mainPrint', `Checking Tool at ${userPreferences.get('toolPath')}`);
         toolVersion(userPreferences.get('toolPath'))
-            .then((version) => {
-                ipcRenderer.send('mainPrint', `Local Version: ${version.substring(0, 5)}`);
-                ipcRenderer.send('mainPrint', version);
-                getReleaseAsset()
-                    .then((res) => {
-                        if (userPreferences.get('autoUpdateTool')) {
+            .then((res) => {
+                if (!res.stderr) {
+                    let version = res.stdout.substring(0, 5);
+                    ipcRenderer.send('mainPrint', `Local Version: ${version}`);
+                    getReleaseAsset()
+                        .then((res) => {
                             // check for updates
-                            if (version.substring(0, 5) === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
+                            if (version === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
                                 ipcRenderer.send('mainPrint', 'DCG is up to date');
-                                resolve(version);
                             } else {
                                 ipcRenderer.send('mainPrint', 'DCG is not the most recent');
                                 ipcRenderer.send('mainPrint', `Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
@@ -87,24 +86,23 @@ function checkToolIntegrity() {
                                 //     .then(resolve)
                                 //     .catch(reject);
                             }
-                        } else {
-                            resolve(version)
-                        }
-                    })
-                    .catch(reject);
+                            resolve(res);
+                        })
+                        .catch(reject);
+                } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
+                    ipcRenderer.send('mainPrint', 'Tool does not recognize -v');
+                    // redownloadTool()
+                    //     .then(resolve)
+                    //     .catch(reject);
+                }
             })
             .catch(() => { // Will be called if tool is broken
-                ipcRenderer.send('mainPrint', 'Tool version unknown');
+                ipcRenderer.send('mainPrint', 'Tool Broken');
                 // Try to redownload
                 // redownloadTool()
                 //     .then(resolve)
                 //     .catch(reject);
             });
-        if (!typeof toolStatus === Array) {
-            reject('Unable to determine tool version.'); // Will be called if tool is between version 1.5.1 and 1.6.2
-        } else {
-            resolve();
-        }
     });
 }
 
@@ -112,16 +110,19 @@ let loadingTasks = [
     checkToolIntegrity()
 ];
 
-Promise.all(loadingTasks)
+setTimeout(() => {
+    Promise.all(loadingTasks)
     .then((res) => {
         // Settle timeout
         setTimeout(() => {
-            ipcRenderer.send('mainPrint', res);
+            ipcRenderer.send('mainPrint', 'Loading Done');
             // ipcRenderer.send('loadingDone');
         }, 1000);
     })
     .catch((err) => {
         ipcRenderer.send('mainPrint', err);
     });
+}, 2000);
+
 
 document.getElementById('launch-button').addEventListener('click', () => { ipcRenderer.send('loadingDone'); });

@@ -40,15 +40,11 @@ let schema = {
             }
             
             if (!toolPath) {
-                console.log('pbA0');
                 getReleaseAsset()
                 .then((res) => {
-                    console.log('pbA1')
                     download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory })
                         .then((res) => {
-                            console.log('pbA2')
                             extract7zip(res.getSavePath()).then((res) => {
-                                console.log('pbA3')
                                 fs.unlinkSync(res.get('Path'));
                                 setTimeout(() => {
                                     return path.join(toolDirectory, findExecutable(toolDirectory).name);
@@ -57,8 +53,6 @@ let schema = {
                         }).catch(console.error);
                 }).catch(console.error);
             } else {
-                console.log('pbB0');
-                console.log(toolPath)
                 return toolPath;
             }
         })()

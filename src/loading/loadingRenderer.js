@@ -1,15 +1,8 @@
 const path = require('path');
-const fs = require('fs');
 const { ipcRenderer } = require('electron');
-const { api, is, isFirstAppLaunch } = require('electron-util');
+const log = require('electron-log')
 const { getReleaseAsset, toolVersion } = require('./scripts/loadingScripts.js');
-
 const { userPreferences } = require('../userPreferences');
-
-let toolDownloadedFlag = false;
-let toolStatus;
-
-ipcRenderer.send('mainPrint', 'Initialization');
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
@@ -20,12 +13,8 @@ setInterval(() => {
     }
 }, 500);
 
-function parsePercent(widthPercent) {
-    return parseInt(widthPercent.slice(0, -1).trim());
-}
-
 function redownloadTool() {
-    ipcRenderer.send('mainPrint', 'Redownload initated');
+    log.debug('Tool redownload initiated');
     return new Promise((resolve, reject) => {
         try {
             // fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
@@ -36,68 +25,53 @@ function redownloadTool() {
     });
 }
 
-function setUiState({ stateString, mainPercent, subPercent }) {
-    return new Promise((resolve, reject) => {
-        try {
-            let mainBar = document.getElementById('main-bar');
-            // let subBar = document.getElementById('sub-bar');
-
-            if (stateString) {
-                document.getElementById('loading-summary').innerText = stateString;
-            }
-            if (mainPercent) {
-                mainBar.style.width = `${parsePercent(mainBar.style.width) + mainPercent}%`;
-            } else if (typeof mainPercent === 'number') {
-                mainBar.style.width = '0%';
-            }
-
-            // if (subPercent) {
-            //     subBar.style.width = `${parsePercent(subBar.style.width) + subPercent}%`;
-            // } else if (typeof subPercent === 'number') {
-            //     subBar.style.width = '0%';
-            // }
-
-            setTimeout(() => { resolve(stateString) }, 500);
-        } catch (err) {
-            reject(err); // If this is called something has really gone wrong.
-        }
-    });
-
+function setBarPercent(percent, delay=0) {
+    setInterval(() => {
+        document.getElementById('main-bar').style.width = `${percent}%`;
+    }, delay);
 }
 
 function checkToolIntegrity() {
-    ipcRenderer.send('mainPrint', 'Checking Tool Integrity');
+    setBarPercent(20, 100);
+    log.verbose('Checking tool integrity');
     return new Promise((resolve, reject) => {
-        ipcRenderer.send('mainPrint', `Checking Tool at ${userPreferences.get('toolPath')}`);
+        setBarPercent(40, 100);
+        log.verbose(`Checking tool at ${userPreferences.get('toolPath')}`);
         toolVersion(userPreferences.get('toolPath'))
             .then((res) => {
+                setBarPercent(60, 100);
                 if (!res.stderr) {
+                    setBarPercent(80, 100);
                     let version = res.stdout.substring(0, 5);
-                    ipcRenderer.send('mainPrint', `Local Version: ${version}`);
+                    log,verbose(`Local Version: ${version}`);
                     getReleaseAsset()
                         .then((res) => {
                             // check for updates
                             if (version === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
-                                ipcRenderer.send('mainPrint', 'DCG is up to date');
+                                log.verbose('DCG is up to date');
                             } else {
-                                ipcRenderer.send('mainPrint', 'DCG is not the most recent');
-                                ipcRenderer.send('mainPrint', `Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
+                                log.verbose('DCG is not the most recent');
+                                log.verbose(`Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
                                 // redownloadTool()
                                 //     .then(resolve)
                                 //     .catch(reject);
                             }
+                            setBarPercent(100, 100);
                             resolve(res);
                         })
                         .catch(reject);
                 } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
-                    ipcRenderer.send('mainPrint', 'Tool does not recognize -v');
+                    log.verbose('Tool does not recognize -v');
+                    resolve();
                     // redownloadTool()
                     //     .then(resolve)
                     //     .catch(reject);
                 }
             })
             .catch(() => { // Will be called if tool is broken
-                ipcRenderer.send('mainPrint', 'Tool Broken');
+                setBarPercent(100, 100);
+                log.verbose('Version check failed');
+                resolve();
                 // Try to redownload
                 // redownloadTool()
                 //     .then(resolve)
@@ -115,8 +89,8 @@ setTimeout(() => {
     .then((res) => {
         // Settle timeout
         setTimeout(() => {
-            ipcRenderer.send('mainPrint', 'Loading Done');
-            // ipcRenderer.send('loadingDone');
+            log.verbose('Loading done');
+            ipcRenderer.send('loadingDone');
         }, 1000);
     })
     .catch((err) => {
@@ -125,4 +99,4 @@ setTimeout(() => {
 }, 2000);
 
 
-document.getElementById('launch-button').addEventListener('click', () => { ipcRenderer.send('loadingDone'); });
+// document.getElementById('launch-button').addEventListener('click', () => { ipcRenderer.send('loadingDone'); });

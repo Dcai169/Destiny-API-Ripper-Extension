@@ -1,10 +1,11 @@
 const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
-const path = require('path');
 const store = require('electron-store');
-const { userPreferences } = require('./userPreferences.js');
+const log = require('electron-log');
+const { debugInfo } = require('electron-util');
+const path = require('path');
 
 store.initRenderer();
-// console.log(`p0: v${app.getVersion()}`);
+log.info(debugInfo());
 
 // Update stuff
 // const updateServer = 'https://hazel-six-omega.vercel.app'
@@ -15,11 +16,9 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
     app.quit();
 }
 
-// for ([key, value] of userPreferences) {
-//     console.log(`${key}: ${value} (${typeof value})`);
-// }
-
 const createMainWindow = () => {
+    log.verbose('Main window spawned');
+
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 1600,
@@ -75,10 +74,12 @@ const createMainWindow = () => {
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 
 const createLoadingWindow = () => {
+    log.verbose('Loading window spawned');
+
     const loadingWindow = new BrowserWindow({
         width: 400,
         height: 250,
@@ -119,7 +120,7 @@ const createLoadingWindow = () => {
     loadingWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    loadingWindow.webContents.openDevTools();
+    // loadingWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
@@ -149,13 +150,20 @@ app.on('activate', () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
 ipcMain.on('mainPrint', (event, args) => {
-    // console.log(event);
     console.log(args);
 });
 
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
+    log.verbose('Loading window destroyed');
+});
+
+ipcMain.on('dlPing', (event, _) => {
+    log.debug(event.sender.getURL())
+    if (event.sender.getURL().includes('loading')) {
+        event.reply('dlPing-reply', event.frameId);
+    }
 });
 
 ipcMain.on('selectOutputPath', (event) => {

@@ -1,5 +1,6 @@
 // Module imports
 const { ipcRenderer } = require('electron');
+const log = require('electron-log');
 // const os = require('os');
 
 // Script imports
@@ -29,16 +30,16 @@ let itemMap = {
 };
 
 function loadItems(itemMap) {
-    console.log('Container cleared.');
+    log.silly('Container cleared.');
     itemContainer.empty();
-    console.log('Queue cleared.');
+    log.silly('Queue cleared.');
     queue.empty();
 
-    console.log(`${itemMap.size} items indexed.`);
+    log.debug(`${itemMap.size} items indexed.`);
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });
-    console.log(`${itemMap.size} items loaded.`);
+    log.debug(`${itemMap.size} items loaded.`);
 }
 
 function searchBoxInputHandler(event) {
@@ -46,7 +47,7 @@ function searchBoxInputHandler(event) {
 
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
-            console.log(event.target.value.toLowerCase());
+            log.debug(event.target.value.toLowerCase());
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);
@@ -72,7 +73,7 @@ function gameSelectorChangeListener() {
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
-        console.log(`${key}: ${value} (${typeof value})`);
+        // log.debug(`${key}: ${value} (${typeof value})`);
         updateUIInput(key, value);
     } 
 
@@ -89,7 +90,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 gameSelector.addEventListener('change', gameSelectorChangeListener);
 [...document.getElementsByClassName('base-filter')].forEach((element) => { element.addEventListener('click', baseFilterClickHandler) });
 [...document.getElementsByClassName('composite-filter')].forEach((element) => { element.addEventListener('click', compositeFilterClickHandler) });
-document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); console.log('Queue cleared.'); });
+document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); log.silly('Queue cleared.'); });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
@@ -115,14 +116,14 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
-        console.log(args);
+        log.debug(args);
         userPreferences.set('outputPath', args[0]);
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
-        console.log(args);
+        log.debug(args);
         userPreferences.set('toolPath', args[0]);
     }
 });

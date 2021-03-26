@@ -1,4 +1,5 @@
 const { setVisibility } = require('./uiUtils.js');
+const log = require('electron-log');
 
 function createItemTile(item, game) {
     let tileRoot;
@@ -115,13 +116,13 @@ function itemTileClickHandler(event) {
     let clicked = $(event.currentTarget);
     switch ($(event.currentTarget).eq(0).parents().attr('id')) {
         case 'item-container':
-            console.log(`${clicked.eq(0).attr('id')} added to queue.`);
+            log.silly(`${clicked.eq(0).attr('id')} added to queue.`);
             queue.append(clicked.detach());
             break;
 
         case 'extract-queue':
             setVisibility(clicked);
-            console.log(`${clicked.eq(0).attr('id')} returned to container.`);
+            log.silly(`${clicked.eq(0).attr('id')} returned to container.`);
             addItemToContainer(clicked.detach());
             break;
     

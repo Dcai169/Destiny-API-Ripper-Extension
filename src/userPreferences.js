@@ -1,10 +1,16 @@
-const { BrowserWindow } = require('electron');
-const { api, is } = require('electron-util');
+const { api } = require('electron-util');
+const log = require('electron-log');
 const Store = require('electron-store');
 const fs = require('fs');
 const path = require('path');
 const { download } = require('electron-dl');
 const { getReleaseAsset, extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
+const { ipcRenderer, BrowserWindow } = require('electron');
+
+function logError(err) {
+    console.error(err);
+    log.error(err);
+}
 
 let schema = {
     "outputPath": {
@@ -17,6 +23,7 @@ let schema = {
                 if (err.code === "EEXIST") {
                     return defaultPath;
                 } else {
+                    logError(err);
                     throw err;
                 }
             }
@@ -35,23 +42,29 @@ let schema = {
                         toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
                     }
                 } else {
+                    logError(err);
                     throw err;
                 }
             }
-            
+
             if (!toolPath) {
                 getReleaseAsset()
-                .then((res) => {
-                    download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory })
-                        .then((res) => {
-                            extract7zip(res.getSavePath()).then((res) => {
-                                fs.unlinkSync(res.get('Path'));
-                                setTimeout(() => {
-                                    return path.join(toolDirectory, findExecutable(toolDirectory).name);
-                                }, 100);
-                            }).catch(console.error);
-                        }).catch(console.error);
-                }).catch(console.error);
+                    .then((res) => {
+                        log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
+                        download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory, saveAs: false })
+                            .then((res) => {
+                                extract7zip(res.getSavePath()).then((res) => {
+                                    let toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
+                                    fs.unlink(res.get('Path'), () => {
+                                        fs.chmod(toolPath, 0o744, () => {
+                                            setTimeout(() => {
+                                                return toolPath;
+                                            }, 100);
+                                        });
+                                    });
+                                }).catch(logError);
+                            }).catch(logError);
+                    }).catch(logError);
             } else {
                 return toolPath;
             }
@@ -65,10 +78,6 @@ let schema = {
     "aggregateOutput": {
         type: 'boolean',
         default: true
-    },
-    "autoUpdateTool": {
-        type: 'boolean',
-        default: false
     }
 }
 

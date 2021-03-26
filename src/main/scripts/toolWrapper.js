@@ -1,15 +1,17 @@
 const { execFile } = require('child_process');
+const log = require('electron-log');
+const { userPreferences } = require('./../../userPreferences.js');
 
 function updateUiDone(code) {
     $('#loading-indicator').removeClass('p-1').addClass('hidden');
     $('#queue-execute-button').removeAttr('disabled');
-    uiConsolePrint(`Done (Exit code ${code})`);
+    uiConsolePrint(`Done (Exit Code: ${code})`);
 }
 
 function runTool(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
-    let commandArgs = [game, '-o', userPreferences.outputPath.value].concat(hashes);
-    let child = execFile(userPreferences.toolPath.value, commandArgs, (err) => {
+    let commandArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes);
+    let child = execFile(userPreferences.get('toolPath'), commandArgs, (err) => {
         if (err) {
             throw err;
         }
@@ -28,13 +30,15 @@ function runToolRecursive(game, itemHashes) {
 }
 
 function execute(game, hashes) {
+    log.info(`Hashes: ${hashes.join(' ')}`);
     // change DOM to reflect program state
     $('#loading-indicator').removeClass('hidden').addClass('p-1');
     $('#queue-execute-button').attr('disabled', 'disabled');
 
-    if (userPreferences.aggregateOutput.value) {
+    if (userPreferences.get('aggregateOutput')) {
         runTool(game, hashes).on('exit', (code) => {
-            updateUiDone();
+            log.info(`Done (Exit Code: ${code})`)
+            updateUiDone(code);
         });
     } else {
         runToolRecursive(game, hashes);

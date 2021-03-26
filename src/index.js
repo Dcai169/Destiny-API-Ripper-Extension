@@ -2,6 +2,10 @@ const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('
 const store = require('electron-store');
 const log = require('electron-log');
 const { debugInfo } = require('electron-util');
+const { download } = require('electron-dl');
+const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
+const { logError } = require('./userPreferences.js');
+const fs = require('fs')
 const path = require('path');
 
 store.initRenderer();
@@ -155,10 +159,21 @@ ipcMain.on('loadingDone', (event, args) => {
     log.verbose('Loading window destroyed');
 });
 
-ipcMain.on('dlPing', (event, _) => {
-    // log.debug(event.sender);
+ipcMain.on('dlPing', (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        event.reply('dlPing-reply', event.frameId);
+        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false })
+            .then((res) => {
+                extract7zip(res.getSavePath()).then((res) => {
+                    let toolPath = path.join(dlPath, findExecutable(dlPath).name);
+                    fs.unlink(res.get('Path'), () => {
+                        fs.chmod(toolPath, 0o744, () => {
+                            setTimeout(() => {
+                                event.reply('dlPing-reply', toolPath);
+                            }, 100);
+                        });
+                    });
+                }).catch(logError);
+            }).catch(logError);
     }
 });
 

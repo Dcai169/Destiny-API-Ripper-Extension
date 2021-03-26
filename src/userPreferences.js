@@ -3,9 +3,8 @@ const log = require('electron-log');
 const Store = require('electron-store');
 const fs = require('fs');
 const path = require('path');
-const { download } = require('electron-dl');
-const { getReleaseAsset, extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
-const { ipcRenderer, BrowserWindow, remote } = require('electron');
+const { getReleaseAsset, findExecutable } = require('./loading/scripts/loadingScripts.js');
+const { ipcRenderer } = require('electron');
 
 function logError(err) {
     console.error(err);
@@ -48,27 +47,15 @@ let schema = {
             }
 
             if (!toolPath) {
-                ipcRenderer.send('dlPing');
-                ipcRenderer.once('dlPing-reply', (event, args) => {
-                    // log.debug(event.sender);
-                });
-                
                 getReleaseAsset()
                     .then((res) => {
                         log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-                        download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory, saveAs: false })
-                            .then((res) => {
-                                extract7zip(res.getSavePath()).then((res) => {
-                                    let toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
-                                    fs.unlink(res.get('Path'), () => {
-                                        fs.chmod(toolPath, 0o744, () => {
-                                            setTimeout(() => {
-                                                return toolPath;
-                                            }, 100);
-                                        });
-                                    });
-                                }).catch(logError);
-                            }).catch(logError);
+                        if (ipcRenderer) {
+                            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
+                            ipcRenderer.once('dlPing-reply', (_, args) => {
+                                return args
+                            });
+                        }
                     }).catch(logError);
             } else {
                 return toolPath;
@@ -88,4 +75,4 @@ let schema = {
 
 const store = new Store({ schema });
 
-module.exports = { userPreferences: store };
+module.exports = { userPreferences: store, logError };

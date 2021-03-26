@@ -1,4 +1,4 @@
-const { api, is } = require('electron-util');
+const { api } = require('electron-util');
 const log = require('electron-log');
 const Store = require('electron-store');
 const fs = require('fs');

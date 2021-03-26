@@ -33,7 +33,7 @@ function setBarPercent(percent, delay=0) {
 
 function checkToolIntegrity() {
     setBarPercent(20, 100);
-    log.verbose('Checking tool integrity');
+    log.info('Checking tool integrity');
     return new Promise((resolve, reject) => {
         setBarPercent(40, 100);
         log.verbose(`Checking tool at ${userPreferences.get('toolPath')}`);
@@ -43,15 +43,15 @@ function checkToolIntegrity() {
                 if (!res.stderr) {
                     setBarPercent(80, 100);
                     let version = res.stdout.substring(0, 5);
-                    log,verbose(`Local Version: ${version}`);
+                    log.info(`Local Version: ${version}`);
                     getReleaseAsset()
                         .then((res) => {
                             // check for updates
                             if (version === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
-                                log.verbose('DCG is up to date');
+                                log.info('DCG is up to date');
                             } else {
-                                log.verbose('DCG is not the most recent');
-                                log.verbose(`Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
+                                log.info('DCG is not the most recent');
+                                log.info(`Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
                                 // redownloadTool()
                                 //     .then(resolve)
                                 //     .catch(reject);
@@ -61,16 +61,17 @@ function checkToolIntegrity() {
                         })
                         .catch(reject);
                 } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
-                    log.verbose('Tool does not recognize -v');
+                    log.info('Tool does not recognize -v');
                     resolve();
                     // redownloadTool()
                     //     .then(resolve)
                     //     .catch(reject);
                 }
             })
-            .catch(() => { // Will be called if tool is broken
+            .catch((err) => { // Will be called if tool is broken
                 setBarPercent(100, 100);
-                log.verbose('Version check failed');
+                log.info('Version check failed');
+                log.error(err);
                 resolve();
                 // Try to redownload
                 // redownloadTool()

@@ -1,4 +1,5 @@
 const { setVisibility } = require('./uiUtils.js');
+const log = require('electron-log');
 
 function getFilterState() {
     let binState = '';
@@ -160,11 +161,13 @@ function updateCompositeCheckboxes(binState) {
 }
 
 function baseFilterClickHandler(event) {
+    log.debug(event.target.id);
     updateItems(event.target);
     updateCompositeCheckboxes(getFilterState());
 }
 
 function compositeFilterClickHandler(event) {
+    log.debug(event.target.id);
     setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 

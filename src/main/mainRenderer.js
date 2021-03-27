@@ -8,7 +8,7 @@ const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./sc
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler } = require('./scripts/filterMenus.js');
+const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
@@ -47,7 +47,7 @@ function searchBoxInputHandler(event) {
 
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
-            log.debug(event.target.value.toLowerCase());
+            log.silly(`Search: ${event.target.value.toLowerCase()}`);
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);

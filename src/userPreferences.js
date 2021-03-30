@@ -49,8 +49,8 @@ let schema = {
             if (!toolPath) {
                 getReleaseAsset()
                     .then((res) => {
-                        log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
                         if (ipcRenderer) {
+                            log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
                             ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
                             ipcRenderer.once('dlPing-reply', (_, args) => {
                                 return args

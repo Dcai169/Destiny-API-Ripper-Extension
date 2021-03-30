@@ -153,6 +153,21 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
+function dlDoneCallback(res) {
+    let archivePath = res.path;
+    let binDir = path.parse(archivePath).dir;
+    extract7zip(res.path).then((res) => {
+        let toolPath = path.join(binDir, findExecutable(binDir).name);
+        fs.unlink(archivePath, () => {
+            fs.chmod(toolPath, 0o744, () => {
+                setTimeout(() => {
+                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
+                }, 100);
+            });
+        });
+    }).catch(logError);
+}
+
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
@@ -161,19 +176,7 @@ ipcMain.on('loadingDone', (event, args) => {
 
 ipcMain.on('dlPing', (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false })
-            .then((res) => {
-                extract7zip(res.getSavePath()).then((res) => {
-                    let toolPath = path.join(dlPath, findExecutable(dlPath).name);
-                    fs.unlink(res.get('Path'), () => {
-                        fs.chmod(toolPath, 0o744, () => {
-                            setTimeout(() => {
-                                event.reply('dlPing-reply', toolPath);
-                            }, 100);
-                        });
-                    });
-                }).catch(logError);
-            }).catch(logError);
+        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
     }
 });
 

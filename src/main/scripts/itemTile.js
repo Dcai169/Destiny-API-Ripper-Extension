@@ -70,7 +70,8 @@ function createItemTile(item, game) {
             name: (item.itemName ? item.itemName : 'Classified'),
             'data-index': item.hash,
             'data-rarity': item.tierType,
-            'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
+            'data-itemtype': item.itemType,
+            'data-itemsubtype': item.itemSubType,
             on: {
                 click: itemTileClickHandler
             }

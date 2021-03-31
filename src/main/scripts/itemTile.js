@@ -1,16 +1,19 @@
 const { setVisibility } = require('./uiUtils.js');
+const evaluateReplace = require('./evaluateReplace.js')
+const log = require('electron-log');
 
 function createItemTile(item, game) {
     let tileRoot;
     if (game === '2') {
         tileRoot = $('<div></div>', {
             class: 'item-tile d-flex align-items-center m-1',
-            style: `position: relative; background-color: var(--${hashToRarityName(item.inventory.tierTypeHash)}-color)`,
+            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.tierType)}-color)`,
             id: item.hash,
             name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
             'data-index': item.index,
             'data-rarity': item.inventory.tierType,
-            'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
+            'data-itemtype': item.itemType,
+            'data-itemsubtype': item.itemSubType,
             'data-ammotype': (item.hasOwnProperty('equippingBlock') && item.equippingBlock.hasOwnProperty('ammoType') ? item.equippingBlock.ammoType : '0'),
             on: {
                 click: itemTileClickHandler
@@ -67,7 +70,8 @@ function createItemTile(item, game) {
             name: (item.itemName ? item.itemName : 'Classified'),
             'data-index': item.hash,
             'data-rarity': item.tierType,
-            'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
+            'data-itemtype': item.itemType,
+            'data-itemsubtype': item.itemSubType,
             on: {
                 click: itemTileClickHandler
             }
@@ -115,14 +119,15 @@ function itemTileClickHandler(event) {
     let clicked = $(event.currentTarget);
     switch ($(event.currentTarget).eq(0).parents().attr('id')) {
         case 'item-container':
-            console.log(`${clicked.eq(0).attr('id')} added to queue.`);
+            log.silly(`${clicked.eq(0).attr('id')} added to queue`);
             queue.append(clicked.detach());
             break;
 
         case 'extract-queue':
-            setVisibility(clicked, clicked.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
-            console.log(`${clicked.eq(0).attr('id')} returned to container.`);
+            setVisibility(clicked);
+            log.silly(`${clicked.eq(0).attr('id')} returned to container`);
             addItemToContainer(clicked.detach());
+            break;
     
         default:
             break;
@@ -135,28 +140,6 @@ function addItemToContainer(item) {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
     } else {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).after(item);
-    }
-}
-
-function hashToRarityName(hash) {
-    switch (hash) {
-        case 2759499571:
-            return 'exotic';
-
-        case 4008398120:
-            return 'legendary';
-
-        case 2127292149:
-            return 'rare';
-
-        case 2395677314:
-            return 'uncommon';
-
-        case 3340296461:
-            return 'common';
-
-        default:
-            break;
     }
 }
 

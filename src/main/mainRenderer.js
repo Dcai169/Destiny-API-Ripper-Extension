@@ -1,7 +1,6 @@
 // Module imports
-const fs = require('fs');
-const path = require('path');
 const { ipcRenderer } = require('electron');
+const log = require('electron-log');
 // const os = require('os');
 
 // Script imports
@@ -10,14 +9,12 @@ const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
+const { userPreferences } = require('../userPreferences');
 
 // Document Objects
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector');
-
-// Load user preferences
-let userPreferences = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'user_preferences.json'), 'utf-8'));
 
 let searchDebounceTimeout;
 let reloadRequired = false;
@@ -33,16 +30,16 @@ let itemMap = {
 };
 
 function loadItems(itemMap) {
-    console.log('Container cleared.');
+    log.silly('Container cleared');
     itemContainer.empty();
-    console.log('Queue cleared.');
+    log.silly('Queue cleared');
     queue.empty();
 
-    console.log(`${itemMap.size} items indexed.`);
+    log.debug(`${itemMap.size} items indexed`);
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });
-    console.log(`${itemMap.size} items loaded.`);
+    log.debug(`${itemMap.size} items loaded`);
 }
 
 function searchBoxInputHandler(event) {
@@ -50,11 +47,11 @@ function searchBoxInputHandler(event) {
 
     searchDebounceTimeout = setTimeout(() => {
         if (event.target.value) {
-            console.log(event.target.value.toLowerCase());
+            log.silly(`Search: ${event.target.value.toLowerCase()}`);
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);
-                setVisibility(item, item.hasClass('m-1') && item.attr('name').toLowerCase().includes(event.target.value.toLowerCase()));
+                setVisibility(item);
             });
         } else {
             [...document.getElementsByClassName('base-filter')].forEach(updateItems);
@@ -73,40 +70,27 @@ function gameSelectorChangeListener() {
     }
 }
 
-function propogateUserPreferences(key) {
-    if (key) {
-        updateUIInput(key, userPreferences[key].value);
-    } else {
-        for (const [key, property] of Object.entries(userPreferences)) {
-            updateUIInput(key, property.value);
-        }
-    }
-    fs.writeFileSync(path.join(process.cwd(), 'user_preferences.json'), JSON.stringify(userPreferences), 'utf8');
-}
-
-function updateUserPreference(key, value) {
-    if (userPreferences[key].value !== value) {
-        userPreferences[key].value = value;
-        propogateUserPreferences(key);
-    }
-}
-
 window.addEventListener('DOMContentLoaded', (event) => {
-    let locale = userPreferences.locale.value.toLowerCase();
+    // Load userPreferences
+    for ([key, value] of userPreferences) {
+        // log.debug(`${key}: ${value} (${typeof value})`);
+        updateUIInput(key, value);
+    } 
+
+    // Load items
     if (!itemMap[gameSelector.value].items) {
-        itemMap[gameSelector.value].get(locale).then((res) => {
+        itemMap[gameSelector.value].get(userPreferences.get('locale').toLowerCase()).then((res) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });
     }
-    propogateUserPreferences();
 });
 
 // Navbar items
 gameSelector.addEventListener('change', gameSelectorChangeListener);
 [...document.getElementsByClassName('base-filter')].forEach((element) => { element.addEventListener('click', baseFilterClickHandler) });
 [...document.getElementsByClassName('composite-filter')].forEach((element) => { element.addEventListener('click', compositeFilterClickHandler) });
-document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); console.log('Queue cleared.'); });
+document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); log.silly('Queue cleared.'); });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
@@ -116,12 +100,12 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
-document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.outputPath.value]) })
-document.getElementById('aggregateOutput').addEventListener('input', () => { updateUserPreference('aggregateOutput', document.getElementById('aggregateOutput').checked) });
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
+document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
     $('#modal-close-button').text('Reload');
-    updateUserPreference('locale', document.getElementById('locale').value);
+    userPreferences.set('locale', document.getElementById('locale').value);
 });
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
@@ -132,13 +116,13 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
-        updateUserPreference('outputPath', args[0]);
+        userPreferences.set('outputPath', args[0]);
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
-        updateUserPreference('toolPath', args[0]);
+        userPreferences.set('toolPath', args[0]);
     }
 });
 

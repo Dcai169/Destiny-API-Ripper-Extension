@@ -1,6 +1,15 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell, autoUpdater } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
+const store = require('electron-store');
+const log = require('electron-log');
+const { debugInfo } = require('electron-util');
+const { download } = require('electron-dl');
+const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
+const { logError } = require('./userPreferences.js');
+const fs = require('fs')
 const path = require('path');
-// const fs = require('fs');
+
+store.initRenderer();
+log.info(debugInfo());
 
 // Update stuff
 // const updateServer = 'https://hazel-six-omega.vercel.app'
@@ -12,14 +21,20 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 }
 
 const createMainWindow = () => {
+    log.verbose('Main window spawned');
+
     // Create the browser window.
     const mainWindow = new BrowserWindow({
         width: 1600,
         height: 1000,
         webPreferences: {
-            nodeIntegration: true
+            contextIsolation: false,
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
+
+    mainWindow.maximize();
 
     // Menu items
     const mainMenu = new Menu();
@@ -52,7 +67,8 @@ const createMainWindow = () => {
     Menu.setApplicationMenu(mainMenu);
 
     app.once('browser-window-created', () => {
-        mainWindow.webContents.send('system-locale', [app.getLocale()])
+        mainWindow.webContents.send('system-locale', app.getLocale());
+        mainWindow.webContents.send('app-version', app.getVersion());
     });
 
     // and load the index.html of the app.
@@ -66,12 +82,16 @@ const createMainWindow = () => {
 };
 
 const createLoadingWindow = () => {
+    log.verbose('Loading window spawned');
+
     const loadingWindow = new BrowserWindow({
         width: 400,
         height: 250,
         frame: false,
         webPreferences: {
-            nodeIntegration: true
+            contextIsolation: false,
+            nodeIntegration: true,
+            enableRemoteModule: true
         }
     });
 
@@ -110,7 +130,9 @@ const createLoadingWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createLoadingWindow);
+app.on('ready', () => {
+    createLoadingWindow();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
@@ -131,15 +153,31 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-
-ipcMain.on('mainPrint', (event, args) => {
-    // console.log(event);
-    console.log(args);
-});
+function dlDoneCallback(res) {
+    let archivePath = res.path;
+    let binDir = path.parse(archivePath).dir;
+    extract7zip(res.path).then((res) => {
+        let toolPath = path.join(binDir, findExecutable(binDir).name);
+        fs.unlink(archivePath, () => {
+            fs.chmod(toolPath, 0o744, () => {
+                setTimeout(() => {
+                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
+                }, 100);
+            });
+        });
+    }).catch(logError);
+}
 
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
+    log.verbose('Loading window destroyed');
+});
+
+ipcMain.on('dlPing', (event, { url, dlPath }) => {
+    if (event.sender.getURL().includes('loading')) {
+        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
+    }
 });
 
 ipcMain.on('selectOutputPath', (event) => {
@@ -155,3 +193,4 @@ ipcMain.on('openExplorer', (_, args) => {
         shell.openPath(args[0]);
     }
 });
+

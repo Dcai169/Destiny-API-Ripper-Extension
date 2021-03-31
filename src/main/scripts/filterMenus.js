@@ -1,4 +1,5 @@
 const { setVisibility } = require('./uiUtils.js');
+const log = require('electron-log');
 
 function getFilterState() {
     let binState = '';
@@ -18,7 +19,16 @@ function setFilterState(binState) {
 }
 
 function updateItems(inputElem) {
-    setVisibility($(`#item-container ${inputElem.dataset.selector}`), inputElem.checked);
+    setVisibility($(`#item-container ${inputElem.dataset.selector}`));
+}
+
+function baseFilterClickHandler(event) {
+    updateItems(event.target);
+    updateCompositeCheckboxes(getFilterState());
+}
+
+function compositeFilterClickHandler(event) {
+    setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 
 function updateCompositeCheckboxes(binState) {
@@ -157,15 +167,6 @@ function updateCompositeCheckboxes(binState) {
             document.getElementById('filter-equipment').indeterminate = true;
             break;
     }
-}
-
-function baseFilterClickHandler(event) {
-    updateItems(event.target);
-    updateCompositeCheckboxes(getFilterState());
-}
-
-function compositeFilterClickHandler(event) {
-    setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 
 module.exports = { baseFilterClickHandler, compositeFilterClickHandler, updateItems };

@@ -1,10 +1,6 @@
 TODO
 In order of priority (mostly)
 
-Maintainance/Updates
-* CGT
-    * Check CGT hash
-
 UI/UX
 * Sorting
     * Name
@@ -13,6 +9,10 @@ UI/UX
     * Rarity
 * Add button to item-tile to bypass using the queue (ie a RIP NOW button)
 * Restore previous session (Queue, Active filters, Search Query, etc)
+
+Other
+* Typescript rewrite
+* Tests
 
 DONE
 * Put items back into #item-container in the correct order by using .after() instead of .append()

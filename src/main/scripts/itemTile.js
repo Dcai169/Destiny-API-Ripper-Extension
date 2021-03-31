@@ -14,7 +14,6 @@ function createItemTile(item, game) {
             'data-rarity': item.inventory.tierType,
             'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
             'data-ammotype': (item.hasOwnProperty('equippingBlock') && item.equippingBlock.hasOwnProperty('ammoType') ? item.equippingBlock.ammoType : '0'),
-            'data-vdeterminers': JSON.stringify(calcFilters(item)),
             on: {
                 click: itemTileClickHandler
             }
@@ -119,7 +118,7 @@ function calcFilters(itemObj) {
     let ammoType = evaluateReplace(itemObj?.equippingBlock?.ammoType, {replacement: '0'});
     let itemClass
 
-    switch (itemObj.tierType) {
+    switch (itemObj.inventory.tierType) {
         case 6:
             filters.push('filter-exotic');
             break;
@@ -145,6 +144,49 @@ function calcFilters(itemObj) {
     }
 
     switch (itemObj.itemType) {
+        case 2:
+            switch (itemObj.itemSubType) {
+                case 26:
+                    filters.push('filter-helmet');
+                    break;
+            
+                case 27:
+                    filters.push('filters-gauntlets');
+                    break;
+
+                case 28:
+                    filters.push('filters-chest');
+                    break;
+
+                case 29:
+                    filters.push('filters-legs');
+                    break;
+
+                case 30:
+                    filters.push('filters-class');
+                    break;
+
+                default:
+                    break;
+            }
+            switch (itemObj.classType) {
+                case 0:
+                    filters.push('filter-titanArmor');
+                    break;
+
+                case 1:
+                    filters.push('filter-hunterArmor');
+                    break;
+
+                case 2:
+                    filters.push('filter-warlockArmor');
+                    break;
+            
+                default:
+                    break;
+            }
+            break;
+
         case 3:
             switch (itemObj.itemSubType) {
                 case 6:
@@ -219,12 +261,34 @@ function calcFilters(itemObj) {
         case 19:
             if (itemObj.itemSubType === 20) {
                 filters.push('filters-shaders');  
-            } else {
-                if (itemObj.classType === 3) {
-                    filters.push('filter-weaponOrnament');
+            } else if (itemObj.itemSubType === 21) {
+                switch (itemObj.classType) {
+                    case 0:
+                        filters.push('filter-titanArmor');
+                        filters.push('filter-armorOrnament');
+                        break;
+                    
+                    case 1:
+                        filters.push('filter-hunterArmor');
+                        filters.push('filter-armorOrnament');
+
+                    case 2:
+                        filters.push('filter-warlockArmor');
+                        filters.push('filter-armorOrnament');
+
+                    case 3:
+                        if (itemObj?.traitIds?.[0] === "item_type.weapon_ornament") {
+                            filters.push('filter-weaponOrnament');
+                        } else {
+                            // Determine class
+                            filters.push('filter-armorOrnament');
+                        }
+                        break;
+                
+                    default:
+                        break;
                 }
             }
-            
             break;
 
 
@@ -235,6 +299,10 @@ function calcFilters(itemObj) {
         case 22:
             filters.push('filter-sparrows');
             break;
+
+        case 24:
+            filters.push('filter-ghostShells');
+            break
 
         default:
             break;
@@ -254,7 +322,7 @@ function itemTileClickHandler(event) {
             break;
 
         case 'extract-queue':
-            setVisibility(clicked);
+            setVisibility(clicked, clicked.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
             log.silly(`${clicked.eq(0).attr('id')} returned to container`);
             addItemToContainer(clicked.detach());
             break;

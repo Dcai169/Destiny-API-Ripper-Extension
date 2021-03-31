@@ -22,6 +22,15 @@ function updateItems(inputElem) {
     setVisibility($(`#item-container ${inputElem.dataset.selector}`));
 }
 
+function baseFilterClickHandler(event) {
+    updateItems(event.target);
+    updateCompositeCheckboxes(getFilterState());
+}
+
+function compositeFilterClickHandler(event) {
+    setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
+}
+
 function updateCompositeCheckboxes(binState) {
     switch (parseInt(binState.slice(0, 5), 2)) { // Rarities
         case 31:
@@ -158,17 +167,6 @@ function updateCompositeCheckboxes(binState) {
             document.getElementById('filter-equipment').indeterminate = true;
             break;
     }
-}
-
-function baseFilterClickHandler(event) {
-    log.debug(event.target.id);
-    updateItems(event.target);
-    updateCompositeCheckboxes(getFilterState());
-}
-
-function compositeFilterClickHandler(event) {
-    log.debug(event.target.id);
-    setFilterState([...getFilterState().padStart(32, '0')].reverse().fill((event.target.checked ? '1' : '0'), event.target.dataset.indexstart, event.target.dataset.indexend).reverse().join(''));
 }
 
 module.exports = { baseFilterClickHandler, compositeFilterClickHandler, updateItems };

@@ -1,15 +1,23 @@
+const log = require('electron-log');
+
 function elementNameIncludes(element, inString) {
     return element.eq(0).attr('name').toLowerCase().includes(inString.toLowerCase());
 }
 
 function calcFilterVisibility(element){
-    return ![...document.getElementsByClassName('base-filter')].every((inputElem) => {
-        return inputElem.checked && element.is(inputElem.dataset.selector);
+    return [...document.getElementsByClassName('base-filter')].every((inputElem) => {
+        return element.is(inputElem.dataset.selector);
     });
 }
 
 function setVisibility(jqueryObj) {
-    let state = (document.getElementById('search-box').value ? jqueryObj.hasClass('m-1') && elementNameIncludes(jqueryObj, document.getElementById('search-box').value.toLowerCase()) && calcFilterVisibility(jqueryObj) : jqueryObj.hasClass('m-1') && calcFilterVisibility(jqueryObj));
+    log.debug(calcFilterVisibility(jqueryObj));
+
+    let state = (
+        document.getElementById('search-box').value ? 
+        jqueryObj.hasClass('m-1') && elementNameIncludes(jqueryObj, document.getElementById('search-box').value.toLowerCase()) && calcFilterVisibility(jqueryObj) : 
+        jqueryObj.hasClass('m-1') && calcFilterVisibility(jqueryObj)
+    );
 
     if (jqueryObj.hasClass((state ? 'hidden' : 'm-1'))) {
         jqueryObj.removeClass((state ? 'hidden' : 'm-1')).addClass((state ? 'm-1' : 'hidden'));

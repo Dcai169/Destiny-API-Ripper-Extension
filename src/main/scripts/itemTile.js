@@ -1,4 +1,5 @@
 const { setVisibility } = require('./uiUtils.js');
+const evaluateReplace = require('./evaluateReplace.js')
 const log = require('electron-log');
 
 function createItemTile(item, game) {
@@ -13,6 +14,7 @@ function createItemTile(item, game) {
             'data-rarity': item.inventory.tierType,
             'data-itemtype': (item.itemSubType ? item.itemSubType : item.itemType),
             'data-ammotype': (item.hasOwnProperty('equippingBlock') && item.equippingBlock.hasOwnProperty('ammoType') ? item.equippingBlock.ammoType : '0'),
+            'data-vdeterminers': JSON.stringify(calcFilters(item)),
             on: {
                 click: itemTileClickHandler
             }
@@ -110,6 +112,137 @@ function createItemTile(item, game) {
     }
 
     return tileRoot;
+}
+
+function calcFilters(itemObj) {
+    let filters = [];
+    let ammoType = evaluateReplace(itemObj?.equippingBlock?.ammoType, {replacement: '0'});
+    let itemClass
+
+    switch (itemObj.tierType) {
+        case 6:
+            filters.push('filter-exotic');
+            break;
+
+        case 5:
+            filters.push('filter-legendary');
+            break;
+
+        case 4:
+            filters.push('filter-rare');
+            break;
+
+        case 3:
+            filters.push('filter-uncommon');
+            break;
+
+        case 2:
+            filters.push('filter-common');
+            break;
+
+        default:
+            break;
+    }
+
+    switch (itemObj.itemType) {
+        case 3:
+            switch (itemObj.itemSubType) {
+                case 6:
+                    filters.push('filter-autoRifle');
+                    break;
+        
+                case 14:
+                    filters.push('filter-scoutRifle');
+                    break;
+        
+                case 13:
+                    filters.push('filter-pulseRifle');
+                    break;
+        
+                case 9:
+                    filters.push('filter-handCannon');
+                    break;
+        
+                case 24:
+                    filters.push('filter-submachineGun');
+                    break;
+        
+                case 17:
+                    filters.push('filter-sidearm');
+                    break;
+        
+                case 31:
+                    filters.push('filter-bow');
+                    break;
+        
+                case 7:
+                    filters.push('filter-shotgun');
+                    break;
+        
+                case 11:
+                    filters.push('filter-fusionRifle');
+                    break;
+        
+                case 12:
+                    filters.push('filter-sniperRifle');
+                    break;
+        
+                case 18:
+                    filters.push('filter-sword');
+                    break;
+        
+                case 23:
+                    if (ammoType === 3) {
+                        filters.push('filter-breachGrenadeLauncher');
+                    } else if (ammoType === 2){
+                        filters.push('filter-heavyGrenadeLauncher');
+                    }
+                    break;
+                
+                case 10:
+                    filters.push('filter-rocketLauncher');
+                    break;
+        
+                case 22:
+                    filters.push('filter-linearFusionRifle');
+                    break;
+        
+                case 8:
+                    filters.push('filter-machineGun');
+                    break;
+            
+                default:
+                    break;
+            }
+            break;
+        
+        case 19:
+            if (itemObj.itemSubType === 20) {
+                filters.push('filters-shaders');  
+            } else {
+                if (itemObj.classType === 3) {
+                    filters.push('filter-weaponOrnament');
+                }
+            }
+            
+            break;
+
+
+        case 21:
+            filters.push('filter-ships');
+            break;            
+
+        case 22:
+            filters.push('filter-sparrows');
+            break;
+
+        default:
+            break;
+    }
+
+    
+
+    return filters;
 }
 
 function itemTileClickHandler(event) {

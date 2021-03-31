@@ -19,7 +19,7 @@ function setFilterState(binState) {
 }
 
 function updateItems(inputElem) {
-    setVisibility($(`#item-container ${inputElem.dataset.selector}`), inputElem.checked);
+    setVisibility($(`#item-container ${inputElem.dataset.selector}`));
 }
 
 function baseFilterClickHandler(event) {

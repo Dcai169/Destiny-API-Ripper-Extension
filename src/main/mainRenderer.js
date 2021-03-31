@@ -51,7 +51,7 @@ function searchBoxInputHandler(event) {
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);
-                setVisibility(item, item.hasClass('m-1') && item.attr('name').toLowerCase().includes(event.target.value.toLowerCase()));
+                setVisibility(item);
             });
         } else {
             [...document.getElementsByClassName('base-filter')].forEach(updateItems);

@@ -7,7 +7,7 @@ function createItemTile(item, game) {
     if (game === '2') {
         tileRoot = $('<div></div>', {
             class: 'item-tile d-flex align-items-center m-1',
-            style: `position: relative; background-color: var(--${hashToRarityName(item.inventory.tierTypeHash)}-color)`,
+            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.tierType)}-color)`,
             id: item.hash,
             name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
             'data-index': item.index,
@@ -140,28 +140,6 @@ function addItemToContainer(item) {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
     } else {
         $(`[data-index='${closest(item.data('index'), containerContents)}']`).after(item);
-    }
-}
-
-function hashToRarityName(hash) {
-    switch (hash) {
-        case 2759499571:
-            return 'exotic';
-
-        case 4008398120:
-            return 'legendary';
-
-        case 2127292149:
-            return 'rare';
-
-        case 2395677314:
-            return 'uncommon';
-
-        case 3340296461:
-            return 'common';
-
-        default:
-            break;
     }
 }
 

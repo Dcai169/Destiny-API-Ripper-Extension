@@ -117,12 +117,14 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
         userPreferences.set('outputPath', args[0]);
+        document.getElementById('outputPath').value = args[0];
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
         userPreferences.set('toolPath', args[0]);
+        document.getElementById('toolPath').value = args[0];
     }
 });
 

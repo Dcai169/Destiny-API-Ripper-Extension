@@ -63,6 +63,7 @@ function executeButtonClickHandler() {
                     execute(gameSelector.value, itemHashes);
                 } else {
                     uiConsolePrint('No internet connection detected');
+                    hideLoading();
                 }
             } else {
                 uiConsolePrint('DCG inoperable');

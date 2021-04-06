@@ -1,10 +1,15 @@
 const { execFile } = require('child_process');
 const log = require('electron-log');
+const { toolVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
 
-function updateUiDone(code) {
+function hideLoading() {
     $('#loading-indicator').removeClass('p-1').addClass('hidden');
     $('#queue-execute-button').removeAttr('disabled');
+}
+
+function updateUiDone(code) {
+    hideLoading();
     uiConsolePrint(`Done (Exit Code: ${code})`);
 }
 
@@ -42,20 +47,32 @@ function execute(game, hashes) {
         });
     } else {
         runToolRecursive(game, hashes);
-        $('#loading-indicator').removeClass('p-1').addClass('hidden');
-        $('#queue-execute-button').removeAttr('disabled');
+        hideLoading();
     }
 }
 
 function executeButtonClickHandler() {
-    if (navigator.onLine) {
-        let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-        uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
-
-        execute(gameSelector.value, itemHashes);
-    } else {
-        uiConsolePrint('No internet connection detected');
-    }
+    toolVersion(userPreferences.get('toolPath'))
+        .then((res) => {
+            if (res.stdout) {
+                uiConsolePrint(`DCG v${res.stdout.substring(0, 5)}`);
+                if (navigator.onLine) {
+                    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+                    uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
+            
+                    execute(gameSelector.value, itemHashes);
+                } else {
+                    uiConsolePrint('No internet connection detected');
+                }
+            } else {
+                uiConsolePrint('DCG inoperable');
+                hideLoading();
+            }
+        })
+        .catch(() => {
+            uiConsolePrint('DCG inoperable');
+            hideLoading();
+        });
 }
 
 function uiConsolePrint(text) {

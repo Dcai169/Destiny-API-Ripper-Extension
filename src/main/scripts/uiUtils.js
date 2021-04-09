@@ -1,7 +1,7 @@
 const log = require('electron-log');
 
 function searchVisibility(jqueryObj) {
-    return jqueryObj.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase());
+    return (document.getElementById('search-box').value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
 }
 
 function filterVisibility(jqueryObj){

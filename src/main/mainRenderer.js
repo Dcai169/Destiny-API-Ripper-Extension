@@ -1,4 +1,5 @@
 // Module imports
+const { api } = require('electron-util');
 const { ipcRenderer } = require('electron');
 const log = require('electron-log');
 // const os = require('os');
@@ -6,7 +7,7 @@ const log = require('electron-log');
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput } = require('./scripts/uiUtils.js');
+const { setVisibility, updateUIInput, uiConsolePrint } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
@@ -28,6 +29,8 @@ let itemMap = {
         items: undefined
     }
 };
+
+uiConsolePrint(`DARE v${api.app.getVersion()}`);
 
 function loadItems(itemMap) {
     log.silly('Container cleared');

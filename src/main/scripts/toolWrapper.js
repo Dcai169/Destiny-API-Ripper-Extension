@@ -2,6 +2,7 @@ const { execFile } = require('child_process');
 const log = require('electron-log');
 const { toolVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
+const { uiConsolePrint } = require('./uiUtils.js');
 
 function hideLoading() {
     $('#loading-indicator').removeClass('p-1').addClass('hidden');
@@ -74,14 +75,6 @@ function executeButtonClickHandler() {
             uiConsolePrint('DCG inoperable');
             hideLoading();
         });
-}
-
-function uiConsolePrint(text) {
-    document.getElementById('console-text').innerText += `${text}\n `;
-
-    if (document.getElementById("console-autoscroll-toggle").checked) {
-        document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
-    }
 }
 
 module.exports = { executeButtonClickHandler };

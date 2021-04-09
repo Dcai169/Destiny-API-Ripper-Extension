@@ -34,4 +34,12 @@ function updateUIInput(elementId, value) {
     }
 }
 
-module.exports = { setVisibility, updateUIInput };
+function uiConsolePrint(text) {
+    document.getElementById('console-text').innerText += `${text}\n `;
+
+    if (document.getElementById("console-autoscroll-toggle").checked) {
+        document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
+    }
+}
+
+module.exports = { setVisibility, updateUIInput, uiConsolePrint };

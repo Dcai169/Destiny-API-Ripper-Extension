@@ -1,7 +1,7 @@
 const log = require('electron-log');
 
 function searchVisibility(jqueryObj) {
-    return jqueryObj.eq(0).attr('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase());
+    return (document.getElementById('search-box').value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
 }
 
 function filterVisibility(jqueryObj){
@@ -34,4 +34,12 @@ function updateUIInput(elementId, value) {
     }
 }
 
-module.exports = { setVisibility, updateUIInput };
+function uiConsolePrint(text) {
+    document.getElementById('console-text').innerText += `${text}\n `;
+
+    if (document.getElementById("console-autoscroll-toggle").checked) {
+        document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
+    }
+}
+
+module.exports = { setVisibility, updateUIInput, uiConsolePrint };

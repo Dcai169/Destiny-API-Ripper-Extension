@@ -7,9 +7,9 @@ function createItemTile(item, game) {
     if (game === '2') {
         tileRoot = $('<div></div>', {
             class: 'item-tile d-flex align-items-center m-1',
-            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.tierType)}-color)`,
+            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`,
             id: item.hash,
-            name: (item.displayProperties.name ? item.displayProperties.name : 'Classified'),
+            name: item.displayProperties.name ?? 'Classified',
             'data-index': item.index,
             'data-rarity': item.inventory.tierType,
             'data-itemtype': item.itemType,

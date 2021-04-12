@@ -162,7 +162,7 @@ function dlDoneCallback(res) {
             fs.chmod(toolPath, 0o744, () => {
                 setTimeout(() => {
                     BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
-                }, 100);
+                }, 200);
             });
         });
     }).catch(logError);

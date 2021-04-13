@@ -1,17 +1,19 @@
-const axios = require('axios');
-const path = require('path');
-const { is } = require('electron-util');
-const fs = require('fs');
-const sevenBin = require('7zip-bin');
-const { extractFull } = require('node-7z');
-const { execFile } = require('child_process');
+import * as axios from 'axios';
+import * as path from 'path';
+import { is } from 'electron-util';
+import * as fs from 'fs';
+import * as sevenBin from '7zip-bin';
+import { extractFull } from 'node-7z';
+import { execFile } from 'child_process';
 
-async function getReleaseAsset() {
+import { GitHubAsset } from '../types/github';
+
+export async function getReleaseAsset() {
     // Get releases
     return new Promise((resolve, reject) => {
-        axios.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
+        axios.default.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
             .then((res) => {
-                res.data[0].assets.forEach((i) => {
+                res.data[0].assets.forEach((i: GitHubAsset) => {
                     if (i.name.toLowerCase().includes((is.macos ? 'osx' : process.platform.substring(0, 3)))) {
                         resolve(i);
                     }
@@ -20,7 +22,7 @@ async function getReleaseAsset() {
     });
 }
 
-async function extract7zip(archivePath) {
+export async function extract7zip(archivePath: string) {
     return new Promise((resolve, reject) => {
         const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, { $bin: sevenBin.path7za, recursive: true });
 
@@ -30,11 +32,11 @@ async function extract7zip(archivePath) {
     });
 }
 
-function toolVersion(toolPath) {
+export function toolVersion(toolPath: string): Promise<{ stdout: string, stderr: string }> {
     return new Promise((resolve, reject) => {
         try {
             execFile(toolPath, ['--version'], (_, stdout, stderr) => {
-                resolve({stdout, stderr});
+                resolve({ stdout, stderr });
             });
         } catch (err) {
             reject(err);
@@ -42,12 +44,11 @@ function toolVersion(toolPath) {
     });
 }
 
-function findExecutable(binPath) {
+export function findExecutable(binPath: string): fs.Dirent | null {
     for (const file of fs.readdirSync(binPath, { withFileTypes: true })) {
         if (file.isFile() && (is.windows ? file.name.split('.').pop() === 'exe' : (file.name.includes('-v') && file.name.split('.').length === 1))) {
             return file;
         }
     }
+    return null;
 }
-
-module.exports = { extract7zip, getReleaseAsset, toolVersion, findExecutable };

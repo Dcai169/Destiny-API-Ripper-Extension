@@ -1,38 +1,38 @@
 // Module imports
-const { api } = require('electron-util');
-const { ipcRenderer } = require('electron');
-const log = require('electron-log');
+import { api } from 'electron-util';
+import { ipcRenderer } from 'electron';
+import * as log from 'electron-log';
 // const os = require('os');
 
 // Script imports
-const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
-const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput, uiConsolePrint } = require('./scripts/uiUtils.js');
-const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
-const { userPreferences } = require('../userPreferences');
+import { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } from './scripts/destinyManifest.js';
+import { createD1ItemTile, createD2ItemTile, addItemToContainer } from './scripts/itemTile.js';
+import { setVisibility, updateUIInput, uiConsolePrint } from './scripts/uiUtils.js';
+import { executeButtonClickHandler } from './scripts/toolWrapper.js';
+import { baseFilterClickHandler, compositeFilterClickHandler, updateItems } from './scripts/filterMenus.js';
+import { userPreferences } from '../userPreferences';
 
 // Document Objects
 let itemContainer = $('#item-container');
 let queue = $('#extract-queue');
-let gameSelector = document.getElementById('gameSelector');
+let gameSelector = document.getElementById('gameSelector') as HTMLInputElement;
 
-let searchDebounceTimeout;
+let searchDebounceTimeout: NodeJS.Timeout;
 let reloadRequired = false;
 let itemMap = {
     '1': {
         get: getDestiny1ItemDefinitions,
-        items: undefined
+        items: Map
     },
     '2': {
         get: getDestiny2ItemDefinitions,
-        items: undefined
+        items: Map
     }
 };
 
 uiConsolePrint(`DARE v${api.app.getVersion()}`);
 
-function loadItems(itemMap) {
+function loadItems(itemMap: Map<number, any>) {
     log.silly('Container cleared');
     itemContainer.empty();
     log.silly('Queue cleared');
@@ -40,17 +40,21 @@ function loadItems(itemMap) {
 
     log.debug(`${itemMap.size} items indexed`);
     itemMap.forEach((item) => {
-        itemContainer.append(createItemTile(item, gameSelector.value));
+        if (gameSelector.value === '2') {
+            itemContainer.append(createD2ItemTile(item));
+        } else if (gameSelector.value === '1') {
+            itemContainer.append(createD1ItemTile(item));
+        }
     });
     log.debug(`${itemMap.size} items loaded`);
 }
 
-function searchBoxInputHandler(event) {
+function searchBoxInputHandler(event: Event) {
     window.clearTimeout(searchDebounceTimeout);
 
     searchDebounceTimeout = setTimeout(() => {
-        if (event.target.value) {
-            log.silly(`Search: ${event.target.value.toLowerCase()}`);
+        if ((event.target as HTMLInputElement).value) {
+            log.silly(`Search: ${(event.target as HTMLInputElement).value.toLowerCase()}`);
             // There's a bug in here; probably some sort of race condition issue
             itemContainer.eq(0).children().each((_, element) => {
                 let item = $(element);
@@ -66,7 +70,7 @@ function gameSelectorChangeListener() {
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
-        itemMap[gameSelector.value].get(locale).then((res) => {
+        itemMap[gameSelector.value].get(userPreferences.get('locale')).then((res: Map<number, any>) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });
@@ -75,14 +79,14 @@ function gameSelectorChangeListener() {
 
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
-    for ([key, value] of userPreferences) {
+    for (const [key, value] of userPreferences) {
         // log.debug(`${key}: ${value} (${typeof value})`);
         updateUIInput(key, value);
     } 
 
     // Load items
     if (!itemMap[gameSelector.value].items) {
-        itemMap[gameSelector.value].get(userPreferences.get('locale').toLowerCase()).then((res) => {
+        itemMap[gameSelector.value].get(userPreferences.get('locale')).then((res: Map<number, any>) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });
@@ -104,11 +108,11 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
-document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
+document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', (document.getElementById('aggregateOutput') as HTMLInputElement).checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
     $('#modal-close-button').text('Reload');
-    userPreferences.set('locale', document.getElementById('locale').value);
+    userPreferences.set('locale', (document.getElementById('locale') as HTMLInputElement).value);
 });
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
@@ -120,21 +124,21 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
 ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     if (args) {
         userPreferences.set('outputPath', args[0]);
-        document.getElementById('outputPath').value = args[0];
+        (document.getElementById('outputPath') as HTMLInputElement).value = args[0];
     }
 });
 
 ipcRenderer.on('selectToolPath-reply', (_, args) => {
     if (args) {
         userPreferences.set('toolPath', args[0]);
-        document.getElementById('toolPath').value = args[0];
+        (document.getElementById('toolPath') as HTMLInputElement).value = args[0];
     }
 });
 
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {
     if (args) {
-        loadItems();
+        loadItems(itemMap[gameSelector.value].items);
     }
 });
 

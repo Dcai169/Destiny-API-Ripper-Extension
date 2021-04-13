@@ -1,8 +1,10 @@
-const path = require('path');
-const { ipcRenderer } = require('electron');
-const log = require('electron-log')
-const { getReleaseAsset, toolVersion } = require('./scripts/loadingScripts.js');
-const { userPreferences } = require('../userPreferences');
+import * as path from 'path';
+import { ipcRenderer } from 'electron';
+import * as log from 'electron-log';
+import { getReleaseAsset, toolVersion } from './loadingScripts.js';
+import { userPreferences } from './../userPreferences.js';
+
+import { GitHubAsset } from './../types/github';
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
@@ -13,7 +15,7 @@ setInterval(() => {
     }
 }, 500);
 
-function redownloadTool() {
+function redownloadTool(): Promise<string | Error> {
     log.debug('Tool redownload initiated');
     return new Promise((resolve, reject) => {
         try {
@@ -25,20 +27,20 @@ function redownloadTool() {
     });
 }
 
-function setBarPercent(percent, delay=0) {
+function setBarPercent(percent: number, delay = 0) {
     setInterval(() => {
         document.getElementById('main-bar').style.width = `${percent}%`;
     }, delay);
 }
 
-function checkToolIntegrity() {
+function checkToolIntegrity(): Promise<GitHubAsset | string> {
     setBarPercent(20, 100);
     log.info('Checking tool integrity');
     return new Promise((resolve, reject) => {
         setBarPercent(40, 100);
         if (userPreferences.get('toolPath')) {
             log.verbose(`Checking tool at ${userPreferences.get('toolPath')}`);
-            toolVersion(userPreferences.get('toolPath'))
+            toolVersion((userPreferences.get('toolPath') as string))
                 .then((res) => {
                     setBarPercent(60, 100);
                     if (!res.stderr) {
@@ -46,7 +48,7 @@ function checkToolIntegrity() {
                         let version = res.stdout.substring(0, 5);
                         log.info(`Local Version: ${version}`);
                         getReleaseAsset()
-                            .then((res) => {
+                            .then((res: GitHubAsset) => {
                                 // check for updates
                                 if (version === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
                                     log.info('DCG is up to date');
@@ -63,7 +65,7 @@ function checkToolIntegrity() {
                             .catch(reject);
                     } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
                         log.info('Tool does not recognize -v');
-                        resolve();
+                        resolve('Tool does not recognize -v');
                         // redownloadTool()
                         //     .then(resolve)
                         //     .catch(reject);
@@ -73,7 +75,7 @@ function checkToolIntegrity() {
                     setBarPercent(100, 100);
                     log.info('Version check failed');
                     log.error(err);
-                    resolve();
+                    resolve('Version check failed');
                     // Try to redownload
                     // redownloadTool()
                     //     .then(resolve)
@@ -82,7 +84,7 @@ function checkToolIntegrity() {
         } else {
             log.verbose('Tool path undefined')
             setBarPercent(100, 100);
-            resolve();
+            resolve('Tool path undefined');
         }
     });
 }
@@ -93,16 +95,16 @@ let loadingTasks = [
 
 setTimeout(() => {
     Promise.all(loadingTasks)
-    .then((res) => {
-        // Settle timeout
-        setTimeout(() => {
-            log.verbose('Loading done');
-            ipcRenderer.send('loadingDone');
-        }, 1000);
-    })
-    .catch((err) => {
-        ipcRenderer.send('mainPrint', err);
-    });
+        .then((res) => {
+            // Settle timeout
+            setTimeout(() => {
+                log.verbose('Loading done');
+                ipcRenderer.send('loadingDone');
+            }, 1000);
+        })
+        .catch((err) => {
+            ipcRenderer.send('mainPrint', err);
+        });
 }, 2000);
 
 

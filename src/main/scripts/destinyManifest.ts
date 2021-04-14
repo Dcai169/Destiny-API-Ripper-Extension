@@ -32,7 +32,7 @@ export function getDestiny1ItemDefinitions(locale = 'en'): Promise<Map<number, D
                     }
                 }
                 // Sort into a Map Object
-                let items = Object.values(destiny1ItemDefinitions);
+                let items = Object.values(destiny1ItemDefinitions).sort((a: Destiny1Item, b: Destiny1Item) => { return a.index - b.index });
                 let destiny1ItemMap = new Map<number, any>();
                 items.forEach((item: Destiny1Item) => {
                     destiny1ItemMap.set(item.hash, item);

@@ -41,8 +41,8 @@ function loadItems(itemMap: Map<number, any>): void {
     itemContainer.empty();
     log.silly('Queue cleared');
     queue.empty();
-
     log.debug(`${itemMap.size} items indexed`);
+
     itemMap.forEach((item) => {
         if (gameSelector.value === '2') {
             itemContainer.append(createD2ItemTile(item));

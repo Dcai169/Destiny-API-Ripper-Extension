@@ -1,11 +1,11 @@
 // import * as log from 'electron-log';
 
 function searchVisibility(jqueryObj: JQuery) {
-    return ((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase()) : true);
+    return ((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase() ? jqueryObj.attr('name')?.toLowerCase().includes((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase()) : true);
 }
 
 function filterVisibility(jqueryObj: JQuery){
-    if (jqueryObj.eq(0).parents().attr('id') === 'extract-queue') {
+    if (jqueryObj.parents().attr('id') === 'extract-queue') {
         return true;
     } else {
         return [...document.getElementsByClassName('base-filter')].every((inputElem) => {

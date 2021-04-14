@@ -1,4 +1,4 @@
-import * as log from 'electron-log';
+// import * as log from 'electron-log';
 
 function searchVisibility(jqueryObj: JQuery) {
     return ((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes((document.getElementById('search-box') as HTMLInputElement).value.toLowerCase()) : true);
@@ -41,5 +41,3 @@ export function uiConsolePrint(text: string) {
         document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
     }
 }
-
-// module.exports = { setVisibility, updateUIInput, uiConsolePrint };

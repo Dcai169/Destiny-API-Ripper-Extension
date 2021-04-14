@@ -8,7 +8,7 @@ import { execFile } from 'child_process';
 
 import { GitHubAsset } from '../types/github';
 
-export async function getReleaseAsset() {
+export async function getReleaseAsset(): Promise<GitHubAsset | Error> {
     // Get releases
     return new Promise((resolve, reject) => {
         axios.default.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
@@ -22,7 +22,7 @@ export async function getReleaseAsset() {
     });
 }
 
-export async function extract7zip(archivePath: string) {
+export async function extract7zip(archivePath: string): Promise<Map<string, string> | Error> {
     return new Promise((resolve, reject) => {
         const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, { $bin: sevenBin.path7za, recursive: true });
 
@@ -44,11 +44,11 @@ export function toolVersion(toolPath: string): Promise<{ stdout: string, stderr:
     });
 }
 
-export function findExecutable(binPath: string): fs.Dirent | null {
+export function findExecutable(binPath: string): fs.Dirent {
     for (const file of fs.readdirSync(binPath, { withFileTypes: true })) {
         if (file.isFile() && (is.windows ? file.name.split('.').pop() === 'exe' : (file.name.includes('-v') && file.name.split('.').length === 1))) {
             return file;
         }
     }
-    return null;
+    return new fs.Dirent();
 }

@@ -78,7 +78,7 @@ export const userPreferences = new Store({
         },
         "locale": {
             type: 'string',
-            enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ka', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
+            enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ko', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
             default: 'en'
         },
         "aggregateOutput": {

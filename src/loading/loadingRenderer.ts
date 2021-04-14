@@ -15,17 +15,17 @@ setInterval(() => {
     }
 }, 500);
 
-function redownloadTool(): Promise<string | Error> {
-    log.debug('Tool redownload initiated');
-    return new Promise((resolve, reject) => {
-        try {
-            // fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
-            // fs.mkdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
-        } catch (err) {
-            reject(err); // No r/w permission
-        }
-    });
-}
+// function redownloadTool(): Promise<string | Error> {
+//     log.debug('Tool redownload initiated');
+//     return new Promise((resolve, reject) => {
+//         try {
+//             // fs.rmdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
+//             // fs.mkdirSync(path.parse(userPreferences.get('toolPath')).dir, { recursive: true });
+//         } catch (err) {
+//             reject(err); // No r/w permission
+//         }
+//     });
+// }
 
 function setBarPercent(percent: number, delay = 0) {
     setInterval(() => {

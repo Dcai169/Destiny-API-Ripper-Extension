@@ -10,7 +10,7 @@ import { createD1ItemTile, createD2ItemTile, addItemToContainer } from './script
 import { setVisibility, updateUIInput, uiConsolePrint } from './scripts/uiUtils.js';
 import { executeButtonClickHandler } from './scripts/toolWrapper.js';
 import { baseFilterClickHandler, compositeFilterClickHandler, updateItems } from './scripts/filterMenus.js';
-import { userPreferences } from '../userPreferences';
+import { userPreferences } from './../userPreferences';
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -19,20 +19,21 @@ let gameSelector = document.getElementById('gameSelector') as HTMLInputElement;
 
 let searchDebounceTimeout: NodeJS.Timeout;
 let reloadRequired = false;
-let itemMap = {
-    '1': {
+let itemMap = [
+    {
         get: getDestiny1ItemDefinitions,
-        items: Map
-    },
-    '2': {
+        items: new Map()
+    }, 
+    {
         get: getDestiny2ItemDefinitions,
-        items: Map
+        items: new Map()
     }
-};
+]
+
 
 uiConsolePrint(`DARE v${api.app.getVersion()}`);
 
-function loadItems(itemMap: Map<number, any>) {
+function loadItems(itemMap: Map<number, any>): void {
     log.silly('Container cleared');
     itemContainer.empty();
     log.silly('Queue cleared');
@@ -66,12 +67,12 @@ function searchBoxInputHandler(event: Event) {
     }, 400);
 }
 
-function gameSelectorChangeListener() {
-    if (itemMap[gameSelector.value].items) {
-        loadItems(itemMap[gameSelector.value].items);
+function gameSelectorChangeListener(): void {
+    if (itemMap[parseInt(gameSelector.value)].items && itemMap[parseInt(gameSelector.value)].items.size) {
+        loadItems(itemMap[parseInt(gameSelector.value)].items);
     } else {
-        itemMap[gameSelector.value].get(userPreferences.get('locale')).then((res: Map<number, any>) => {
-            itemMap[gameSelector.value].items = res;
+        itemMap[parseInt(gameSelector.value)].get((userPreferences.get('locale') as string)).then((res: Map<number, any>) => {
+            itemMap[parseInt(gameSelector.value)].items = res;
             loadItems(res);
         });
     }
@@ -82,15 +83,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
     for (const [key, value] of userPreferences) {
         // log.debug(`${key}: ${value} (${typeof value})`);
         updateUIInput(key, value);
-    } 
+    }
 
     // Load items
-    if (!itemMap[gameSelector.value].items) {
-        itemMap[gameSelector.value].get(userPreferences.get('locale')).then((res: Map<number, any>) => {
-            itemMap[gameSelector.value].items = res;
-            loadItems(res);
-        });
-    }
+    gameSelectorChangeListener();
 });
 
 // Navbar items
@@ -138,7 +134,7 @@ ipcRenderer.on('selectToolPath-reply', (_, args) => {
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {
     if (args) {
-        loadItems(itemMap[gameSelector.value].items);
+        loadItems(itemMap[parseInt(gameSelector.value)].items);
     }
 });
 

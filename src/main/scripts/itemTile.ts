@@ -1,5 +1,5 @@
 import { setVisibility } from './uiUtils.js';
-import { evaluateReplace } from './evaluateReplace.js';
+// import { evaluateReplace } from './evaluateReplace.js';
 import * as log from 'electron-log';
 
 import { Destiny1Item } from './../../types/destiny1';
@@ -121,9 +121,6 @@ export function createD1ItemTile(item: Destiny1Item) {
     return tileRoot;
 }
 
-
-
-
 function itemTileClickHandler(event: Event): void {
     let clicked = $(event.currentTarget) as JQuery<HTMLElement>;
     switch ($(event.currentTarget).eq(0).parents().attr('id')) {
@@ -180,5 +177,3 @@ function closest(searchTarget: any, targetList: any[]) {
         return (Math.abs(curr - searchTarget) < Math.abs(prev - searchTarget) ? curr : prev);
     });
 }
-
-// module.exports = { createItemTile, addItemToContainer };

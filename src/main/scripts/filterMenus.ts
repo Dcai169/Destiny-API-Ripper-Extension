@@ -1,5 +1,5 @@
 import { setVisibility } from './uiUtils.js';
-import * as log from 'electron-log';
+// import * as log from 'electron-log';
 
 function getFilterState() {
     let binState = '';
@@ -149,5 +149,3 @@ function updateCompositeCheckboxes(binState: string) {
             break;
     }
 }
-
-// module.exports = { baseFilterClickHandler, compositeFilterClickHandler, updateItems };

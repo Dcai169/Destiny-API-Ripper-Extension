@@ -9,7 +9,8 @@
       "moduleResolution": "node",
 
       "noImplicitReturns": true,
-      "noImplicitAny": false,
+      "noUnusedLocals": true,
+      "noImplicitAny": true,
       "removeComments": true,
 
       "declaration": true,

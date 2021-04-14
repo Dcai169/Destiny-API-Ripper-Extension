@@ -9,7 +9,7 @@ const baseUrl = 'https://bungie.net';
 const blacklistedDestiny1Hashes = [4248210736]; // Default Shader
 const blacklistedDestiny2Hashes = [4248210736, 2426387438, 2931483505, 1959648454, 702981643, 2325217837, 2965439266, 4236468733, 2699000684, 1702504372, 3344732822, 2912265353, 4143534670, 873770815, 3367964921, 4089988225, 811724212, 3054638345, 463166592, 3507818312, 3835954362, 1339405989, 3807544519, 834178986, 839740147, 577345565, 574694085, 2039333456, 60802325, 3031612900, 2449203932, 242730894, 3735037521, 558870048, 2419910641, 2552954151, 2251060291, 3692806198];
 
-export function getDestiny1ItemDefinitions(locale = 'en') {
+export function getDestiny1ItemDefinitions(locale = 'en'): Promise<Map<number, Destiny1Item>> {
     return new Promise((resolve, reject) => {
         let destiny1ItemDefinitions: Destiny1Item[] = [];
         // Send GET request to manifest server
@@ -42,9 +42,9 @@ export function getDestiny1ItemDefinitions(locale = 'en') {
     });
 }
 
-export function getDestiny2ItemDefinitions(locale = 'en') {
+export function getDestiny2ItemDefinitions(locale = 'en'): Promise<Map<number, Destiny2Item>> {
     return new Promise((resolve, reject) => {
-        let destiny2ItemDefinitions:Destiny2Item[] = [];
+        let destiny2ItemDefinitions: Destiny2Item[] = [];
         // Send GET request to manifest server
         axios.default.get(baseUrl + '/Platform/Destiny2/Manifest/', { headers: { 'X-API-Key': process.env.API_KEY } })
             .then((res) => {
@@ -74,10 +74,8 @@ export function getDestiny2ItemDefinitions(locale = 'en') {
     });
 }
 
-function arrayEquals(a: any[], b: any[]) {
+function arrayEquals(a: any[], b: any[]): boolean {
     return Array.isArray(a) && Array.isArray(b) && // both are Arrays
         a.length === b.length && // Same length
         a.every((val, index) => val === b[index]); // each value is the same
 }
-
-// module.exports = { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions };

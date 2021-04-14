@@ -66,18 +66,17 @@ export function executeButtonClickHandler() {
             
                     execute(gameSelector.value, itemHashes);
                 } else {
-                    uiConsolePrint('No internet connection detected');
+                    uiConsolePrint('No internet connection detected.');
                     hideLoading();
                 }
             } else if (res.stderr) {
-                uiConsolePrint('DCG inoperable');
+                uiConsolePrint('DCG version could not be determined.');
+                uiConsolePrint(`Error: ${res.stderr}`);
                 hideLoading();
             }
         })
         .catch(() => {
-            uiConsolePrint('DCG inoperable');
+            uiConsolePrint('DCG inoperable.');
             hideLoading();
         });
 }
-
-// module.exports = { executeButtonClickHandler };

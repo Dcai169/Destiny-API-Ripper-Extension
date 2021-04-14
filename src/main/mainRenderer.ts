@@ -21,9 +21,12 @@ let searchDebounceTimeout: NodeJS.Timeout;
 let reloadRequired = false;
 let itemMap = [
     {
+
+    },
+    {
         get: getDestiny1ItemDefinitions,
         items: new Map()
-    }, 
+    },
     {
         get: getDestiny2ItemDefinitions,
         items: new Map()

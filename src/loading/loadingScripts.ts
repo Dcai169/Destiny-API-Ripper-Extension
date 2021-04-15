@@ -39,7 +39,7 @@ export function toolVersion(toolPath: string): Promise<{ stdout: string, stderr:
                 resolve({ stdout, stderr });
             });
         } catch (err) {
-            reject(err);
+            reject({stdout: null, stderr: err});
         }
     });
 }

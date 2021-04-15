@@ -36,7 +36,7 @@ function defaultToolPath(): string {
         fs.mkdirSync(toolDirectory);
     } catch (err) {
         if (err.code === "EEXIST") {
-            if (findExecutable(toolDirectory)) {
+            if (findExecutable(toolDirectory).name) {
                 toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
             }
         } else {

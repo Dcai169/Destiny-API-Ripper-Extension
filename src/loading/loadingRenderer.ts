@@ -33,7 +33,7 @@ function setBarPercent(percent: number, delay = 0) {
     }, delay);
 }
 
-function checkToolIntegrity(): Promise<GitHubAsset | string> {
+function checkToolIntegrity(): Promise<GitHubAsset | Error> {
     setBarPercent(20, 100);
     log.info('Checking tool integrity');
     return new Promise((resolve, reject) => {
@@ -65,7 +65,7 @@ function checkToolIntegrity(): Promise<GitHubAsset | string> {
                             .catch(reject);
                     } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
                         log.info('Tool does not recognize -v');
-                        resolve('Tool does not recognize -v');
+                        resolve(Error('Tool does not recognize -v'));
                         // redownloadTool()
                         //     .then(resolve)
                         //     .catch(reject);
@@ -74,8 +74,8 @@ function checkToolIntegrity(): Promise<GitHubAsset | string> {
                 .catch((err) => { // Will be called if tool is broken
                     setBarPercent(100, 100);
                     log.info('Version check failed');
-                    log.error(err);
-                    resolve('Version check failed');
+                    log.error(err.stderr);
+                    resolve(Error('Version check failed'));
                     // Try to redownload
                     // redownloadTool()
                     //     .then(resolve)
@@ -84,7 +84,7 @@ function checkToolIntegrity(): Promise<GitHubAsset | string> {
         } else {
             log.verbose('Tool path undefined')
             setBarPercent(100, 100);
-            resolve('Tool path undefined');
+            resolve(Error('Tool path undefined'));
         }
     });
 }

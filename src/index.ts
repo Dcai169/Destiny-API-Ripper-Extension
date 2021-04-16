@@ -1,10 +1,10 @@
 import { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } from 'electron';
 import * as log from 'electron-log';
 import * as store from 'electron-store';
-import { debugInfo } from 'electron-util';
+import { debugInfo, is } from 'electron-util';
 import { download } from 'electron-dl';
 import { extract7zip, findExecutable } from './loading/loadingScripts';
-import { logError } from './userPreferences';
+import { logError, userPreferences } from './userPreferences';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -209,16 +209,16 @@ ipcMain.on('loadingDone', (event, args) => {
 
 ipcMain.on('dlPing', (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
+        download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
     }
 });
 
 ipcMain.on('selectOutputPath', (event) => {
-    event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
+    event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', buttonLabel: 'Select', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent', 'showHiddenFiles'], defaultPath: (userPreferences.get('outputPath') as string) }))
 });
 
 ipcMain.on('selectToolPath', (event) => {
-    event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+    event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', buttonLabel: 'Select', filters: [{ name: 'Executable Files', extensions: [(is.windows ? 'exe' : '')] }], properties: ['openFile', 'dontAddToRecent', 'showHiddenFiles'], defaultPath: (userPreferences.get('toolPath') as string) }))
 });
 
 ipcMain.on('restart', (_, args) => {

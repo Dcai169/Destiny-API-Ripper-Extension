@@ -8,6 +8,8 @@ import { logError } from './userPreferences';
 import * as fs from 'fs';
 import * as path from 'path';
 
+// import { GitHubAsset } from './types/github';
+
 store.initRenderer();
 log.info(debugInfo());
 
@@ -156,7 +158,7 @@ app.on('activate', () => {
 function dlDoneCallback(res: { path: string, [key: string]: any }) {
     let archivePath = res.path;
     let binDir = path.parse(archivePath).dir;
-    extract7zip(res.path).then((res) => {
+    extract7zip(archivePath).then((res) => {
         let toolPath = path.join(binDir, findExecutable(binDir).name);
         fs.unlink(archivePath, () => {
             fs.chmod(toolPath, 0o744, () => {
@@ -167,6 +169,37 @@ function dlDoneCallback(res: { path: string, [key: string]: any }) {
         });
     }).catch(logError);
 }
+
+// function redownloadTool() {
+//     log.debug('Tool redownload initiated');
+//     let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
+
+//     fs.rmdirSync(toolDirectory, { recursive: true });
+//     fs.mkdirSync(toolDirectory);
+
+//     getReleaseAsset()
+//         .then((res: GitHubAsset) => {
+//             log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
+//             download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory, saveAs: false })
+//                 .then((res) => {
+//                     res.on('done', (event) => {
+//                         let binDir = path.parse(res.getSavePath()).dir;
+//                         let archivePath = res.getSavePath();
+//                         extract7zip(archivePath).then((res) => {
+//                             let toolPath = path.join(binDir, findExecutable(binDir).name);
+//                             fs.unlink(archivePath, () => {
+//                                 fs.chmod(toolPath, 0o744, () => {
+//                                     setTimeout(() => {
+//                                         BrowserWindow.getFocusedWindow().webContents.send('updateRequest-reply', toolPath);
+//                                     }, 200);
+//                                 });
+//                             });
+//                         }).catch(logError);
+//                     });
+//                 })
+//                 .catch(logError);
+//         }).catch(logError);
+// }
 
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
@@ -186,6 +219,19 @@ ipcMain.on('selectOutputPath', (event) => {
 
 ipcMain.on('selectToolPath', (event) => {
     event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+});
+
+ipcMain.on('restart', (_, args) => {
+    if (args) {
+        app.relaunch();
+        app.exit();
+    }
+});
+
+ipcMain.on('updateRequest', (_, args) => {
+    let binDir = path.parse(args).dir
+    fs.rmdirSync(binDir, { recursive: true });
+    fs.mkdirSync(binDir);
 });
 
 ipcMain.on('openExplorer', (_, args) => {

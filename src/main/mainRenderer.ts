@@ -2,6 +2,7 @@
 import { api } from 'electron-util';
 import { ipcRenderer } from 'electron';
 import * as log from 'electron-log';
+import * as path from 'path';
 // const os = require('os');
 
 // Script imports
@@ -11,6 +12,8 @@ import { setVisibility, updateUIInput, uiConsolePrint } from './scripts/uiUtils.
 import { executeButtonClickHandler } from './scripts/toolWrapper.js';
 import { baseFilterClickHandler, compositeFilterClickHandler, updateItems } from './scripts/filterMenus.js';
 import { userPreferences } from './../userPreferences';
+import { toolVersion, getReleaseAsset } from './../loading/loadingScripts';
+import { GitHubAsset } from 'src/types/github.js';
 
 // Document Objects
 let itemContainer = $('#item-container');
@@ -18,8 +21,8 @@ let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector') as HTMLInputElement;
 
 let searchDebounceTimeout: NodeJS.Timeout;
-let loadingDotsTimeout: NodeJS.Timeout;
 let reloadRequired = false;
+let restartRequired = false;
 let itemMap = [
     {
 
@@ -82,6 +85,14 @@ function gameSelectorChangeListener(): void {
     }
 }
 
+function signalUpdate() {
+    ipcRenderer.send('updateRequest', userPreferences.get('toolPath'));
+    document.getElementById('update-button').setAttribute('disabled', 'disabled');
+    userPreferences.delete('toolPath');
+    restartRequired = true;
+    $('#modal-close-button').text('Restart');
+}
+
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for (const [key, value] of userPreferences) {
@@ -106,20 +117,22 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
-// document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
 document.getElementById('update-button').addEventListener('click', (event) => {
-    ipcRenderer.send('updateRequest');
-    document.getElementById('update-button').setAttribute('disabled', 'disabled');
-    if (!loadingDotsTimeout) {
-        loadingDotsTimeout = setInterval(() => {
-            let loadingDots = document.getElementById('loading-dots');
-            if (loadingDots.innerText.length < 3) {
-                loadingDots.innerText += '.';
+    toolVersion((userPreferences.get('toolPath') as string))
+        .then((res) => {
+            if (!res.stderr) {
+                let version = res.stdout.substring(0, 5);
+                getReleaseAsset()
+                    .then((res: GitHubAsset) => {
+                        if (version !== path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
+                            signalUpdate();
+                        }
+                    });
             } else {
-                loadingDots.innerText = '';
+                signalUpdate();
             }
-        }, 500);
-    }
+        });
 });
 
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
@@ -131,7 +144,9 @@ document.getElementById('locale').addEventListener('change', () => {
 });
 
 document.getElementById('modal-close-button').addEventListener('click', () => {
-    if (reloadRequired) {
+    if (restartRequired) {
+        ipcRenderer.send('restart', true);
+    } else if (reloadRequired) {
         document.location.reload();
         reloadRequired = false;
     }
@@ -144,18 +159,11 @@ ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     }
 });
 
-// ipcRenderer.on('selectToolPath-reply', (_, args) => {
-//     if (args) {
-//         userPreferences.set('toolPath', args[0]);
-//         (document.getElementById('toolPath') as HTMLInputElement).value = args[0];
-//     }
-// });
-
-ipcRenderer.on('updateRequest-reply', () => {
-    clearInterval(loadingDotsTimeout);
-    updateUIInput('toolPath', userPreferences.get('toolPath'));
-    document.getElementById('loading-dots').innerText = '';
-    document.getElementById('update-button').removeAttribute('disabled');
+ipcRenderer.on('selectToolPath-reply', (_, args) => {
+    if (args) {
+        userPreferences.set('toolPath', args[0]);
+        (document.getElementById('toolPath') as HTMLInputElement).value = args[0];
+    }
 });
 
 // Keyboard shortcuts

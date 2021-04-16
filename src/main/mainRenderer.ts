@@ -18,6 +18,7 @@ let queue = $('#extract-queue');
 let gameSelector = document.getElementById('gameSelector') as HTMLInputElement;
 
 let searchDebounceTimeout: NodeJS.Timeout;
+let loadingDotsTimeout: NodeJS.Timeout;
 let reloadRequired = false;
 let itemMap = [
     {
@@ -106,6 +107,21 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 // document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('update-button').addEventListener('click', (event) => {
+    ipcRenderer.send('updateRequest');
+    document.getElementById('update-button').setAttribute('disabled', 'disabled');
+    if (!loadingDotsTimeout) {
+        loadingDotsTimeout = setInterval(() => {
+            let loadingDots = document.getElementById('loading-dots');
+            if (loadingDots.innerText.length < 3) {
+                loadingDots.innerText += '.';
+            } else {
+                loadingDots.innerText = '';
+            }
+        }, 500);
+    }
+});
+
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', (document.getElementById('aggregateOutput') as HTMLInputElement).checked) });
 document.getElementById('locale').addEventListener('change', () => {
@@ -113,6 +129,7 @@ document.getElementById('locale').addEventListener('change', () => {
     $('#modal-close-button').text('Reload');
     userPreferences.set('locale', (document.getElementById('locale') as HTMLInputElement).value);
 });
+
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
         document.location.reload();
@@ -133,6 +150,13 @@ ipcRenderer.on('selectOutputPath-reply', (_, args) => {
 //         (document.getElementById('toolPath') as HTMLInputElement).value = args[0];
 //     }
 // });
+
+ipcRenderer.on('updateRequest-reply', () => {
+    clearInterval(loadingDotsTimeout);
+    updateUIInput('toolPath', userPreferences.get('toolPath'));
+    document.getElementById('loading-dots').innerText = '';
+    document.getElementById('update-button').removeAttribute('disabled');
+});
 
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {

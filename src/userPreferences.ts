@@ -31,13 +31,12 @@ function defaultOutputPath(): string {
 
 function defaultToolPath(): string {
     let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
-    let toolPath = "";
     try {
         fs.mkdirSync(toolDirectory);
     } catch (err) {
         if (err.code === "EEXIST") {
             if (findExecutable(toolDirectory).name) {
-                toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
+                return path.join(toolDirectory, findExecutable(toolDirectory).name);
             }
         } else {
             logError(err);
@@ -45,24 +44,19 @@ function defaultToolPath(): string {
         }
     }
 
-    if (!toolPath) {
-        getReleaseAsset()
-            .then((res: GitHubAsset) => {
-                if (ipcRenderer) {
-                    log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-                    ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
-                    ipcRenderer.once('dlPing-reply', (_, args) => {
-                        return args;
-                    });
-                }
-            }).catch((err) => {
-                logError(err);
-                return '';
-                // throw err;
-            });
-    } else {
-        return toolPath;
-    }
+    getReleaseAsset()
+        .then((res: GitHubAsset) => {
+            if (ipcRenderer) {
+                log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
+                ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
+                ipcRenderer.once('dlPing-reply', (_, args) => {
+                    return args;
+                });
+            }
+        }).catch((err) => {
+            logError(err);
+            return '';
+        });
     return '';
 }
 

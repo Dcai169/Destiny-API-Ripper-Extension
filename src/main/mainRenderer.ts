@@ -119,13 +119,16 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
 document.getElementById('update-button').addEventListener('click', (event) => {
+    log.silly('Update button clicked');
     toolVersion((userPreferences.get('toolPath') as string))
         .then((res) => {
             if (!res.stderr) {
                 let version = res.stdout.substring(0, 5);
+                log.debug(`Tool Version v${version}`);
                 getReleaseAsset()
                     .then((res: GitHubAsset) => {
                         if (version !== path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
+                            log.debug(`Downloading ${res.browser_download_url}`);
                             signalUpdate();
                         }
                     });

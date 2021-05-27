@@ -118,24 +118,21 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
 document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
-document.getElementById('update-button').addEventListener('click', (event) => {
+document.getElementById('update-button').addEventListener('click', async (event) => {
     log.silly('Update button clicked');
-    toolVersion((userPreferences.get('toolPath') as string))
-        .then((res) => {
-            if (!res.stderr) {
-                let version = res.stdout.substring(0, 5);
-                log.debug(`Tool Version v${version}`);
-                getReleaseAsset()
-                    .then((res: GitHubAsset) => {
-                        if (version !== path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
-                            log.debug(`Downloading ${res.browser_download_url}`);
-                            signalUpdate();
-                        }
-                    });
-            } else {
-                signalUpdate();
-            }
-        });
+    let res = await toolVersion((userPreferences.get('toolPath') as string));
+    if (!res.stderr) {
+        let version = res.stdout.substring(0, 5);
+        getReleaseAsset()
+            .then((res: GitHubAsset) => {
+                if (version !== path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
+                    log.debug(`Downloading ${res.browser_download_url}`);
+                    signalUpdate();
+                }
+            });
+    } else {
+        signalUpdate();
+    }
 });
 
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })

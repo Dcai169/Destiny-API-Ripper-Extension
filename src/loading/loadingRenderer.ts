@@ -3,7 +3,6 @@ import { ipcRenderer } from 'electron';
 import * as log from 'electron-log';
 import { getReleaseAsset, toolVersion } from './loadingScripts.js';
 import { userPreferences } from './../userPreferences.js';
-
 import { GitHubAsset } from './../types/github';
 
 setInterval(() => {
@@ -21,58 +20,40 @@ function setBarPercent(percent: number, delay = 0) {
     }, delay);
 }
 
-function checkToolIntegrity(): Promise<GitHubAsset | Error> {
-    setBarPercent(20, 100);
+async function checkToolIntegrity(): Promise<string> {
     log.info('Checking tool integrity');
-    return new Promise((resolve, reject) => {
-        setBarPercent(40, 100);
+    return new Promise(async (resolve, reject) => {
         if (userPreferences.get('toolPath')) {
             log.verbose(`Checking tool at ${userPreferences.get('toolPath')}`);
-            toolVersion((userPreferences.get('toolPath') as string))
-                .then((res) => {
-                    setBarPercent(60, 100);
-                    if (!res.stderr) {
-                        setBarPercent(80, 100);
-                        let version = res.stdout.substring(0, 5);
-                        log.info(`Local Version: ${version}`);
-                        getReleaseAsset()
-                            .then((res: GitHubAsset) => {
-                                // check for updates
-                                if (version === path.parse(res.browser_download_url).dir.split('/').pop().substring(1)) {
-                                    log.info('DCG is up to date');
-                                } else {
-                                    log.info('DCG is not the most recent');
-                                    log.info(`Newest version is ${path.parse(res.browser_download_url).dir.split('/').pop().substring(1)}`);
-                                    // redownloadTool()
-                                    //     .then(resolve)
-                                    //     .catch(reject);
-                                }
-                                setBarPercent(100, 100);
-                                resolve(res);
-                            })
-                            .catch(reject);
-                    } else { // --version does not work; Will be called if tool is between version 1.5.1 and 1.6.2
-                        log.info('Tool does not recognize -v');
-                        resolve(Error('Tool does not recognize -v'));
-                        // redownloadTool()
-                        //     .then(resolve)
-                        //     .catch(reject);
-                    }
-                })
-                .catch((err) => { // Will be called if tool is broken
-                    setBarPercent(100, 100);
-                    log.info('Version check failed');
-                    log.error(err.stderr);
-                    resolve(Error('Version check failed'));
-                    // Try to redownload
-                    // redownloadTool()
-                    //     .then(resolve)
-                    //     .catch(reject);
-                });
+            let res = await toolVersion((userPreferences.get('toolPath') as string));
+            if (!res.stderr) {
+                resolve(res.stdout.substring(0, 5));
+            } else {
+                reject(res.stderr);
+            }
         } else {
             log.verbose('Tool path undefined')
-            setBarPercent(100, 100);
-            resolve(Error('Tool path undefined'));
+            reject(Error('Tool path undefined'));
+        }
+    });
+}
+
+async function updateTool(): Promise<GitHubAsset> {
+    return new Promise(async (resolve, reject) => {
+        let res = await toolVersion((userPreferences.get('toolPath') as string));
+        if (!res.stderr) {
+            let version = res.stdout.substring(0, 5);
+            log.info(`Local Version: ${version}`);
+            let latest = await getReleaseAsset();
+            if (version === path.parse(latest.browser_download_url).dir.split('/').pop().substring(1)) {
+                log.info('DCG is up to date');
+            } else {
+                log.info('DCG is not the most recent');
+                log.info(`Newest version is ${path.parse(latest.browser_download_url).dir.split('/').pop().substring(1)}`);
+            }
+            resolve(latest);
+        } else {
+            reject(Error('Version check failed'));
         }
     });
 }

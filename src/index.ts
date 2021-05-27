@@ -7,7 +7,7 @@ import { extract7zip, findExecutable } from './loading/loadingScripts';
 import { logError, userPreferences } from './userPreferences';
 import * as fs from 'fs';
 import * as path from 'path';
-
+import { downloadRes } from './types/downloadRes';
 // import { GitHubAsset } from './types/github';
 
 store.initRenderer();
@@ -155,7 +155,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-function dlDoneCallback(res: { path: string, [key: string]: any }) {
+function dlDoneCallback(res: downloadRes) {
     let archivePath = res.path;
     let binDir = path.parse(archivePath).dir;
     extract7zip(archivePath).then((res) => {
@@ -163,43 +163,12 @@ function dlDoneCallback(res: { path: string, [key: string]: any }) {
         fs.unlink(archivePath, () => {
             fs.chmod(toolPath, 0o744, () => {
                 setTimeout(() => {
-                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
+                    BrowserWindow.getFocusedWindow().webContents.send('dlFinish', toolPath);
                 }, 200);
             });
         });
     }).catch(logError);
 }
-
-// function redownloadTool() {
-//     log.debug('Tool redownload initiated');
-//     let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
-
-//     fs.rmdirSync(toolDirectory, { recursive: true });
-//     fs.mkdirSync(toolDirectory);
-
-//     getReleaseAsset()
-//         .then((res: GitHubAsset) => {
-//             log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-//             download(BrowserWindow.getFocusedWindow(), res.browser_download_url, { directory: toolDirectory, saveAs: false })
-//                 .then((res) => {
-//                     res.on('done', (event) => {
-//                         let binDir = path.parse(res.getSavePath()).dir;
-//                         let archivePath = res.getSavePath();
-//                         extract7zip(archivePath).then((res) => {
-//                             let toolPath = path.join(binDir, findExecutable(binDir).name);
-//                             fs.unlink(archivePath, () => {
-//                                 fs.chmod(toolPath, 0o744, () => {
-//                                     setTimeout(() => {
-//                                         BrowserWindow.getFocusedWindow().webContents.send('updateRequest-reply', toolPath);
-//                                     }, 200);
-//                                 });
-//                             });
-//                         }).catch(logError);
-//                     });
-//                 })
-//                 .catch(logError);
-//         }).catch(logError);
-// }
 
 ipcMain.on('loadingDone', (event, args) => {
     createMainWindow();
@@ -207,7 +176,7 @@ ipcMain.on('loadingDone', (event, args) => {
     log.verbose('Loading window destroyed');
 });
 
-ipcMain.on('dlPing', (event, { url, dlPath }) => {
+ipcMain.on('dlStart', (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
         download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
     }

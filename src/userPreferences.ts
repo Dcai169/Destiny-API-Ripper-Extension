@@ -48,8 +48,8 @@ function defaultToolPath(): string {
         .then((res: GitHubAsset) => {
             if (ipcRenderer) {
                 log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-                ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
-                ipcRenderer.once('dlPing-reply', (_, args) => {
+                ipcRenderer.send('dlStart', { url: res.browser_download_url, dlPath: toolDirectory });
+                ipcRenderer.once('dlFinish', (_, args) => {
                     return args;
                 });
             }

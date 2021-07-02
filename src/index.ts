@@ -2,12 +2,11 @@ import { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } from 'elec
 import * as log from 'electron-log';
 import * as store from 'electron-store';
 import { debugInfo, is } from 'electron-util';
-import { download } from 'electron-dl';
+import { download, File } from 'electron-dl';
 import { extract7zip, findExecutable } from './loading/loadingScripts';
 import { logError, userPreferences } from './userPreferences';
 import * as fs from 'fs';
 import * as path from 'path';
-import { downloadRes } from './types/downloadRes';
 // import { GitHubAsset } from './types/github';
 
 store.initRenderer();
@@ -155,7 +154,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-function dlDoneCallback(res: downloadRes) {
+function dlDoneCallback(res: File) {
     let archivePath = res.path;
     let binDir = path.parse(archivePath).dir;
     extract7zip(archivePath).then((res) => {

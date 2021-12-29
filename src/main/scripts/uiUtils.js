@@ -1,32 +1,33 @@
 const log = require('electron-log');
 
-function searchVisibility(jqueryObj) {
-    return (document.getElementById('search-box').value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
+function searchVisibility(element) {
+    return (document.getElementById('search-box').value.toLowerCase() ? element.getAttribute('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
 }
 
-function filterVisibility(jqueryObj){
-    if (jqueryObj.eq(0).parents().attr('id') === 'extract-queue') {
+function filterVisibility(element) {
+    if (element.parentElement.id === 'extract-queue') {
         return true;
     } else {
         return [...document.getElementsByClassName('base-filter')].every((inputElem) => {
-            return (jqueryObj.is(inputElem.dataset.selector) ? inputElem.checked : true);
+            return (element.matches(inputElem.dataset.selector) ? inputElem.checked : true);
         });
     }
 }
 
-function setVisibility(jqueryObj) {
-    let state = searchVisibility(jqueryObj) && filterVisibility(jqueryObj);
-    jqueryObj.removeClass((state ? 'hidden' : 'm-1')).addClass((state ? 'm-1' : 'hidden'));
+function setVisibility(element) {
+    let visibilityState = searchVisibility(element) && filterVisibility(element);
+    element.classList.remove((visibilityState ? 'hidden' : 'm-1'));
+    element.classList.add((visibilityState ? 'm-1' : 'hidden'));
 }
 
 function updateUIInput(elementId, value) {
     switch (typeof value) {
         case 'string':
-            $(`#${elementId}`).val(value);
+            document.getElementById(elementId).value = value;
             break;
 
         case 'boolean':
-            $(`#${elementId}`).prop('checked', !!value);
+            document.getElementById(elementId).value = !!value;
             break;
 
         default:

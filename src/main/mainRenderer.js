@@ -7,14 +7,14 @@ const log = require('electron-log');
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput, uiConsolePrint } = require('./scripts/uiUtils.js');
+const { setVisibility, updateUIInput: updateUIInputElements, uiConsolePrint } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
-let itemContainer = $('#item-container');
-let queue = $('#extract-queue');
+let itemContainer = document.getElementById('item-container');
+let queue = document.getElementById('extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
 let searchDebounceTimeout;
@@ -46,20 +46,22 @@ function loadItems(itemMap) {
 }
 
 function searchBoxInputHandler(event) {
-    window.clearTimeout(searchDebounceTimeout);
-
-    searchDebounceTimeout = setTimeout(() => {
-        if (event.target.value) {
-            log.silly(`Search: ${event.target.value.toLowerCase()}`);
-            // There's a bug in here; probably some sort of race condition issue
-            itemContainer.eq(0).children().each((_, element) => {
-                let item = $(element);
-                setVisibility(item);
-            });
-        } else {
-            [...document.getElementsByClassName('base-filter')].forEach(updateItems);
-        }
-    }, 400);
+    if (event.target.value) {
+        [...document.getElementById('item-container').children].forEach((element) => {
+            if (element.getAttribute('name').toLowerCase().includes(event.target.value.toLowerCase())) {
+                element.classList.remove('hidden');
+                element.classList.add('m-1');
+            } else {
+                element.classList.remove('m-1');
+                element.classList.add('hidden');
+            }
+        })
+    } else {
+        [...document.getElementById('item-container').children].forEach((element) => { // TODO: set visibility based on filter settings
+            element.classList.remove('hidden');
+            element.classList.add('m-1');
+        })
+    }
 }
 
 function gameSelectorChangeListener() {
@@ -77,8 +79,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
         // log.debug(`${key}: ${value} (${typeof value})`);
-        updateUIInput(key, value);
-    } 
+        updateUIInputElements(key, value);
+    }
 
     // Load items
     if (!itemMap[gameSelector.value].items) {
@@ -93,7 +95,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 gameSelector.addEventListener('change', gameSelectorChangeListener);
 [...document.getElementsByClassName('base-filter')].forEach((element) => { element.addEventListener('click', baseFilterClickHandler) });
 [...document.getElementsByClassName('composite-filter')].forEach((element) => { element.addEventListener('click', compositeFilterClickHandler) });
-document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); log.silly('Queue cleared.'); });
+document.getElementById('queue-clear-button').addEventListener('click', () => {
+    [...queue.children].forEach(item => { addItemToContainer(item); });
+    log.silly('Queue cleared.');
+});
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
@@ -107,9 +112,10 @@ document.getElementById('open-output').addEventListener('click', () => { ipcRend
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
-    $('#modal-close-button').text('Reload');
+    document.getElementById('modal-close-button').textContent = 'Reload';
     userPreferences.set('locale', document.getElementById('locale').value);
 });
+
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
         document.location.reload();

@@ -5,8 +5,9 @@ const { userPreferences } = require('./../../userPreferences.js');
 const { uiConsolePrint } = require('./uiUtils.js');
 
 function hideLoading() {
-    $('#loading-indicator').removeClass('p-1').addClass('hidden');
-    $('#queue-execute-button').removeAttr('disabled');
+    document.getElementById('loading-indicator').classList.remove('p-1');
+    document.getElementById('loading-indicator').classList.add('hidden');
+    document.getElementById('queue-execute-button').removeAttribute('disabled');
 }
 
 function updateUiDone(code) {
@@ -38,8 +39,9 @@ function runToolRecursive(game, itemHashes) {
 function execute(game, hashes) {
     log.info(`Hashes: ${hashes.join(' ')}`);
     // change DOM to reflect program state
-    $('#loading-indicator').removeClass('hidden').addClass('p-1');
-    $('#queue-execute-button').attr('disabled', 'disabled');
+    document.getElementById('queue-execute-button').setAttribute('disabled', 'disabled');
+    document.getElementById('loading-indicator').classList.remove('hidden');
+    document.getElementById('loading-indicator').classList.add('p-1');
 
     if (userPreferences.get('aggregateOutput')) {
         runTool(game, hashes).on('exit', (code) => {
@@ -58,9 +60,9 @@ function executeButtonClickHandler() {
             if (res.stdout) {
                 uiConsolePrint(`DCG v${res.stdout.substring(0, 5)}`);
                 if (navigator.onLine) {
-                    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
+                    let itemHashes = [...queue.childen].map(item => { return item.id });
                     uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
-            
+
                     execute(gameSelector.value, itemHashes);
                 } else {
                     uiConsolePrint('No internet connection detected');

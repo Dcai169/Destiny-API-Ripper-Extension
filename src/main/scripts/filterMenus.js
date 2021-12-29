@@ -19,7 +19,9 @@ function setFilterState(binState) {
 }
 
 function updateItems(inputElem) {
-    setVisibility($(`#item-container ${inputElem.dataset.selector}`));
+    [...document.querySelectorAll(`#item-container ${inputElem.dataset.selector}`)].forEach((item) => {
+        setVisibility(item);
+    });
 }
 
 function baseFilterClickHandler(event) {

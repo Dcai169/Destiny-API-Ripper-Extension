@@ -36,7 +36,7 @@ let schema = {
             try {
                 fs.mkdirSync(toolDirectory);
             } catch (err) {
-                if (err.code === "EEXIST") {
+                if (err.code === "EEXIST") { // Directory already exists
                     if (findExecutable(toolDirectory)) {
                         toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
                     }
@@ -64,7 +64,7 @@ let schema = {
     },
     "locale": {
         type: 'string',
-        enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ka', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
+        enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ko', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
         default: 'en'
     },
     "aggregateOutput": {

@@ -20,11 +20,11 @@ async function getReleaseAsset() {
     });
 }
 
-async function extract7zip(archivePath) {
+async function extract7zip(archivePath, progressCallback=() => {}) {
     return new Promise((resolve, reject) => {
         const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, { $bin: sevenBin.path7za, recursive: true });
 
-        extractorStream.on('progress', (progress) => { });
+        extractorStream.on('progress', progressCallback);
         extractorStream.on('error', reject);
         extractorStream.on('end', () => { resolve(extractorStream.info) });
     });

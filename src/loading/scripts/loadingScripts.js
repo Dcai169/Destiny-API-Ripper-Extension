@@ -30,16 +30,14 @@ async function extract7zip(archivePath, progressCallback=() => {}) {
     });
 }
 
-function toolVersion(toolPath) {
-    return new Promise((resolve, reject) => {
-        try {
-            execFile(toolPath, ['--version'], (_, stdout, stderr) => {
-                resolve({stdout, stderr});
-            });
-        } catch (err) {
-            reject(err);
-        }
-    });
+async function getDCGVersion(toolPath) {
+    try {
+        execFile(toolPath, ['--version'], (_, stdout, stderr) => {
+            return Promise.resolve({stdout, stderr});
+        });
+    } catch (err) {
+        return Promise.reject(err);
+    }
 }
 
 function findExecutable(binPath) {
@@ -50,4 +48,4 @@ function findExecutable(binPath) {
     }
 }
 
-module.exports = { extract7zip, getReleaseAsset, toolVersion, findExecutable };
+module.exports = { extract7zip, getReleaseAsset, toolVersion: getDCGVersion, findExecutable };

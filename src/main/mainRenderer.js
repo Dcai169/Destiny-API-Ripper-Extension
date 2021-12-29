@@ -33,12 +33,6 @@ let itemMap = {
 uiConsolePrint(`DARE v${api.app.getVersion()}`);
 
 function loadItems(itemMap) {
-    log.silly('Container cleared');
-    itemContainer.empty();
-    log.silly('Queue cleared');
-    queue.empty();
-
-    log.debug(`${itemMap.size} items indexed`);
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });

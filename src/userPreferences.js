@@ -70,6 +70,10 @@ let schema = {
     "aggregateOutput": {
         type: 'boolean',
         default: true
+    },
+    "preferredDCGVersion": { 
+        type: 'string',
+        default: 'latest'
     }
 }
 

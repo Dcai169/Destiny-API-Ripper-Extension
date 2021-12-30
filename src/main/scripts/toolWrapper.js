@@ -2,7 +2,7 @@ const { execFile } = require('child_process');
 const log = require('electron-log');
 const { toolVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
-const { uiConsolePrint } = require('./uiUtils.js');
+const { printConsoleOutput } = require('./uiUtils.js');
 
 function hideLoading() {
     document.getElementById('loading-indicator').classList.remove('p-1');
@@ -12,10 +12,10 @@ function hideLoading() {
 
 function updateUiDone(code) {
     hideLoading();
-    uiConsolePrint(`Done (Exit Code: ${code})`);
+    printConsoleOutput(`Done (Exit Code: ${code})`);
 }
 
-function runTool(game, hashes) {
+function runDCG(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes);
     let child = execFile(userPreferences.get('toolPath'), commandArgs, (err) => {
@@ -23,20 +23,20 @@ function runTool(game, hashes) {
             throw err;
         }
     });
-    child.stdout.on('data', uiConsolePrint);
-    child.stderr.on('data', uiConsolePrint);
+    child.stdout.on('data', printConsoleOutput);
+    child.stderr.on('data', printConsoleOutput);
 
     return child;
 }
 
-function runToolRecursive(game, itemHashes) {
+function runDCGRecursive(game, itemHashes) {
     if (itemHashes.length > 0) {
-        let child = runTool(game, [itemHashes.pop()]);
-        child.on('exit', (code) => { runToolRecursive(game, itemHashes) });
+        let child = runDCG(game, [itemHashes.pop()]);
+        child.on('exit', (code) => { runDCGRecursive(game, itemHashes) });
     }
 }
 
-function execute(game, hashes) {
+function executeQueue(game, hashes) {
     log.info(`Hashes: ${hashes.join(' ')}`);
     // change DOM to reflect program state
     document.getElementById('queue-execute-button').setAttribute('disabled', 'disabled');
@@ -44,12 +44,12 @@ function execute(game, hashes) {
     document.getElementById('loading-indicator').classList.add('p-1');
 
     if (userPreferences.get('aggregateOutput')) {
-        runTool(game, hashes).on('exit', (code) => {
+        runDCG(game, hashes).on('exit', (code) => {
             log.info(`Done (Exit Code: ${code})`)
             updateUiDone(code);
         });
     } else {
-        runToolRecursive(game, hashes);
+        runDCGRecursive(game, hashes);
         hideLoading();
     }
 }
@@ -58,23 +58,23 @@ function executeButtonClickHandler() {
     toolVersion(userPreferences.get('toolPath'))
         .then((res) => {
             if (res.stdout) {
-                uiConsolePrint(`DCG v${res.stdout.substring(0, 5)}`);
+                printConsoleOutput(`DCG v${res.stdout.substring(0, 5)}`);
                 if (navigator.onLine) {
                     let itemHashes = [...queue.childen].map(item => { return item.id });
-                    uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
+                    printConsoleOutput(`Hashes: ${itemHashes.join(' ')}`);
 
-                    execute(gameSelector.value, itemHashes);
+                    executeQueue(gameSelector.value, itemHashes);
                 } else {
-                    uiConsolePrint('No internet connection detected');
+                    printConsoleOutput('No internet connection detected');
                     hideLoading();
                 }
             } else {
-                uiConsolePrint('DCG inoperable');
+                printConsoleOutput('DCG inoperable');
                 hideLoading();
             }
         })
         .catch(() => {
-            uiConsolePrint('DCG inoperable');
+            printConsoleOutput('DCG inoperable');
             hideLoading();
         });
 }

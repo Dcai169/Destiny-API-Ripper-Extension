@@ -48,4 +48,4 @@ function findExecutable(binPath) {
     }
 }
 
-module.exports = { extract7zip, getReleaseAsset, toolVersion: getDCGVersion, findExecutable };
+module.exports = { extract7zip, getReleaseAsset, getDCGVersion, findExecutable };

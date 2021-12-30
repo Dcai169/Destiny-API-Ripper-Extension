@@ -7,7 +7,7 @@ const log = require('electron-log');
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput: updateUIInputElements, uiConsolePrint } = require('./scripts/uiUtils.js');
+const { setVisibility, setInputElemValue, printConsoleOutput } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
@@ -30,7 +30,7 @@ let itemMap = {
     }
 };
 
-uiConsolePrint(`DARE v${api.app.getVersion()}`);
+printConsoleOutput(`DARE v${api.app.getVersion()}`);
 
 function loadItems(itemMap) {
     itemMap.forEach((item) => {
@@ -73,7 +73,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
         // log.debug(`${key}: ${value} (${typeof value})`);
-        updateUIInputElements(key, value);
+        setInputElemValue(key, value);
     }
 
     // Load items

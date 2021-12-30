@@ -184,8 +184,8 @@ ipcMain.on('selectOutputPath', (event) => {
     event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
 });
 
-ipcMain.on('selectToolPath', (event) => {
-    event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.on('selectDCGPath', (event) => {
+    event.reply('selectDCGPath-reply', dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
 });
 
 ipcMain.on('openExplorer', (_, args) => {

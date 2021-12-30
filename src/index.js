@@ -12,10 +12,6 @@ let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
 store.initRenderer();
 log.info(debugInfo());
 
-// Update stuff
-// const updateServer = 'https://hazel-six-omega.vercel.app'
-// const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
     app.quit();
@@ -79,7 +75,7 @@ const createMainWindow = () => {
     mainWindow.setMenuBarVisibility(false);
 
     // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+    mainWindow.webContents.openDevTools();
 };
 
 const createLoadingWindow = () => {

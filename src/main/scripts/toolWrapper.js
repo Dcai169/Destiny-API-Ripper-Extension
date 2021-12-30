@@ -21,7 +21,7 @@ function updateUiDone(code) {
 function runDCG(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes);
-    let child = execFile(userPreferences.get('toolPath'), commandArgs, (err) => {
+    let child = execFile(userPreferences.get('dcgPath'), commandArgs, (err) => {
         if (err) {
             throw err;
         }

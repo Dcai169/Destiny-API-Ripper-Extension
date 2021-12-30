@@ -31,13 +31,15 @@ async function extract7zip(archivePath, progressCallback=() => {}) {
 }
 
 async function getDCGVersion(toolPath) {
-    try {
-        execFile(toolPath, ['--version'], (_, stdout, stderr) => {
-            return Promise.resolve({stdout, stderr});
-        });
-    } catch (err) {
-        return Promise.reject(err);
-    }
+    return new Promise((resolve, reject) => {
+        try {
+            execFile(toolPath, ['--version'], (_, stdout, stderr) => {
+                resolve({stdout, stderr});
+            });
+        } catch (err) {
+            reject(err);
+        }
+    });
 }
 
 function findExecutable(binPath) {

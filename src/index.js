@@ -7,6 +7,7 @@ const { extract7zip, findExecutable } = require('./loading/scripts/loadingScript
 const { logError } = require('./userPreferences.js');
 const fs = require('fs')
 const path = require('path');
+let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
 
 store.initRenderer();
 log.info(debugInfo());
@@ -169,6 +170,7 @@ function dlDoneCallback(res) {
 }
 
 ipcMain.on('loadingDone', (event, args) => {
+    startupConsoleMessage += args.consoleMessage;
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
     log.verbose('Loading window destroyed');
@@ -194,3 +196,4 @@ ipcMain.on('openExplorer', (_, args) => {
     }
 });
 
+ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConsoleMessage-reply', startupConsoleMessage) });

@@ -30,11 +30,12 @@ async function extract7zip(archivePath, progressCallback=() => {}) {
     });
 }
 
-async function getDCGVersion(toolPath) {
+async function getDCGVersion(dcgPath) {
     return new Promise((resolve, reject) => {
         try {
-            execFile(toolPath, ['--version'], (_, stdout, stderr) => {
-                resolve({stdout, stderr});
+            execFile(dcgPath, ['--version'], (_, stdout, stderr) => {
+                if (stderr) { reject(stderr) }
+                resolve(stdout.trim());
             });
         } catch (err) {
             reject(err);

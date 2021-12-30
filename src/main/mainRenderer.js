@@ -101,7 +101,7 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
-document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.send('selectDCGPath') });
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
@@ -124,10 +124,10 @@ ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     }
 });
 
-ipcRenderer.on('selectToolPath-reply', (_, args) => {
+ipcRenderer.on('selectDCGPath-reply', (_, args) => {
     if (args) {
-        userPreferences.set('toolPath', args[0]);
-        document.getElementById('toolPath').value = args[0];
+        userPreferences.set('dcgPath', args[0]);
+        document.getElementById('dcgPath').value = args[0];
     }
 });
 

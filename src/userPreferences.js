@@ -28,17 +28,17 @@ let schema = {
             }
         })()
     },
-    "toolPath": {
+    "dcgPath": {
         type: 'string',
         default: (() => {
-            let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
-            let toolPath = "";
+            let dcgDirectory = path.join(api.app.getPath('userData'), 'bin', 'dcg');
+            let dcgPath = "";
             try {
-                fs.mkdirSync(toolDirectory);
+                fs.mkdirSync(dcgDirectory);
             } catch (err) {
                 if (err.code === "EEXIST") { // Directory already exists
-                    if (findExecutable(toolDirectory)) {
-                        toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
+                    if (findExecutable(dcgDirectory)) {
+                        dcgPath = path.join(dcgDirectory, findExecutable(dcgDirectory).name);
                     }
                 } else {
                     logError(err);
@@ -46,19 +46,19 @@ let schema = {
                 }
             }
 
-            if (!toolPath) {
-                getReleaseAsset()
+            if (!dcgPath) {
+                getReleaseAsset('TiredHobgoblin/Destiny-Collada-Generator')
                     .then((res) => {
                         if (ipcRenderer) {
-                            log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-                            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
+                            log.verbose(`Downloading ${res.browser_download_url} to ${dcgDirectory}`);
+                            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: dcgDirectory });
                             ipcRenderer.once('dlPing-reply', (_, args) => {
                                 return args
                             });
                         }
                     }).catch(logError);
             } else {
-                return toolPath;
+                return dcgPath;
             }
         })()
     },

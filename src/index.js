@@ -157,11 +157,11 @@ function dlDoneCallback(res) {
     let archivePath = res.path;
     let binDir = path.parse(archivePath).dir;
     extract7zip(res.path).then((res) => {
-        let toolPath = path.join(binDir, findExecutable(binDir).name);
+        let dcgPath = path.join(binDir, findExecutable(binDir).name);
         fs.unlink(archivePath, () => {
-            fs.chmod(toolPath, 0o744, () => {
+            fs.chmod(dcgPath, 0o744, () => {
                 setTimeout(() => {
-                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
+                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', dcgPath);
                 }, 200);
             });
         });

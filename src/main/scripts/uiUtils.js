@@ -21,6 +21,7 @@ function setVisibility(element) {
 }
 
 function setInputElemValue(elementId, value) {
+    // log.silly(`Setting #${elementId} to '${value}'`);
     switch (typeof value) {
         case 'string':
             document.getElementById(elementId).value = value;

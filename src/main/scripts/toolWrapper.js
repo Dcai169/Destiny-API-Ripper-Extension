@@ -1,6 +1,6 @@
 const { execFile } = require('child_process');
 const log = require('electron-log');
-const { toolVersion } = require('./../../loading/scripts/loadingScripts.js');
+const { getDCGVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
 const { printConsoleOutput } = require('./uiUtils.js');
 
@@ -55,13 +55,12 @@ function executeQueue(game, hashes) {
 }
 
 function executeButtonClickHandler() {
-    toolVersion(userPreferences.get('toolPath'))
-        .then((res) => {
-            if (res.stdout) {
-                printConsoleOutput(`DCG v${res.stdout.substring(0, 5)}`);
+    getDCGVersion(userPreferences.get('dcgPath'))
+        .then((version) => {
+            if (version) {
                 if (navigator.onLine) {
-                    let itemHashes = [...queue.childen].map(item => { return item.id });
                     printConsoleOutput(`Hashes: ${itemHashes.join(' ')}`);
+                    let itemHashes = [...queue.children].map(item => { return item.id })
 
                     executeQueue(gameSelector.value, itemHashes);
                 } else {
@@ -73,10 +72,6 @@ function executeButtonClickHandler() {
                 hideLoading();
             }
         })
-        .catch(() => {
-            printConsoleOutput('DCG inoperable');
-            hideLoading();
-        });
 }
 
 module.exports = { executeButtonClickHandler };

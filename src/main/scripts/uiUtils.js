@@ -36,12 +36,17 @@ function setInputElemValue(elementId, value) {
     }
 }
 
-function printConsoleOutput(text) {
-    document.getElementById('console-text').innerText += `${text}\n `;
+function printConsole(text, type='log') {
+    let textElem = document.createElement('span');
+    textElem.innerText = text;
+    textElem.classList.add(`console-${type}`);
+
+    document.getElementById('console-text').appendChild(textElem);
+    document.getElementById('console-text').appendChild(document.createElement('br'));
 
     if (document.getElementById("console-autoscroll-toggle").checked) {
         document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
     }
 }
 
-module.exports = { setVisibility, setInputElemValue, printConsoleOutput };
+module.exports = { setVisibility, setInputElemValue, printConsole };

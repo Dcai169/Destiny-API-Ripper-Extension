@@ -2,7 +2,10 @@ const { execFile } = require('child_process');
 const log = require('electron-log');
 const { getDCGVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
-const { printConsoleOutput } = require('./uiUtils.js');
+const { printConsole } = require('./uiUtils.js');
+
+const printConsoleLog = (text) => { printConsole(text, 'log') };
+const printConsoleError = (text) => { printConsole(text, 'error') };
 
 function hideLoading() {
     document.getElementById('loading-indicator').classList.remove('p-1');
@@ -12,7 +15,7 @@ function hideLoading() {
 
 function updateUiDone(code) {
     hideLoading();
-    printConsoleOutput(`Done (Exit Code: ${code})`);
+    printConsole(`Done (Exit Code: ${code})`);
 }
 
 function runDCG(game, hashes) {
@@ -23,8 +26,8 @@ function runDCG(game, hashes) {
             throw err;
         }
     });
-    child.stdout.on('data', printConsoleOutput);
-    child.stderr.on('data', printConsoleOutput);
+    child.stdout.on('data', printConsoleLog);
+    child.stderr.on('data', printConsoleError);
 
     return child;
 }
@@ -59,16 +62,16 @@ function executeButtonClickHandler() {
         .then((version) => {
             if (version) {
                 if (navigator.onLine) {
-                    printConsoleOutput(`Hashes: ${itemHashes.join(' ')}`);
                     let itemHashes = [...queue.children].map(item => { return item.id })
+                    printConsole(`Hashes: ${itemHashes.join(' ')}`);
 
                     executeQueue(gameSelector.value, itemHashes);
                 } else {
-                    printConsoleOutput('No internet connection detected');
+                    printConsole('No internet connection detected', 'error');
                     hideLoading();
                 }
             } else {
-                printConsoleOutput('DCG inoperable');
+                printConsole('DCG inoperable', 'error');
                 hideLoading();
             }
         })

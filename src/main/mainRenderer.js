@@ -7,7 +7,7 @@ const log = require('electron-log');
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, setInputElemValue, printConsoleOutput } = require('./scripts/uiUtils.js');
+const { setVisibility, setInputElemValue, printConsole } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
 const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
@@ -17,7 +17,6 @@ let itemContainer = document.getElementById('item-container');
 let queue = document.getElementById('extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
-let searchDebounceTimeout;
 let reloadRequired = false;
 let itemMap = {
     '1': {
@@ -30,7 +29,7 @@ let itemMap = {
     }
 };
 
-printConsoleOutput(`DARE v${api.app.getVersion()}`);
+ipcRenderer.send('getStartupConsoleMessage');
 
 function loadItems(itemMap) {
     itemMap.forEach((item) => {
@@ -130,6 +129,8 @@ ipcRenderer.on('selectDCGPath-reply', (_, args) => {
         document.getElementById('dcgPath').value = args[0];
     }
 });
+
+ipcRenderer.on('getStartupConsoleMessage-reply', (_, args) => { printConsole(args + '\n ', 'log') });
 
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {

@@ -7,7 +7,6 @@ function createItemTile(item, game) {
         tileRoot = document.createElement('div');
         tileRoot.id = item.hash;
 
-        tileRoot.style.position = 'relative';
         tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`;
 
         tileRoot.classList.add('item-tile');
@@ -17,9 +16,7 @@ function createItemTile(item, game) {
 
         tileRoot.dataset.index = item.index;
         tileRoot.dataset.rarity = item.inventory.tierType;
-        tileRoot.dataset.itemtype = item.itemType;
-        tileRoot.dataset.itemsubtype = item.itemSubType;
-        tileRoot.dataset.ammotype = item?.equippingBlock?.ammoType ?? '0';
+        tileRoot.dataset.itemcategories = item.itemCategoryHashes.join(' ');
 
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item.displayProperties.name);
@@ -81,8 +78,7 @@ function createItemTile(item, game) {
         tileRoot = document.createElement('div');
         tileRoot.id = item.hash;
 
-        tileRoot.style.position = 'relative';
-        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`;
+        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item?.inventory.tierType)}-color)`;
 
         tileRoot.classList.add('item-tile');
         tileRoot.classList.add('d-flex');
@@ -91,9 +87,6 @@ function createItemTile(item, game) {
 
         tileRoot.dataset.index = item.index;
         tileRoot.dataset.rarity = item.inventory.tierType;
-        tileRoot.dataset.itemtype = item.itemType;
-        tileRoot.dataset.itemsubtype = item.itemSubType;
-        tileRoot.dataset.ammotype = item?.equippingBlock?.ammoType ?? '0';
 
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item?.itemName ?? 'Classified');
@@ -170,6 +163,8 @@ function addItemToContainer(item) {
     } else {
         document.querySelector(`[data-index='${closest(itemIndex, containerContents)}']`).after(item);
     }
+
+    setVisibility(item);
 }
 
 function tierNumberToRarityName(tierType) {

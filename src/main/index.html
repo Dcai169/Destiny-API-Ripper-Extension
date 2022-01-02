@@ -72,318 +72,287 @@
             </div>
             <!-- Filter Dropdown -->
             <div class="d-inline p-1">
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="filter-dropdown"
-                  data-toggle="dropdown">Filters</button>
-                <ul class="dropdown-menu multi-level" role="menu" aria-labelledby="filter-dropdown">
-                  <li class="dropdown-submenu">
-                    <div class="dropdown-item">
-                      <div class="container">
-                        <input class="form-check-input composite-filter" type="checkbox" id="filter-rarity" data-indexstart="27" data-indexend="32" checked>
-                        <label class="form-check-label" for="filter-rarity">Rarity</a>
-                      </div>
-                    </div>
-                    <ul class="dropdown-menu" style="transform: translate(calc(100% - 4px), -47%);">
+              <div class="btn-group" role="group">
+                <!-- Rarity -->
+                <div class="btn-group" role="group" style="width: 8ch;">
+                  <button id="rarity-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Rarity</button>
+                  <ul>
+                    <ul class="dropdown-menu" aria-labelledby="rarity-dropdown-button">
                       <li class="dropdown-item">
                         <div class="container">
-                          <input class="form-check-input base-filter" type="checkbox" id="filter-exotic" data-index="31" data-selector="[data-rarity='6']" checked>
+                          <input class="form-check-input rarity-filter" type="checkbox" id="filter-exotic" data-selector="[data-rarity='6']" checked>
                           <label class="form-check-label" for="filter-exotic" style="color: var(--exotic-color);">Exotic</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
-                          <input class="form-check-input base-filter" type="checkbox" id="filter-legendary" data-index="30" data-selector="[data-rarity='5']" checked>
+                          <input class="form-check-input rarity-filter" type="checkbox" id="filter-legendary" data-selector="[data-rarity='5']" checked>
                           <label class="form-check-label" for="filter-legendary" style="color: var(--legendary-color);">Legendary</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
-                          <input class="form-check-input base-filter" type="checkbox" id="filter-rare" data-index="29" data-selector="[data-rarity='4']" checked>
+                          <input class="form-check-input rarity-filter" type="checkbox" id="filter-rare" data-selector="[data-rarity='4']" checked>
                           <label class="form-check-label" for="filter-rare" style="color: var(--rare-color);">Rare</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
-                          <input class="form-check-input base-filter" type="checkbox" id="filter-uncommon" data-index="28" data-selector="[data-rarity='3']" checked>
+                          <input class="form-check-input rarity-filter" type="checkbox" id="filter-uncommon" data-selector="[data-rarity='3']" checked>
                           <label class="form-check-label" for="filter-uncommon" style="color: var(--uncommon-color);">Uncommon</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
-                          <input class="form-check-input base-filter" type="checkbox" id="filter-common" data-index="27" data-selector="[data-rarity='2']" checked>
+                          <input class="form-check-input rarity-filter" type="checkbox" id="filter-common" data-selector="[data-rarity='2']" checked>
                           <label class="form-check-label" for="filter-common" style="color: var(--common-color);">Common</label>
                         </div>
                       </li>
                     </ul>
-                  </li>
-                  <li class="dropdown-submenu">
-                    <div class="dropdown-item">
-                      <div class="container">
-                        <input class="form-check-input composite-filter" type="checkbox" id="filter-type" data-indexstart="00" data-indexend="27" checked>
-                        <label class="form-check-label" for="filter-type">Item Type</label>
+                  </ul>
+                </div>
+                <!-- Item Type -->
+                <div class="btn-group" role="group">
+                  <button id="type-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Item Type</button>
+                  <ul class="dropdown-menu" aria-labelledby="type-dropdown-button" style="transform: translate(calc(100% - 4px), -35.5%);">
+                    <li class="dropdown-submenu">
+                      <div class="dropdown-item">
+                        <div class="container">
+                          <input class="form-check-input dependent-filter" type="checkbox" id="filter-armor" checked>
+                          <label class="form-check-label" for="filter-armor">Armor</label>
+                        </div>
                       </div>
-                    </div>
-                    <ul class="dropdown-menu" style="transform: translate(calc(100% - 4px), -35.5%);">
-                      <li class="dropdown-submenu">
-                        <div class="dropdown-item">
+                      <ul class="dropdown-menu" style="transform: translate(calc(100% - 40px), -45.6%);">
+                        <li class="dropdown-item">
                           <div class="container">
-                            <input class="form-check-input composite-filter" type="checkbox" id="filter-armor" data-indexstart="21" data-indexend="27" checked>
-                            <label class="form-check-label" for="filter-armor">Armor</label>
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-helmet" data-category="45" data-selector="[data-itemcategories*='45']" data-influence="filter-armor" checked>
+                            <label class="form-check-label" for="filter-helmet">Helmet</label>
                           </div>
-                        </div>
-                        <ul class="dropdown-menu" style="transform: translate(calc(100% - 40px), -45.6%);">
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-helmet" data-index="26" data-selector="[data-itemtype='26']" checked>
-                              <label class="form-check-label" for="filter-helmet">Helmet</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-gauntlets" data-index="25" data-selector="[data-itemtype='27']" checked>
-                              <label class="form-check-label" for="filter-gauntlets">Gauntlets</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-chest" data-index="24" data-selector="[data-itemtype='28']" checked>
-                              <label class="form-check-label" for="filter-chest">Chest Armor</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-legs" data-index="23" data-selector="[data-itemtype='29']" checked>
-                              <label class="form-check-label" for="filter-legs">Leg Armor</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-class" data-index="22" data-selector="[data-itemtype='30']" checked>
-                              <label class="form-check-label" for="filter-class">Class Item</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-armorOrnament" data-index="21" data-selector="[data-itemtype='21']:not([data-class='3'])" checked>
-                              <label class="form-check-label" for="filter-armorOrnament">Armor Ornaments</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-divider">
-                            <hr>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input" type="checkbox" id="filter-titanArmor" data-selector="[data-class='0']" checked>
-                              <label class="form-check-label" for="filter-titanArmor">Titan Armor</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input" type="checkbox" id="filter-hunterArmor" data-selector="[data-class='1']" checked>
-                              <label class="form-check-label" for="filter-hunterArmor">Hunter Armor</label>
-                            </div>
-                          </li>
-                          <li class="dropdown-item">
-                            <div class="container">
-                              <input class="form-check-input" type="checkbox" id="filter-warlockArmor" data-selector="[data-class='3']" checked>
-                              <label class="form-check-label" for="filter-warlockArmor">Warlock Armor</label>
-                            </div>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="dropdown-submenu">
-                        <div class="dropdown-item">
+                        </li>
+                        <li class="dropdown-item">
                           <div class="container">
-                            <input class="form-check-input composite-filter" type="checkbox" id="filter-weapons" data-indexstart="04" data-indexend="21" checked>
-                            <label class="form-check-label" for="filter-weapons">Weapons</label>
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-gauntlets" data-category="46" data-selector="[data-itemcategories*='46']" data-influence="filter-armor" checked>
+                            <label class="form-check-label" for="filter-gauntlets">Arms</label>
                           </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-chest" data-category="47" data-selector="[data-itemcategories*='47']" data-influence="filter-armor" checked>
+                            <label class="form-check-label" for="filter-chest">Chest Armor</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-legs" data-category="48" data-selector="[data-itemcategories*='48']" data-influence="filter-armor" checked>
+                            <label class="form-check-label" for="filter-legs">Legs</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-class" data-category="49" data-selector="[data-itemcategories*='49']" data-influence="filter-armor" checked>
+                            <label class="form-check-label" for="filter-class">Class Item</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-divider">
+                          <hr>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-armorOrnament" data-category="1742617626" data-selector="[data-itemcategories*='1742617626']" checked>
+                            <label class="form-check-label" for="filter-armorOrnament">Armor Ornaments</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input" type="checkbox" id="filter-titanArmor" data-category="22" data-selector="[data-itemcategories*='22']" checked>
+                            <label class="form-check-label" for="filter-titanArmor">Titan Armor</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input" type="checkbox" id="filter-hunterArmor" data-category="23" data-selector="[data-itemcategories*='23']" checked>
+                            <label class="form-check-label" for="filter-hunterArmor">Hunter Armor</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input" type="checkbox" id="filter-warlockArmor" data-category="21" data-selector="[data-itemcategories*='21']" checked>
+                            <label class="form-check-label" for="filter-warlockArmor">Warlock Armor</label>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                      <div class="dropdown-item">
+                        <div class="container">
+                          <input class="form-check-input dependent-filter" type="checkbox" id="filter-weapons" checked>
+                          <label class="form-check-label" for="filter-weapons">Weapons</label>
                         </div>
-                        <ul class="dropdown-menu" style="transform: translate(calc(100% - 58px), -79%);">
-                          <li class="dropdown-submenu">
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input composite-filter" type="checkbox" id="filter-primary" data-indexstart="14" data-indexend="21" checked>
-                                <label class="form-check-label" for="filter-primary">Primary Weapons</label>
-                              </div>
-                            </div>
-                            <ul class="dropdown-menu" style="transform:translate(calc(100% + 10px), -61%)">
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-autoRifle" data-selector="[data-itemtype='3'][data-itemsubtype='6']" data-index="20" checked>
-                                  <label class="form-check-label" for="filter-autoRifle">Auto Rifles</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-scoutRifle" data-selector="[data-itemtype='3'][data-itemsubtype='14']" data-index="19" checked>
-                                  <label class="form-check-label" for="filter-scoutRifle">Scout Rifles</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-pulseRifle" data-selector="[data-itemtype='3'][data-itemsubtype='13']" data-index="18" checked>
-                                  <label class="form-check-label" for="filter-pulseRifle">Pulse Rifles</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-handCannon" data-selector="[data-itemtype='3'][data-itemsubtype='9']" data-index="17" checked>
-                                  <label class="form-check-label" for="filter-handCannon">Hand Cannons</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-submachineGun" data-selector="[data-itemtype='3'][data-itemsubtype='24']" data-index="16" checked>
-                                  <label class="form-check-label" for="filter-submachineGun">Submachine Guns</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-sidearm" data-selector="[data-itemtype='3'][data-itemsubtype='17']" data-index="15" checked>
-                                  <label class="form-check-label" for="filter-sidearm">Sidearms</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-bow" data-selector="[data-itemtype='3'][data-itemsubtype='31']" data-index="14" checked>
-                                  <label class="form-check-label" for="filter-bow">Bows</label>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="dropdown-submenu">
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input composite-filter" type="checkbox" id="filter-secondary" data-indexstart="10" data-indexend="14" checked>
-                                <label class="form-check-label" for="filter-secondary">Special Weapons</label>
-                              </div>
-                            </div>
-                            <ul class="dropdown-menu" style="transform: translate(calc(100% + 0px), -79%)">
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-shotgun" data-selector="[data-itemtype='3'][data-itemsubtype='7']" data-index="13" checked>
-                                  <label class="form-check-label" for="filter-shotgun">Shotguns</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-breachGrenadeLauncher" data-selector="[data-itemtype='3'][data-itemsubtype='23'][data-ammotype='1'],[data-ammotype='2']" data-index="12" checked>
-                                  <label class="form-check-label" for="filter-breachGrenadeLauncher">Grenade Launchers</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-fusionRifle" data-selector="[data-itemtype='3'][data-itemsubtype='11']" data-index="11" checked>
-                                  <label class="form-check-label" for="filter-fusionRifle">Fusion Rifles</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-sniperRifle" data-selector="[data-itemtype='3'][data-itemsubtype='12']" data-index="10" checked>
-                                  <label class="form-check-label" for="filter-sniperRifle">Sniper Rifles</label>
-                                </div>
-                              </li>
-                              <!-- <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-traceRifle" data-selector="[data-itemtype='25']" data-index="10" checked>
-                                  <label class="form-check-label" for="filter-traceRifle">Trace Rifles</label>
-                                </div>
-                              </li> -->
-                            </ul>
-                          </li>
-                          <li class="dropdown-submenu">
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input composite-filter" type="checkbox" id="filter-heavy" data-indexstart="05" data-indexend="10" checked>
-                                <label class="form-check-label" for="filter-heavy">Heavy Weapons</label>
-                              </div>
-                            </div>
-                            <ul class="dropdown-menu" style="transform: translate(calc(100% - 0px), -47%);">
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-sword" data-selector="[data-itemtype='3'][data-itemsubtype='18']" data-index="09" checked>
-                                  <label class="form-check-label" for="filter-sword">Swords</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-heavyGrenadeLauncher" data-selector="[data-itemtype='3'][data-itemsubtype='23'][data-ammotype='3']" data-index="08" checked>
-                                  <label class="form-check-label" for="filter-heavyGrenadeLauncher">Grenade Launchers</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-rocketLauncher" data-selector="[data-itemtype='3'][data-itemsubtype='10']" data-index="07" checked>
-                                  <label class="form-check-label" for="filter-rocketLauncher">Rocket Launchers</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-linearFusionRifle" data-selector="[data-itemtype='3'][data-itemsubtype='22']" data-index="06" checked>
-                                  <label class="form-check-label" for="filter-linearFusionRifle">Linear Fusion Rifle</label>
-                                </div>
-                              </li>
-                              <li class="dropdown-item">
-                                <div class="container">
-                                  <input class="form-check-input base-filter" type="checkbox" id="filter-machineGun" data-selector="[data-itemtype='3'][data-itemsubtype='8']" data-index="05" checked>
-                                  <label class="form-check-label" for="filter-machineGun">Light Machine Gun</label>
-                                </div>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="dropdown-item">
+                      </div>
+                      <ul class="dropdown-menu" style="transform: translate(calc(100% - 53px), -17.88%);">
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-autoRifle" data-category="5" data-selector="[data-itemcategories*='5']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-autoRifle">Auto Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-scoutRifle" data-category="8" data-selector="[data-itemcategories*='8']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-scoutRifle">Scout Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-pulseRifle" data-category="7" data-selector="[data-itemcategories*='7']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-pulseRifle">Pulse Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-handCannon" data-category="6" data-selector="[data-itemcategories*='6']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-handCannon">Hand Cannons</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-submachineGun" data-category="3954685534" data-selector="[data-itemcategories*='3954685534']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-submachineGun">Submachine Guns</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-sidearm" data-category="14" data-selector="[data-itemcategories*='14']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-sidearm">Sidearms</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-bow" data-category="3317538576" data-selector="[data-itemcategories*='3317538576']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-bow">Bows</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-divider">
+                          <hr>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-shotgun" data-category="11" data-selector="[data-itemcategories*='11']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-shotgun">Shotguns</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-breachGrenadeLauncher" data-category="" data-selector="[data-itemcategories*='153950757']:not([data-itemcategories*='4'])" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-breachGrenadeLauncher">Grenade Launchers</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-fusionRifle" data-category="9" data-selector="[data-itemcategories*='9']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-fusionRifle">Fusion Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-sniperRifle" data-category="10" data-selector="[data-itemcategories*='10']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-sniperRifle">Sniper Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-traceRifle" data-category="2489664120" data-selector="[data-itemcategories*='2489664120']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-traceRifle">Trace Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-divider">
+                          <hr>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-sword" data-category="54" data-selector="[data-itemcategories*='54']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-sword">Swords</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-heavyGrenadeLauncher" data-category="" data-selector="[data-itemcategories*='153950757'][data-itemcategories*='4']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-heavyGrenadeLauncher">Grenade Launchers</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-rocketLauncher" data-category="13" data-selector="[data-itemcategories*='13']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-rocketLauncher">Rocket Launchers</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-linearFusionRifle" data-category="1504945536" data-selector="[data-itemcategories*='1504945536']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-linearFusionRifle">Linear Fusion Rifles</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-machineGun" data-category="12" data-selector="[data-itemcategories*='12']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-machineGun">Machine Guns</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-divider">
+                          <hr>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input type-filter" type="checkbox" id="filter-weaponOrnament" data-category="3124752623" data-selector="[data-itemcategories*='3124752623']" data-influence="filter-weapons" checked>
+                            <label class="form-check-label" for="filter-weaponOrnament">Weapon Ornaments</label>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="dropdown-submenu">
+                      <div class="dropdown-item">
+                        <div class="container">
+                          <input class="form-check-input dependent-filter" type="checkbox" id="filter-equipment" checked>
+                          <label class="form-check-label" for="filter-equipment">Equipment</label>
+                        </div>
+                      </div>
+                      <ul class="dropdown-menu" style="transform: translate(calc(100% - 6px), -73%);">
+                        <li>
+                          <div class="dropdown-item">
                             <div class="container">
-                              <input class="form-check-input base-filter" type="checkbox" id="filter-weaponOrnament" data-index="04" data-selector="[data-itemtype='21'][data-class='3']" checked>
-                              <label class="form-check-label" for="filter-weaponOrnament">Weapon Ornaments</label>
+                              <input class="form-check-input type-filter" type="checkbox" id="filter-ships" data-category="42" data-selector="[data-itemcategories*='42']" data-influence="filter-equipment" checked>
+                              <label class="form-check-label" for="filter-ships">Ships</label>
                             </div>
-                          </li>
-                        </ul>
-                      </li>
-                      <li class="dropdown-submenu">
-                        <div class="dropdown-item">
-                          <div class="container">
-                            <input class="form-check-input composite-filter" type="checkbox" id="filter-equipment" data-indexstart="01" data-indexend="04" checked>
-                            <label class="form-check-label" for="filter-equipment">Equipment</label>
                           </div>
-                        </div>
-                        <ul class="dropdown-menu" style="transform: translate(calc(100% - 6px), -73%);">
-                          <li>
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input base-filter" type="checkbox" id="filter-ships" data-selector="[data-itemtype='21']" data-index="03" checked>
-                                <label class="form-check-label" for="filter-ships">Ships</label>
-                              </div>
+                        </li>
+                        <li>
+                          <div class="dropdown-item">
+                            <div class="container">
+                              <input class="form-check-input type-filter" type="checkbox" id="filter-sparrows" data-category="43" data-selector="[data-itemcategories*='43']" data-influence="filter-equipment" checked>
+                              <label class="form-check-label" for="filter-sparrows">Sparrows</label>
                             </div>
-                          </li>
-                          <li>
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input base-filter" type="checkbox" id="filter-sparrows" data-selector="[data-itemtype='22']" data-index="02" checked>
-                                <label class="form-check-label" for="filter-sparrows">Sparrows</label>
-                              </div>
-                            </div>
-                          </li>
-                          <li>
-                            <div class="dropdown-item">
-                              <div class="container">
-                                <input class="form-check-input base-filter" type="checkbox" id="filter-ghostShells" data-selector="[data-itemtype='24']" data-index="01" checked>
-                                <label class="form-check-label" for="filter-ghostShells">Ghost Shells</label>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
-                      </li>
-                      <li>
-                        <div class="dropdown-item">
-                          <div class="container">
-                            <input class="form-check-input base-filter" type="checkbox" id="filter-shaders" data-selector="[data-itemtype='19'][data-itemsubtype='20']" data-index="00" checked>
-                            <label class="form-check-label" for="filter-shaders">Shaders</label>
                           </div>
+                        </li>
+                        <li>
+                          <div class="dropdown-item">
+                            <div class="container">
+                              <input class="form-check-input type-filter" type="checkbox" id="filter-ghostShells" data-category="39" data-selector="[data-itemcategories*='39']" data-influence="filter-equipment" checked>
+                              <label class="form-check-label" for="filter-ghostShells">Ghost Shells</label>
+                            </div>
+                          </div>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      <div class="dropdown-item">
+                        <div class="container">
+                          <input class="form-check-input type-filter" type="checkbox" id="filter-shaders" data-category="41" data-selector="[data-itemcategories*='41']" checked>
+                          <label class="form-check-label" for="filter-shaders">Shaders</label>
                         </div>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>

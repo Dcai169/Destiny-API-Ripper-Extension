@@ -32,14 +32,14 @@ function setBarPercent(percent, delay = 0) {
             // check if DCG matches desired version
             if (`${targetedDCGLink.split('/')[7]}.0` !== `v${dcgVersion}`) {
                 log.warn(`DCG version mismatch: v${userPreferences.get('preferredDCGVersion')}`);
-                ipcRenderer.send('loadingDone', {'consoleMessage': 'DCG version mismatch'});
+                ipcRenderer.send('loadingDone', {'consoleMessage': 'DCG version mismatch', 'textType': 'log'});
             } else {
                 log.verbose(`DCG version matches desired version`);
-                ipcRenderer.send('loadingDone', {'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}`});
+                ipcRenderer.send('loadingDone', {'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}`, 'textType': 'log'});
             }
         } else { // Legacy DCG or misconfigured DCG path
             log.warn(`DCG version check failed`);
-            ipcRenderer.send('loadingDone', {'consoleMessage': 'Destiny Collada Generator version check failed, Check the DCG path is configured correctly'}); 
+            ipcRenderer.send('loadingDone', {'consoleMessage': 'Destiny Collada Generator version check failed, Check the DCG path is configured correctly', 'textType': 'warn'}); 
         }
     } else {
         log.error('DCG path undefined')

@@ -25,6 +25,10 @@ body {
   background-color: #3E4145;
 }
 
+.item-tile {
+  position: relative;
+}
+
 .item-tile:hover {
   filter: brightness(80%) !important;
 }

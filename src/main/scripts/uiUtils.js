@@ -1,21 +1,45 @@
 const log = require('electron-log');
+const searchBoxElem = document.getElementById('search-box');
 
 function getSearchVisibility(element) {
-    return (document.getElementById('search-box').value.toLowerCase() ? element.getAttribute('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
+    if (!searchBoxElem.value) return true;
+    return element.getAttribute('name').toLowerCase().includes(searchBoxElem.value.toLowerCase());
 }
 
-function getFilterVisibility(element) {
-    if (element.parentElement.id === 'extract-queue') {
-        return true;
-    } else {
-        return [...document.getElementsByClassName('base-filter')].every((inputElem) => {
-            return (element.matches(inputElem.dataset.selector) ? inputElem.checked : true);
-        });
+function getTypeFilterVisibility(element) {
+    return !element.dataset.itemcategories.split(' ').some((itemCategory) => {
+        let filterElem = document.querySelector(`input.type-filter[data-category="${itemCategory}"]`) // TODO: improve performance (currently very slow)
+        if (filterElem) return !filterElem.checked; // if the item category does not have a corresponding filter, skip it
+    });
+}
+
+function getRarityFilterVisibility(element) {
+    switch (element.dataset.rarity) {
+        case '6':
+            return document.getElementById('filter-exotic').checked;
+
+        case '5':
+            return document.getElementById('filter-legendary').checked;
+
+        case '4':
+            return document.getElementById('filter-rare').checked;
+
+        case '3':
+            return document.getElementById('filter-uncommon').checked;
+
+        case '2':
+            return document.getElementById('filter-common').checked;
+
+        default:
+            return true;
     }
 }
 
-function setVisibility(element) {
-    let visibilityState = getSearchVisibility(element) && getFilterVisibility(element);
+function calcVisibilityState(element) {
+    return getSearchVisibility(element) && getTypeFilterVisibility(element) && getRarityFilterVisibility(element);
+}
+
+function setVisibility(element, visibilityState=calcVisibilityState(element)) {
     element.classList.remove((visibilityState ? 'hidden' : 'm-1'));
     element.classList.add((visibilityState ? 'm-1' : 'hidden'));
 }

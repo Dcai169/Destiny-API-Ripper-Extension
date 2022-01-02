@@ -1,15 +1,13 @@
 // Module imports
-const { api } = require('electron-util');
 const { ipcRenderer } = require('electron');
 const log = require('electron-log');
-// const os = require('os');
 
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, setInputElemValue, printConsole } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
+const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
@@ -17,6 +15,7 @@ let itemContainer = document.getElementById('item-container');
 let queue = document.getElementById('extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
+let searchTimeout;
 let reloadRequired = false;
 let itemMap = {
     '1': {
@@ -38,23 +37,14 @@ function loadItems(itemMap) {
     log.debug(`${itemMap.size} items loaded`);
 }
 
-function searchBoxInputHandler(event) {
-    if (event.target.value) {
-        [...document.getElementById('item-container').children].forEach((element) => {
-            if (element.getAttribute('name').toLowerCase().includes(event.target.value.toLowerCase())) {
-                element.classList.remove('hidden');
-                element.classList.add('m-1');
-            } else {
-                element.classList.remove('m-1');
-                element.classList.add('hidden');
-            }
-        })
-    } else {
+function searchBoxInputHandler() {
+    clearTimeout(searchTimeout);
+
+    searchTimeout = setTimeout(() => {
         [...document.getElementById('item-container').children].forEach((element) => { // TODO: set visibility based on filter settings
-            element.classList.remove('hidden');
-            element.classList.add('m-1');
+            setVisibility(element);
         })
-    }
+    }, 500);
 }
 
 function gameSelectorChangeListener() {
@@ -71,7 +61,6 @@ function gameSelectorChangeListener() {
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
-        // log.debug(`${key}: ${value} (${typeof value})`);
         setInputElemValue(key, value);
     }
 
@@ -86,17 +75,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 // Navbar items
 gameSelector.addEventListener('change', gameSelectorChangeListener);
-[...document.getElementsByClassName('base-filter')].forEach((element) => { element.addEventListener('click', baseFilterClickHandler) });
-[...document.getElementsByClassName('composite-filter')].forEach((element) => { element.addEventListener('click', compositeFilterClickHandler) });
+[...document.getElementsByClassName('rarity-filter')].forEach((inputElem) => { inputElem.addEventListener('click', rarityFilterClickHandler); });
+[...document.getElementsByClassName('type-filter')].forEach((element) => { element.addEventListener('click', typeFilterClickHandler) });
+[...document.getElementsByClassName('dependent-filter')].forEach((element) => { element.addEventListener('click', dependentFilterClickHandler) });
 document.getElementById('queue-clear-button').addEventListener('click', () => {
     [...queue.children].forEach(item => { addItemToContainer(item); });
-    log.silly('Queue cleared.');
+    // log.silly('Queue cleared.');
 });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
 // Console
-document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').textContent = '' });
+document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').innerHTML = '' });
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });

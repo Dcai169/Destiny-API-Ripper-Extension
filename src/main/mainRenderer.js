@@ -41,9 +41,15 @@ function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
 
     searchTimeout = setTimeout(() => {
-        [...document.getElementById('item-container').children].forEach((element) => { // TODO: set visibility based on filter settings
-            setVisibility(element);
-        })
+        if (document.getElementById('search-box').value) {
+            [...document.querySelectorAll('#item-container .item-tile.m-1')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
+            })
+        } else {
+            [...document.getElementById('item-container').children].forEach((item) => {
+                setVisibility(item);
+            })
+        }
     }, 500);
 }
 

@@ -8,8 +8,7 @@ function getSearchVisibility(element) {
 
 function getTypeFilterVisibility(element) {
     return !element.dataset.itemcategories.split(' ').some((itemCategory) => {
-        let filterElem = document.querySelector(`input.type-filter[data-category="${itemCategory}"]`) // TODO: improve performance (currently very slow)
-        if (filterElem) return !filterElem.checked; // if the item category does not have a corresponding filter, skip it
+        return !document.getElementById(`filter-${itemCategory}`).checked;
     });
 }
 

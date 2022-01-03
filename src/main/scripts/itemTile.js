@@ -16,7 +16,7 @@ function createItemTile(item, game) {
 
         tileRoot.dataset.index = item.index;
         tileRoot.dataset.rarity = item.inventory.tierType;
-        tileRoot.dataset.itemcategories = item.itemCategoryHashes.join(' ');
+        tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(distinguishGrenadeLauncherHash).map(itemCategoryHashToName).join(' ').trim();
 
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item.displayProperties.name);
@@ -186,6 +186,117 @@ function tierNumberToRarityName(tierType) {
 
         default:
             break;
+    }
+}
+
+function distinguishGrenadeLauncherHash(itemCategoryHash, _, categoryHashArr) {
+    if (itemCategoryHash === 153950757 && categoryHashArr.includes(4)) {
+        return 153950761;
+    } else {
+        return itemCategoryHash;
+    }
+}
+
+function itemCategoryHashToName(hash) {
+    switch (hash) {
+        case 45:
+            return 'helmet';
+
+        case 46:
+            return 'gauntlets';
+
+        case 47:
+            return 'chest';
+
+        case 48:
+            return 'legs';
+
+        case 49:
+            return 'class';
+
+        case 1742617626:
+            return 'armorOrnament';
+
+        // case 22:
+        //     return 'titanArmor';
+
+        // case 23:
+        //     return 'hunterArmor';
+
+        // case 21:
+        //     return 'warlockArmor';
+
+        case 5:
+            return 'autoRifle';
+
+        case 8:
+            return 'scoutRifle';
+
+        case 7:
+            return 'pulseRifle';
+
+        case 6:
+            return 'handCannon';
+
+        case 3954685534:
+            return 'submachineGun';
+
+        case 14:
+            return 'sidearm';
+
+        case 3317538576:
+            return 'bow';
+        
+        case 11:
+            return 'shotgun';
+
+        case 9:
+            return 'fusionRifle';
+
+        case 10:
+            return 'sniperRifle';
+
+        case 2489664120:
+            return 'traceRifle';
+
+        case 54:
+            return 'sword';
+
+        case 13:
+            return 'rocketLauncher';
+
+        case 1504945536:
+            return 'linearFusionRifle';
+
+        case 12:
+            return 'machineGun';
+
+        case 3124752623:
+            return 'weaponOrnament';
+
+        case 42:
+            return 'ships';
+
+        case 43:
+            return 'sparrows';
+
+        case 39:
+            return 'ghostShells';
+
+        case 41:
+            return 'shaders';
+
+        case 153950757:
+            return 'breachGrenadeLauncher';
+
+        case 153950761:
+            return 'heavyGrenadeLauncher';
+
+        case 55:
+            return 'masks';
+
+        default:
+            return '';
     }
 }
 

@@ -5,6 +5,7 @@ require('dotenv').config({ path: 'api.env' });
 
 const BASE_URL = 'https://bungie.net';
 const DEFAULT_SHADER_HASH = 4248210736; // Default Shader
+const DESTINY2_HASH_BLACKLIST = [702981643, 2965439266, 2426387438, 3807544519, 2325217837, 4248210736];
 
 function getDestiny1ItemDefinitions(locale = 'en') {
     return new Promise((resolve, reject) => {
@@ -47,10 +48,10 @@ function getDestiny2ItemDefinitions(locale = 'en') {
                     .then((res) => {
                         for (let [hash, item] of Object.entries(res.data)) {
                             if (((item) => {
-                                if (item.hash === DEFAULT_SHADER_HASH) { return false }
+                                if (DESTINY2_HASH_BLACKLIST.includes(item.hash)) { return false }
                                 if (!item?.displayProperties.name) { return false }
-                                if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [59, 3109687656].includes(itemCategoryHash) })) { return false } // Mods and ?
-                                if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [1, 20, 39, 41, 42, 43, 55].includes(itemCategoryHash) })) { return true } // Armor, weapons, shaders, ships, ghost shells, and sparrows
+                                if (item.itemCategoryHashes?.includes(3109687656)) { return false } // Mods
+                                if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [1, 20, 39, 41, 42, 43, 55, 1742617626, 3124752623].includes(itemCategoryHash) })) { return true } // Armor, weapons, shaders, ships, ghost shells, and sparrows
                             })(item)) {
                                 destiny2ItemDefinitions[hash] = item;
                             }

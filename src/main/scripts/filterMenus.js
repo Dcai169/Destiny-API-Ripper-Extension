@@ -3,7 +3,7 @@ const log = require('electron-log');
 
 function updateItemVisibilityFromInputElem(inputElem) {
     [...document.querySelectorAll(`#item-container .item-tile${(inputElem.dataset.selector ?? '')}`)].forEach((item) => {
-        setVisibility(item, inputElem.checked);
+        setVisibility(item);
     });
 }
 
@@ -13,12 +13,15 @@ function rarityFilterClickHandler(event) {
 
 function typeFilterClickHandler(event) {
     updateItemVisibilityFromInputElem(event.target);
-    updateDependentCheckboxes(document.getElementById(event.target.dataset.influence));
+    if (event.target.dataset.influence) {
+        updateDependentCheckboxes(document.getElementById(event.target.dataset.influence));
+    }
 }
 
 function dependentFilterClickHandler(event) {
     [...document.querySelectorAll(`[data-influence=${event.target.id}]`)].forEach((inputElem) => {
         inputElem.checked = event.target.checked;
+        updateItemVisibilityFromInputElem(inputElem);
     });
 }
 

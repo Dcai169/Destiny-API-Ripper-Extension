@@ -5,7 +5,7 @@ const { debugInfo } = require('electron-util');
 const { download } = require('electron-dl');
 const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
 const { logError } = require('./userPreferences.js');
-const fs = require('fs')
+const fsp = require('fs').promises;
 const path = require('path');
 let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
 
@@ -150,20 +150,7 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-function dlDoneCallback(res) {
-    let archivePath = res.path;
-    let binDir = path.parse(archivePath).dir;
-    extract7zip(res.path).then((res) => {
-        let dcgPath = path.join(binDir, findExecutable(binDir).name);
-        fs.unlink(archivePath, () => {
-            fs.chmod(dcgPath, 0o744, () => {
-                setTimeout(() => {
-                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', dcgPath);
-                }, 200);
-            });
-        });
-    }).catch(logError);
-}
+let fsopSemaphore = false;
 
 ipcMain.on('loadingDone', (event, args) => {
     startupConsoleMessage += args.consoleMessage;
@@ -172,11 +159,33 @@ ipcMain.on('loadingDone', (event, args) => {
     log.verbose('Loading window destroyed');
 });
 
-ipcMain.on('dlPing', (event, { url, dlPath }) => {
+ipcMain.handle('download', async (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
+        let dlData;
+        fsopSemaphore = true;
+        await download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, overwrite: true, onCompleted: (res) => { dlData = res } });
+        return dlData;
     }
 });
+
+ipcMain.handle('decompress7zip', async (_, args) => {
+    let archivePath = args.path;
+    let exeDir = path.parse(archivePath).dir;
+
+    await extract7zip(archivePath)
+    let dcgPath = path.join(exeDir, findExecutable(exeDir).name);
+    await fsp.chmod(dcgPath, 0o744);
+    fsopSemaphore = false;
+    return dcgPath;
+});
+
+ipcMain.handle('getFSOPSemaphore', () => {
+    return fsopSemaphore;
+});
+
+ipcMain.on('setFSOPSemaphore', (_, args) => {
+    fsopSemaphore = args;
+})
 
 ipcMain.on('selectOutputPath', (event) => {
     event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))

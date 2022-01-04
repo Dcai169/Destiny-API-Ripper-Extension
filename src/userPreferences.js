@@ -11,16 +11,19 @@ function logError(err) {
     log.error(err);
 }
 
-function downloadGitHubRelease(repo, path) {
+function downloadGitHubRelease(repo, path, decompress = (res) => { return res }) {
     getReleaseAsset(repo)
     .then((res) => {
         if (ipcRenderer) {
             log.verbose(`Downloading ${res.browser_download_url} to ${path}`);
-            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: path });
-            ipcRenderer.once('dlPing-reply', (_, args) => {
-                return args
-            });
+            ipcRenderer.invoke('download', { url: res.browser_download_url, dlPath: path }).then(decompress);
         }
+    }).catch(logError);
+}
+
+function decompressDCG(dlParameters) {
+    ipcRenderer.invoke('decompress7zip', dlParameters).then((res) => {
+        return res;
     }).catch(logError);
 }
 
@@ -47,12 +50,12 @@ let schema = {
             let dcgDirectory = path.join(api.app.getPath('userData'), 'bin', 'dcg');
 
             if (fs.mkdirSync(dcgDirectory, { recursive: true })) {
-                return downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory);
+                downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory, decompressDCG);
             } else {
                 if (findExecutable(dcgDirectory)) {
                     return path.join(dcgDirectory, findExecutable(dcgDirectory).name);
                 } else {
-                    return downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory);
+                    downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory, decompressDCG);
                 }
             }
         })()
@@ -66,7 +69,7 @@ let schema = {
         type: 'boolean',
         default: true
     },
-    "preferredDCGVersion": { 
+    "preferredDCGVersion": {
         type: 'string',
         default: 'latest'
     }

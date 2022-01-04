@@ -3,7 +3,6 @@ const { ipcRenderer } = require('electron');
 const log = require('electron-log')
 const { userPreferences } = require('../userPreferences');
 const { getDCGVersion, getReleaseAsset } = require('./scripts/loadingScripts.js');
-const { execFile } = require('child_process');
 
 setInterval(() => {
     let loadingDots = document.getElementById('loading-dots');
@@ -21,6 +20,8 @@ function setBarPercent(percent, delay = 0) {
 }
 
 (async () => {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    if (await ipcRenderer.invoke('getFSOPSemaphore')) { await new Promise(resolve => setTimeout(resolve, 4000)) }
     if (userPreferences.get('dcgPath')) {
         log.verbose(`Checking DCG at ${userPreferences.get('dcgPath')}`);
         let dcgVersion = await getDCGVersion(userPreferences.get('dcgPath'));

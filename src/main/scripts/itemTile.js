@@ -59,6 +59,7 @@ function createItemTile(item, game) {
 
         let textContainer = document.createElement('div');
         let titleText = document.createElement('p');
+        titleText.classList.add('item-name');
         titleText.classList.add('m-0');
         titleText.innerHTML = `<b class='m-0'>${item.displayProperties.name}</b>`;
         titleText.style.color = (item.inventory.tierType <= 2 ? 'black' : 'white');

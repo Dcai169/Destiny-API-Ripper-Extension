@@ -27,6 +27,11 @@ body, html {
   display: grid;
 }
 
+div {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .box {
   margin: auto;
 }

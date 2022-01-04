@@ -19,10 +19,18 @@
 body {
   font-family: "Neue Haas Grotesk Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   scrollbar-color: dark;
+
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #main-content {
   background-color: #3E4145;
+}
+
+.item-name {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .item-tile {
@@ -48,6 +56,11 @@ body {
 
 .hidden {
   content-visibility: hidden;
+}
+
+code {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .console-text {

@@ -28,7 +28,9 @@ const createMainWindow = () => {
             contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
-        }
+        },
+        backgroundColor: '#3E4145',
+        show: false
     });
 
     mainWindow.maximize();
@@ -74,8 +76,12 @@ const createMainWindow = () => {
     // Hide menubar
     mainWindow.setMenuBarVisibility(false);
 
+    mainWindow.on('ready-to-show', () => {
+        mainWindow.show();
+    })
+
     // Open the DevTools.
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 };
 
 const createLoadingWindow = () => {
@@ -89,7 +95,8 @@ const createLoadingWindow = () => {
             contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
-        }
+        },
+        show: false
     });
 
     // Menu items
@@ -119,6 +126,10 @@ const createLoadingWindow = () => {
 
     // Hide menubar
     loadingWindow.setMenuBarVisibility(false);
+
+    loadingWindow.on('ready-to-show', () => {
+        loadingWindow.show();
+    })
 
     // Open the DevTools.
     // loadingWindow.webContents.openDevTools();

@@ -206,6 +206,14 @@ ipcMain.on('selectDCGPath', (event) => {
     event.reply('selectDCGPath-reply', dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
 });
 
+ipcMain.handle('selectMDEPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })[0];
+});
+
+ipcMain.handle('selectPKGPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })[0];
+})
+
 ipcMain.on('openExplorer', (_, args) => {
     if (args) {
         shell.openPath(args[0]);

@@ -68,9 +68,14 @@ code {
 }
 
 .console-warn {
-  color: #fffF00
+  color: #FFFF00
 }
 
 .console-error {
   color: #FF0000;
+}
+
+#aggregateCheckbox {
+  margin-left: 1.25rem;
+  margin-top: 2.25rem;
 }

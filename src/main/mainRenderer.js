@@ -65,6 +65,8 @@ function gameSelectorChangeListener() {
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
+    if (process.platform === 'win32' && process.arch === 'x64') document.getElementById('mde-settings').classList.remove('hidden');
+
     // Load userPreferences
     for ([key, value] of userPreferences) {
         setInputElemValue(key, value);
@@ -104,6 +106,8 @@ document.getElementById('locale').addEventListener('change', () => {
     document.getElementById('modal-close-button').textContent = 'Reload';
     userPreferences.set('locale', document.getElementById('locale').value);
 });
+document.getElementById('mdePath').addEventListener('click', (event) => { ipcRenderer.invoke('selectMDEPath').then((res) => { userPreferences.set('mdePath', res); event.target.value = res; }) });
+document.getElementById('pkgPath').addEventListener('click', (event) => { ipcRenderer.invoke('selectPKGPath').then((res) => { userPreferences.set('pkgPath', res); event.target.value = res; }) });
 
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {

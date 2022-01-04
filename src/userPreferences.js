@@ -11,6 +11,19 @@ function logError(err) {
     log.error(err);
 }
 
+function downloadGitHubRelease(repo, path) {
+    getReleaseAsset(repo)
+    .then((res) => {
+        if (ipcRenderer) {
+            log.verbose(`Downloading ${res.browser_download_url} to ${path}`);
+            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: path });
+            ipcRenderer.once('dlPing-reply', (_, args) => {
+                return args
+            });
+        }
+    }).catch(logError);
+}
+
 let schema = {
     "outputPath": {
         type: 'string',
@@ -32,33 +45,15 @@ let schema = {
         type: 'string',
         default: (() => {
             let dcgDirectory = path.join(api.app.getPath('userData'), 'bin', 'dcg');
-            let dcgPath = "";
-            try {
-                fs.mkdirSync(dcgDirectory);
-            } catch (err) {
-                if (err.code === "EEXIST") { // Directory already exists
-                    if (findExecutable(dcgDirectory)) {
-                        dcgPath = path.join(dcgDirectory, findExecutable(dcgDirectory).name);
-                    }
-                } else {
-                    logError(err);
-                    throw err;
-                }
-            }
 
-            if (!dcgPath) {
-                getReleaseAsset('TiredHobgoblin/Destiny-Collada-Generator')
-                    .then((res) => {
-                        if (ipcRenderer) {
-                            log.verbose(`Downloading ${res.browser_download_url} to ${dcgDirectory}`);
-                            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: dcgDirectory });
-                            ipcRenderer.once('dlPing-reply', (_, args) => {
-                                return args
-                            });
-                        }
-                    }).catch(logError);
+            if (fs.mkdirSync(dcgDirectory, { recursive: true })) {
+                return downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory);
             } else {
-                return dcgPath;
+                if (findExecutable(dcgDirectory)) {
+                    return path.join(dcgDirectory, findExecutable(dcgDirectory).name);
+                } else {
+                    return downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory);
+                }
             }
         })()
     },

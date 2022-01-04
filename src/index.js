@@ -174,7 +174,7 @@ ipcMain.on('loadingDone', (event, args) => {
 
 ipcMain.on('dlPing', (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
+        download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
     }
 });
 

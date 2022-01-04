@@ -205,5 +205,5 @@ ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConso
 
 ipcMain.on('loadingTimeout', () => {
     app.relaunch();
-    app.quit();
+    app.exit(302);
 })

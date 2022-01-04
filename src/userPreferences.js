@@ -11,6 +11,22 @@ function logError(err) {
     log.error(err);
 }
 
+function downloadGitHubRelease(repo, path, decompress = (res) => { return res }) {
+    getReleaseAsset(repo)
+    .then((res) => {
+        if (ipcRenderer) {
+            log.verbose(`Downloading ${res.browser_download_url} to ${path}`);
+            ipcRenderer.invoke('download', { url: res.browser_download_url, dlPath: path }).then(decompress);
+        }
+    }).catch(logError);
+}
+
+function decompressDCG(dlParameters) {
+    ipcRenderer.invoke('decompress7zip', dlParameters).then((res) => {
+        return res;
+    }).catch(logError);
+}
+
 let schema = {
     "outputPath": {
         type: 'string',
@@ -28,48 +44,34 @@ let schema = {
             }
         })()
     },
-    "toolPath": {
+    "dcgPath": {
         type: 'string',
         default: (() => {
-            let toolDirectory = path.join(api.app.getPath('userData'), 'bin');
-            let toolPath = "";
-            try {
-                fs.mkdirSync(toolDirectory);
-            } catch (err) {
-                if (err.code === "EEXIST") {
-                    if (findExecutable(toolDirectory)) {
-                        toolPath = path.join(toolDirectory, findExecutable(toolDirectory).name);
-                    }
-                } else {
-                    logError(err);
-                    throw err;
-                }
-            }
+            let dcgDirectory = path.join(api.app.getPath('userData'), 'bin', 'dcg');
 
-            if (!toolPath) {
-                getReleaseAsset()
-                    .then((res) => {
-                        if (ipcRenderer) {
-                            log.verbose(`Downloading ${res.browser_download_url} to ${toolDirectory}`);
-                            ipcRenderer.send('dlPing', { url: res.browser_download_url, dlPath: toolDirectory });
-                            ipcRenderer.once('dlPing-reply', (_, args) => {
-                                return args
-                            });
-                        }
-                    }).catch(logError);
+            if (fs.mkdirSync(dcgDirectory, { recursive: true })) {
+                downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory, decompressDCG);
             } else {
-                return toolPath;
+                if (findExecutable(dcgDirectory)) {
+                    return path.join(dcgDirectory, findExecutable(dcgDirectory).name);
+                } else {
+                    downloadGitHubRelease('TiredHobgoblin/Destiny-Collada-Generator', dcgDirectory, decompressDCG);
+                }
             }
         })()
     },
     "locale": {
         type: 'string',
-        enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ka', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
+        enum: ['de', 'en', 'es', 'es-mx', 'fr', 'it', 'ja', 'ko', 'pl', 'pt-br', 'ru', 'zh-cht', 'zh-chs'],
         default: 'en'
     },
     "aggregateOutput": {
         type: 'boolean',
         default: true
+    },
+    "preferredDCGVersion": {
+        type: 'string',
+        default: 'latest'
     }
 }
 

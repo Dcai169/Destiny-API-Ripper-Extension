@@ -1,80 +1,80 @@
 const { execFile } = require('child_process');
 const log = require('electron-log');
-const { toolVersion } = require('./../../loading/scripts/loadingScripts.js');
+const { getDCGVersion } = require('./../../loading/scripts/loadingScripts.js');
 const { userPreferences } = require('./../../userPreferences.js');
-const { uiConsolePrint } = require('./uiUtils.js');
+const { printConsole } = require('./uiUtils.js');
+
+const printConsoleLog = (text) => { printConsole(text, 'log') };
+const printConsoleError = (text) => { printConsole(text, 'error') };
 
 function hideLoading() {
-    $('#loading-indicator').removeClass('p-1').addClass('hidden');
-    $('#queue-execute-button').removeAttr('disabled');
+    document.getElementById('loading-indicator').classList.remove('p-1');
+    document.getElementById('loading-indicator').classList.add('hidden');
+    document.getElementById('queue-execute-button').removeAttribute('disabled');
 }
 
 function updateUiDone(code) {
     hideLoading();
-    uiConsolePrint(`Done (Exit Code: ${code})`);
+    printConsole(`Done (Exit Code: ${code})`);
 }
 
-function runTool(game, hashes) {
+function runDCG(game, hashes) {
     // DestinyColladaGenerator.exe [<GAME>] [-o <OUTPUTPATH>] [<HASHES>]
     let commandArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes);
-    let child = execFile(userPreferences.get('toolPath'), commandArgs, (err) => {
+    let child = execFile(userPreferences.get('dcgPath'), commandArgs, (err) => {
         if (err) {
             throw err;
         }
     });
-    child.stdout.on('data', uiConsolePrint);
-    child.stderr.on('data', uiConsolePrint);
+    child.stdout.on('data', printConsoleLog);
+    child.stderr.on('data', printConsoleError);
 
     return child;
 }
 
-function runToolRecursive(game, itemHashes) {
+function runDCGRecursive(game, itemHashes) {
     if (itemHashes.length > 0) {
-        let child = runTool(game, [itemHashes.pop()]);
-        child.on('exit', (code) => { runToolRecursive(game, itemHashes) });
+        let child = runDCG(game, [itemHashes.pop()]);
+        child.on('exit', (code) => { runDCGRecursive(game, itemHashes) });
     }
 }
 
-function execute(game, hashes) {
+function executeQueue(game, hashes) {
     log.info(`Hashes: ${hashes.join(' ')}`);
     // change DOM to reflect program state
-    $('#loading-indicator').removeClass('hidden').addClass('p-1');
-    $('#queue-execute-button').attr('disabled', 'disabled');
+    document.getElementById('queue-execute-button').setAttribute('disabled', 'disabled');
+    document.getElementById('loading-indicator').classList.remove('hidden');
+    document.getElementById('loading-indicator').classList.add('p-1');
 
     if (userPreferences.get('aggregateOutput')) {
-        runTool(game, hashes).on('exit', (code) => {
+        runDCG(game, hashes).on('exit', (code) => {
             log.info(`Done (Exit Code: ${code})`)
             updateUiDone(code);
         });
     } else {
-        runToolRecursive(game, hashes);
+        runDCGRecursive(game, hashes);
         hideLoading();
     }
 }
 
 function executeButtonClickHandler() {
-    toolVersion(userPreferences.get('toolPath'))
-        .then((res) => {
-            if (res.stdout) {
-                uiConsolePrint(`DCG v${res.stdout.substring(0, 5)}`);
+    getDCGVersion(userPreferences.get('dcgPath'))
+        .then((version) => {
+            if (version) {
                 if (navigator.onLine) {
-                    let itemHashes = [...queue.eq(0).children()].map(item => { return item.id });
-                    uiConsolePrint(`Hashes: ${itemHashes.join(' ')}`);
-            
-                    execute(gameSelector.value, itemHashes);
+                    let itemHashes = [...queue.children].map(item => { return item.id })
+                    printConsole(`Hashes: ${itemHashes.join(' ')}`);
+
+                    executeQueue(gameSelector.value, itemHashes);
                 } else {
-                    uiConsolePrint('No internet connection detected');
+                    printConsole('No internet connection detected', 'error');
                     hideLoading();
                 }
             } else {
-                uiConsolePrint('DCG inoperable');
+                printConsole('DCG inoperable', 'error');
                 hideLoading();
             }
         })
-        .catch(() => {
-            uiConsolePrint('DCG inoperable');
-            hideLoading();
-        });
 }
 
 module.exports = { executeButtonClickHandler };

@@ -1,6 +1,9 @@
 TODO
 In order of priority (mostly)
 
+* MDE Integration
+* Localization
+
 UI/UX
 * Sorting
     * Name

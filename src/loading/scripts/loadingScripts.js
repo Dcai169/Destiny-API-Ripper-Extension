@@ -6,35 +6,48 @@ const sevenBin = require('7zip-bin');
 const { extractFull } = require('node-7z');
 const { execFile } = require('child_process');
 
-async function getReleaseAsset() {
+async function getReleaseAsset(repo, tag='latest') {
     // Get releases
     return new Promise((resolve, reject) => {
-        axios.get('https://api.github.com/repos/TiredHobgoblin/Destiny-Collada-Generator/releases')
+        axios.get(`https://api.github.com/repos/${repo}/releases`)
             .then((res) => {
-                res.data[0].assets.forEach((i) => {
-                    if (i.name.toLowerCase().includes((is.macos ? 'osx' : process.platform.substring(0, 3)))) {
-                        resolve(i);
-                    }
-                });
+                if (tag === 'latest') {
+                    res.data[0].assets.forEach((asset) => {
+                        if (asset.name.toLowerCase().includes((is.macos ? 'osx' : process.platform.substring(0, 3)))) {
+                            resolve(asset);
+                        }
+                    });
+                } else {
+                    res.data.forEach(release => {
+                        if (release.tag_name === tag) {
+                            release.assets.forEach((asset) => {
+                                if (asset.name.toLowerCase().includes((is.macos ? 'osx' : process.platform.substring(0, 3)))) {
+                                    resolve(asset);
+                                }
+                            });
+                        }
+                    });
+                }
             }).catch(reject);
     });
 }
 
-async function extract7zip(archivePath) {
+async function extract7zip(archivePath, progressCallback=() => {}) {
     return new Promise((resolve, reject) => {
         const extractorStream = extractFull(archivePath, path.parse(archivePath).dir, { $bin: sevenBin.path7za, recursive: true });
 
-        extractorStream.on('progress', (progress) => { });
+        extractorStream.on('progress', progressCallback);
         extractorStream.on('error', reject);
         extractorStream.on('end', () => { resolve(extractorStream.info) });
     });
 }
 
-function toolVersion(toolPath) {
+async function getDCGVersion(dcgPath) {
     return new Promise((resolve, reject) => {
         try {
-            execFile(toolPath, ['--version'], (_, stdout, stderr) => {
-                resolve({stdout, stderr});
+            execFile(dcgPath, ['--version'], (_, stdout, stderr) => {
+                if (stderr) { reject(stderr) }
+                resolve(stdout.trim());
             });
         } catch (err) {
             reject(err);
@@ -50,4 +63,4 @@ function findExecutable(binPath) {
     }
 }
 
-module.exports = { extract7zip, getReleaseAsset, toolVersion, findExecutable };
+module.exports = { extract7zip, getReleaseAsset, getDCGVersion, findExecutable };

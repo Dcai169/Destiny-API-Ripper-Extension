@@ -1,32 +1,57 @@
 const log = require('electron-log');
+const searchBoxElem = document.getElementById('search-box');
 
-function searchVisibility(jqueryObj) {
-    return (document.getElementById('search-box').value.toLowerCase() ? jqueryObj.eq(0).attr('name')?.toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()) : true);
+function getSearchVisibility(element) {
+    if (!searchBoxElem.value) return true;
+    return element.getAttribute('name').toLowerCase().includes(searchBoxElem.value.toLowerCase());
 }
 
-function filterVisibility(jqueryObj){
-    if (jqueryObj.eq(0).parents().attr('id') === 'extract-queue') {
-        return true;
-    } else {
-        return [...document.getElementsByClassName('base-filter')].every((inputElem) => {
-            return (jqueryObj.is(inputElem.dataset.selector) ? inputElem.checked : true);
-        });
+function getTypeFilterVisibility(element) {
+    return !element.dataset.itemcategories.split(' ').some((itemCategory) => {
+        return !document.getElementById(`filter-${itemCategory}`).checked;
+    });
+}
+
+function getRarityFilterVisibility(element) {
+    switch (element.dataset.rarity) {
+        case '6':
+            return document.getElementById('filter-exotic').checked;
+
+        case '5':
+            return document.getElementById('filter-legendary').checked;
+
+        case '4':
+            return document.getElementById('filter-rare').checked;
+
+        case '3':
+            return document.getElementById('filter-uncommon').checked;
+
+        case '2':
+            return document.getElementById('filter-common').checked;
+
+        default:
+            return true;
     }
 }
 
-function setVisibility(jqueryObj) {
-    let state = searchVisibility(jqueryObj) && filterVisibility(jqueryObj);
-    jqueryObj.removeClass((state ? 'hidden' : 'm-1')).addClass((state ? 'm-1' : 'hidden'));
+function calcVisibilityState(element) {
+    return getSearchVisibility(element) && getTypeFilterVisibility(element) && getRarityFilterVisibility(element);
 }
 
-function updateUIInput(elementId, value) {
+function setVisibility(element, visibilityState=calcVisibilityState(element)) {
+    element.classList.remove((visibilityState ? 'hidden' : 'm-1'));
+    element.classList.add((visibilityState ? 'm-1' : 'hidden'));
+}
+
+function setInputElemValue(elementId, value) {
+    // log.silly(`Setting #${elementId} to '${value}'`);
     switch (typeof value) {
         case 'string':
-            $(`#${elementId}`).val(value);
+            document.getElementById(elementId).value = value;
             break;
 
         case 'boolean':
-            $(`#${elementId}`).prop('checked', !!value);
+            document.getElementById(elementId).value = !!value;
             break;
 
         default:
@@ -34,12 +59,17 @@ function updateUIInput(elementId, value) {
     }
 }
 
-function uiConsolePrint(text) {
-    document.getElementById('console-text').innerText += `${text}\n `;
+function printConsole(text, type='log') {
+    let textElem = document.createElement('span');
+    textElem.innerText = text;
+    textElem.classList.add(`console-${type}`);
+
+    document.getElementById('console-text').appendChild(textElem);
+    document.getElementById('console-text').appendChild(document.createElement('br'));
 
     if (document.getElementById("console-autoscroll-toggle").checked) {
         document.getElementById('console-container').scrollTop = document.getElementById('console-container').scrollHeight;
     }
 }
 
-module.exports = { setVisibility, updateUIInput, uiConsolePrint };
+module.exports = { setVisibility, setInputElemValue, printConsole };

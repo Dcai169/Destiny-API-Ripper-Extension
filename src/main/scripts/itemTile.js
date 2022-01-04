@@ -1,146 +1,171 @@
 const { setVisibility } = require('./uiUtils.js');
-const evaluateReplace = require('./evaluateReplace.js')
 const log = require('electron-log');
 
 function createItemTile(item, game) {
     let tileRoot;
     if (game === '2') {
-        tileRoot = $('<div></div>', {
-            class: 'item-tile d-flex align-items-center m-1',
-            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`,
-            id: item.hash,
-            name: item.displayProperties.name ?? 'Classified',
-            'data-index': item.index,
-            'data-rarity': item.inventory.tierType,
-            'data-itemtype': item.itemType,
-            'data-itemsubtype': item.itemSubType,
-            'data-ammotype': (item.hasOwnProperty('equippingBlock') && item.equippingBlock.hasOwnProperty('ammoType') ? item.equippingBlock.ammoType : '0'),
-            on: {
-                click: itemTileClickHandler
-            }
-        });
+        tileRoot = document.createElement('div');
+        tileRoot.id = item.hash;
+
+        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`;
+
+        tileRoot.classList.add('item-tile');
+        tileRoot.classList.add('d-flex');
+        tileRoot.classList.add('align-items-center');
+        tileRoot.classList.add('m-1');
+
+        tileRoot.dataset.index = item.index;
+        tileRoot.dataset.rarity = item.inventory.tierType;
+        tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(distinguishGrenadeLauncherHash).map(itemCategoryHashToName).join(' ').trim();
+
+        tileRoot.onclick = itemTileClickHandler;
+        tileRoot.setAttribute('name', item.displayProperties.name);
 
         // Image div (Icon & Season Badge)
-        let imgDiv = $('<div></div>', {
-            style: 'display: grid; position: relative;'
-        });
+        let iconDiv = document.createElement('div');
+        iconDiv.style.display = 'grid';
+        iconDiv.style.position = 'relative';
 
-        imgDiv.append($('<img></img>', {
-            src: `https://bungie.net${item.displayProperties.icon}`,
-            referrerpolicy: 'no-referrer',
-            crossorigin: 'None',
-            loading: 'lazy',
-            style: 'grid-row: 1; grid-column: 1;'
-        }));
+        let iconImg = document.createElement('img');
+        iconImg.src = `https://bungie.net${item.displayProperties.icon}`;
+        iconImg.setAttribute('referrerpolicy', 'no-referrer');
+        iconImg.setAttribute('crossorigin', 'None');
+        iconImg.loading = 'lazy';
+
+        iconImg.style.gridRow = '1';
+        iconImg.style.gridColumn = '1';
+
+        iconDiv.appendChild(iconImg);
 
         if (item.iconWatermark) {
-            imgDiv.append($('<img></img>', {
-                src: `https://bungie.net${item.iconWatermark}`,
-                referrerpolicy: 'no-referrer',
-                crossorigin: 'None',
-                loading: 'lazy',
-                style: 'grid-row: 1; grid-column: 1; z-index: 1;'
-            }));
+            let watermarkImg = document.createElement('img');
+            watermarkImg.src = `https://bungie.net${item.iconWatermark}`;
+            watermarkImg.setAttribute('referrerpolicy', 'no-referrer');
+            watermarkImg.setAttribute('crossorigin', 'None');
+            watermarkImg.loading = 'lazy';
+
+            watermarkImg.style.gridRow = '1';
+            watermarkImg.style.gridColumn = '1';
+            watermarkImg.style.zIndex = '1';
+
+            iconDiv.appendChild(watermarkImg);
         }
 
         // Item text (Name & Type)
-        let textDiv = $('<div></div>', {
-            class: 'tile-text d-inline-flex px-2'
-        });
+        let textDiv = document.createElement('div');
+        textDiv.classList.add('tile-text');
+        textDiv.classList.add('d-inline-flex');
+        textDiv.classList.add('px-2');
 
-        let textContainer = $('<div></div>', {});
-        textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
-            text: (item.displayProperties.name ? item.displayProperties.name : `#${item.hash}`),
-            style: `color: ${(item.inventory.tierType <= 2 ? 'black' : 'white')}`
-        })));
-        textContainer.append($('<p></p>', { class: 'm-0' }).append($('<i></i>', {
-            text: (item.itemTypeDisplayName ? item.itemTypeDisplayName : undefined),
-            class: 'fs-5 item-type',
-            style: `color: ${(item.inventory.tierType <= 2 ? '#707070' : '#DDD')}`
-        })));
+        let textContainer = document.createElement('div');
+        let titleText = document.createElement('p');
+        titleText.classList.add('item-name');
+        titleText.classList.add('m-0');
+        titleText.innerHTML = `<b class='m-0'>${item.displayProperties.name}</b>`;
+        titleText.style.color = (item.inventory.tierType <= 2 ? 'black' : 'white');
 
-        textDiv.append(textContainer);
-        tileRoot.append(imgDiv);
-        tileRoot.append(textDiv);
+        let typeText = document.createElement('p');
+        typeText.classList.add('m-0');
+        typeText.innerHTML = `<i class='fs-5 item-type'>${item.itemTypeDisplayName}</i>`;
+        typeText.style.color = (item.inventory.tierType <= 2 ? '#707070' : '#DDD');
+
+        textContainer.appendChild(titleText);
+        textContainer.appendChild(typeText);
+        textDiv.appendChild(textContainer);
+
+        tileRoot.appendChild(iconDiv);
+        tileRoot.appendChild(textDiv);
     } else if (game === '1') {
-        tileRoot = $('<div></div>', {
-            class: 'item-tile d-flex align-items-center m-1',
-            style: `position: relative; background-color: var(--${tierNumberToRarityName(item.tierType)}-color)`,
-            id: item.hash,
-            name: (item.itemName ? item.itemName : 'Classified'),
-            'data-index': item.hash,
-            'data-rarity': item.tierType,
-            'data-itemtype': item.itemType,
-            'data-itemsubtype': item.itemSubType,
-            on: {
-                click: itemTileClickHandler
-            }
-        });
+        tileRoot = document.createElement('div');
+        tileRoot.id = item.hash;
+
+        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item?.inventory.tierType)}-color)`;
+
+        tileRoot.classList.add('item-tile');
+        tileRoot.classList.add('d-flex');
+        tileRoot.classList.add('align-items-center');
+        tileRoot.classList.add('m-1');
+
+        tileRoot.dataset.index = item.index;
+        tileRoot.dataset.rarity = item.inventory.tierType;
+
+        tileRoot.onclick = itemTileClickHandler;
+        tileRoot.setAttribute('name', item?.itemName ?? 'Classified');
 
         // Image div (Icon & Season Badge)
-        let imgDiv = $('<div></div>', {
-            style: 'display: grid; position: relative;'
-        });
+        let iconDiv = document.createElement('div');
+        iconDiv.style.display = 'grid';
+        iconDiv.style.position = 'relative';
 
-        imgDiv.append($('<img></img>', {
-            src: `https://bungie.net${(item.icon ? item.icon : '/img/misc/missing_icon.png')}`,
-            referrerpolicy: 'no-referrer',
-            crossorigin: 'None',
-            loading: 'lazy',
-            style: 'grid-row: 1; grid-column: 1;'
-        }));
+        let iconImg = document.createElement('img');
+        iconImg.src = `https://bungie.net${(item.icon ? item.icon : '/img/misc/missing_icon.png')}`;
+        iconImg.setAttribute('referrerpolicy', 'no-referrer');
+        iconImg.setAttribute('crossorigin', 'None');
+        iconImg.loading = 'lazy';
+
+        iconImg.style.gridRow = '1';
+        iconImg.style.gridColumn = '1';
+
+        iconDiv.appendChild(iconImg);
 
         // Item text (Name & Type)
-        let textDiv = $('<div></div>', {
-            class: 'tile-text d-inline-flex px-2'
-        });
+        let textDiv = document.createElement('div');
+        textDiv.classList.add('tile-text');
+        textDiv.classList.add('d-inline-flex');
+        textDiv.classList.add('px-2');
 
-        let textContainer = $('<div></div>', {});
-        textContainer.append($('<p></p>', { class: 'm-0' }).append($(`<b></b>`, {
-            text: (item.itemName ? item.itemName : `#${item.hash}`),
-            class: 'm-0',
-            style: `color: ${(item.tierType <= 2 ? 'black' : 'white')}`
-        })));
-        textContainer.append($('<p></p>', { class: 'm-0' }).append($('<i></i>', {
-            text: (item.itemTypeName ? item.itemTypeName : undefined),
-            class: 'fs-5 item-type',
-            style: `color: ${(item.tierType <= 2 ? '#707070' : '#DDD')}`
-        })));
+        let textContainer = document.createElement('div');
+        let titleText = document.createElement('p');
+        titleText.classList.add('m-0');
+        titleText.innerHTML = `<b class='m-0'>${(item?.itemName ?? `#${item.hash}`)}</b>`;
+        titleText.style.color = (item.inventory.tierType <= 2 ? 'black' : 'white');
 
-        textDiv.append(textContainer);
-        tileRoot.append(imgDiv);
-        tileRoot.append(textDiv);
+        let typeText = document.createElement('p');
+        typeText.classList.add('m-0');
+        typeText.innerHTML = `<i class='fs-5 item-type'>${item.itemTypeName}</i>`;
+        typeText.style.color = (item.tierType <= 2 ? '#707070' : '#DDD');
+
+        textContainer.appendChild(titleText);
+        textContainer.appendChild(typeText);
+        textDiv.appendChild(textContainer);
+
+        tileRoot.appendChild(iconDiv);
+        tileRoot.appendChild(textDiv);
     }
 
     return tileRoot;
 }
 
 function itemTileClickHandler(event) {
-    let clicked = $(event.currentTarget);
-    switch ($(event.currentTarget).eq(0).parents().attr('id')) {
+    let clicked = event.currentTarget;
+    switch (clicked.parentElement.id) {
         case 'item-container':
-            log.silly(`${clicked.eq(0).attr('id')} added to queue`);
-            queue.append(clicked.detach());
+            log.silly(`${clicked.id} added to queue`);
+            queue.append(clicked);
             break;
 
         case 'extract-queue':
             setVisibility(clicked);
-            log.silly(`${clicked.eq(0).attr('id')} returned to container`);
-            addItemToContainer(clicked.detach());
+            log.silly(`${clicked.id} returned to container`);
+            addItemToContainer(clicked);
             break;
-    
+
         default:
             break;
     }
 }
 
 function addItemToContainer(item) {
-    let containerContents = [...itemContainer.eq(0).children()].map(item => { return item.dataset.index });
-    if (item.data('index') < Math.min(...containerContents)) {
-        $(`[data-index='${closest(item.data('index'), containerContents)}']`).before(item);
+    let containerContents = Array.from(itemContainer.children).map(item => { return item.dataset.index });
+    let itemIndex = item.dataset.index;
+
+    if (itemIndex < Math.min(...containerContents)) {
+        document.querySelector(`[data-index='${closest(itemIndex, containerContents)}']`).before(item);
     } else {
-        $(`[data-index='${closest(item.data('index'), containerContents)}']`).after(item);
+        document.querySelector(`[data-index='${closest(itemIndex, containerContents)}']`).after(item);
     }
+
+    setVisibility(item);
 }
 
 function tierNumberToRarityName(tierType) {
@@ -162,6 +187,117 @@ function tierNumberToRarityName(tierType) {
 
         default:
             break;
+    }
+}
+
+function distinguishGrenadeLauncherHash(itemCategoryHash, _, categoryHashArr) {
+    if (itemCategoryHash === 153950757 && categoryHashArr.includes(4)) {
+        return 153950761;
+    } else {
+        return itemCategoryHash;
+    }
+}
+
+function itemCategoryHashToName(hash) {
+    switch (hash) {
+        case 45:
+            return 'helmet';
+
+        case 46:
+            return 'gauntlets';
+
+        case 47:
+            return 'chest';
+
+        case 48:
+            return 'legs';
+
+        case 49:
+            return 'class';
+
+        case 1742617626:
+            return 'armorOrnament';
+
+        // case 22:
+        //     return 'titanArmor';
+
+        // case 23:
+        //     return 'hunterArmor';
+
+        // case 21:
+        //     return 'warlockArmor';
+
+        case 5:
+            return 'autoRifle';
+
+        case 8:
+            return 'scoutRifle';
+
+        case 7:
+            return 'pulseRifle';
+
+        case 6:
+            return 'handCannon';
+
+        case 3954685534:
+            return 'submachineGun';
+
+        case 14:
+            return 'sidearm';
+
+        case 3317538576:
+            return 'bow';
+        
+        case 11:
+            return 'shotgun';
+
+        case 9:
+            return 'fusionRifle';
+
+        case 10:
+            return 'sniperRifle';
+
+        case 2489664120:
+            return 'traceRifle';
+
+        case 54:
+            return 'sword';
+
+        case 13:
+            return 'rocketLauncher';
+
+        case 1504945536:
+            return 'linearFusionRifle';
+
+        case 12:
+            return 'machineGun';
+
+        case 3124752623:
+            return 'weaponOrnament';
+
+        case 42:
+            return 'ships';
+
+        case 43:
+            return 'sparrows';
+
+        case 39:
+            return 'ghostShells';
+
+        case 41:
+            return 'shaders';
+
+        case 153950757:
+            return 'breachGrenadeLauncher';
+
+        case 153950761:
+            return 'heavyGrenadeLauncher';
+
+        case 55:
+            return 'masks';
+
+        default:
+            return '';
     }
 }
 

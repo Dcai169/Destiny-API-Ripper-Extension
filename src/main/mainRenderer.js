@@ -1,23 +1,21 @@
 // Module imports
-const { api } = require('electron-util');
 const { ipcRenderer } = require('electron');
 const log = require('electron-log');
-// const os = require('os');
 
 // Script imports
 const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./scripts/destinyManifest.js');
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
-const { setVisibility, updateUIInput, uiConsolePrint } = require('./scripts/uiUtils.js');
+const { setVisibility, setInputElemValue, printConsole } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { baseFilterClickHandler, compositeFilterClickHandler, updateItems } = require('./scripts/filterMenus.js');
+const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
-let itemContainer = $('#item-container');
-let queue = $('#extract-queue');
+let itemContainer = document.getElementById('item-container');
+let queue = document.getElementById('extract-queue');
 let gameSelector = document.getElementById('gameSelector');
 
-let searchDebounceTimeout;
+let searchTimeout;
 let reloadRequired = false;
 let itemMap = {
     '1': {
@@ -30,36 +28,29 @@ let itemMap = {
     }
 };
 
-uiConsolePrint(`DARE v${api.app.getVersion()}`);
+ipcRenderer.send('getStartupConsoleMessage');
 
 function loadItems(itemMap) {
-    log.silly('Container cleared');
-    itemContainer.empty();
-    log.silly('Queue cleared');
-    queue.empty();
-
-    log.debug(`${itemMap.size} items indexed`);
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });
     log.debug(`${itemMap.size} items loaded`);
 }
 
-function searchBoxInputHandler(event) {
-    window.clearTimeout(searchDebounceTimeout);
+function searchBoxInputHandler() {
+    clearTimeout(searchTimeout);
 
-    searchDebounceTimeout = setTimeout(() => {
-        if (event.target.value) {
-            log.silly(`Search: ${event.target.value.toLowerCase()}`);
-            // There's a bug in here; probably some sort of race condition issue
-            itemContainer.eq(0).children().each((_, element) => {
-                let item = $(element);
-                setVisibility(item);
-            });
+    searchTimeout = setTimeout(() => {
+        if (document.getElementById('search-box').value) {
+            [...document.querySelectorAll('#item-container .item-tile.m-1')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
+            })
         } else {
-            [...document.getElementsByClassName('base-filter')].forEach(updateItems);
+            [...document.getElementById('item-container').children].forEach((item) => {
+                setVisibility(item);
+            })
         }
-    }, 400);
+    }, 500);
 }
 
 function gameSelectorChangeListener() {
@@ -76,9 +67,8 @@ function gameSelectorChangeListener() {
 window.addEventListener('DOMContentLoaded', (event) => {
     // Load userPreferences
     for ([key, value] of userPreferences) {
-        // log.debug(`${key}: ${value} (${typeof value})`);
-        updateUIInput(key, value);
-    } 
+        setInputElemValue(key, value);
+    }
 
     // Load items
     if (!itemMap[gameSelector.value].items) {
@@ -91,25 +81,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 // Navbar items
 gameSelector.addEventListener('change', gameSelectorChangeListener);
-[...document.getElementsByClassName('base-filter')].forEach((element) => { element.addEventListener('click', baseFilterClickHandler) });
-[...document.getElementsByClassName('composite-filter')].forEach((element) => { element.addEventListener('click', compositeFilterClickHandler) });
-document.getElementById('queue-clear-button').addEventListener('click', () => { [...queue.eq(0).children()].forEach(item => { addItemToContainer($(`#${item.id}`).detach()); }); log.silly('Queue cleared.'); });
+[...document.getElementsByClassName('rarity-filter')].forEach((inputElem) => { inputElem.addEventListener('click', rarityFilterClickHandler); });
+[...document.getElementsByClassName('type-filter')].forEach((element) => { element.addEventListener('click', typeFilterClickHandler) });
+[...document.getElementsByClassName('dependent-filter')].forEach((element) => { element.addEventListener('click', dependentFilterClickHandler) });
+document.getElementById('queue-clear-button').addEventListener('click', () => {
+    [...queue.children].forEach(item => { addItemToContainer(item); });
+    // log.silly('Queue cleared.');
+});
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
 // Console
-document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').textContent = '' });
+document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').innerHTML = '' });
 
 // Settings modal
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
-document.getElementById('toolPath').addEventListener('click', () => { ipcRenderer.send('selectToolPath') });
+document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.send('selectDCGPath') });
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
 document.getElementById('locale').addEventListener('change', () => {
     reloadRequired = true;
-    $('#modal-close-button').text('Reload');
+    document.getElementById('modal-close-button').textContent = 'Reload';
     userPreferences.set('locale', document.getElementById('locale').value);
 });
+
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
         document.location.reload();
@@ -124,12 +119,14 @@ ipcRenderer.on('selectOutputPath-reply', (_, args) => {
     }
 });
 
-ipcRenderer.on('selectToolPath-reply', (_, args) => {
+ipcRenderer.on('selectDCGPath-reply', (_, args) => {
     if (args) {
-        userPreferences.set('toolPath', args[0]);
-        document.getElementById('toolPath').value = args[0];
+        userPreferences.set('dcgPath', args[0]);
+        document.getElementById('dcgPath').value = args[0];
     }
 });
+
+ipcRenderer.on('getStartupConsoleMessage-reply', (_, args) => { printConsole(args + '\n ', 'log') });
 
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {

@@ -5,15 +5,12 @@ const { debugInfo } = require('electron-util');
 const { download } = require('electron-dl');
 const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
 const { logError } = require('./userPreferences.js');
-const fs = require('fs')
+const fsp = require('fs').promises;
 const path = require('path');
+let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
 
 store.initRenderer();
 log.info(debugInfo());
-
-// Update stuff
-// const updateServer = 'https://hazel-six-omega.vercel.app'
-// const updateUrl = `${updateServer}/update/${process.platform}/${app.getVersion()}`
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
@@ -31,7 +28,9 @@ const createMainWindow = () => {
             contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
-        }
+        },
+        backgroundColor: '#3E4145',
+        show: false
     });
 
     mainWindow.maximize();
@@ -77,6 +76,10 @@ const createMainWindow = () => {
     // Hide menubar
     mainWindow.setMenuBarVisibility(false);
 
+    mainWindow.on('ready-to-show', () => {
+        mainWindow.show();
+    })
+
     // Open the DevTools.
     // mainWindow.webContents.openDevTools();
 };
@@ -92,7 +95,8 @@ const createLoadingWindow = () => {
             contextIsolation: false,
             nodeIntegration: true,
             enableRemoteModule: true
-        }
+        },
+        show: false
     });
 
     // Menu items
@@ -122,6 +126,10 @@ const createLoadingWindow = () => {
 
     // Hide menubar
     loadingWindow.setMenuBarVisibility(false);
+
+    loadingWindow.on('ready-to-show', () => {
+        loadingWindow.show();
+    })
 
     // Open the DevTools.
     // loadingWindow.webContents.openDevTools();
@@ -153,39 +161,49 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-function dlDoneCallback(res) {
-    let archivePath = res.path;
-    let binDir = path.parse(archivePath).dir;
-    extract7zip(res.path).then((res) => {
-        let toolPath = path.join(binDir, findExecutable(binDir).name);
-        fs.unlink(archivePath, () => {
-            fs.chmod(toolPath, 0o744, () => {
-                setTimeout(() => {
-                    BrowserWindow.getFocusedWindow().webContents.send('dlPing-reply', toolPath);
-                }, 200);
-            });
-        });
-    }).catch(logError);
-}
+let fsopSemaphore = false;
 
 ipcMain.on('loadingDone', (event, args) => {
+    startupConsoleMessage += args.consoleMessage;
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
     log.verbose('Loading window destroyed');
 });
 
-ipcMain.on('dlPing', (event, { url, dlPath }) => {
+ipcMain.handle('download', async (event, { url, dlPath }) => {
     if (event.sender.getURL().includes('loading')) {
-        download(BrowserWindow.getFocusedWindow(), url, { directory: dlPath, saveAs: false, onCompleted: dlDoneCallback }).catch(logError);
+        let dlData;
+        fsopSemaphore = true;
+        await download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, overwrite: true, onCompleted: (res) => { dlData = res } });
+        return dlData;
     }
 });
+
+ipcMain.handle('decompress7zip', async (_, args) => {
+    let archivePath = args.path;
+    let exeDir = path.parse(archivePath).dir;
+
+    await extract7zip(archivePath)
+    let dcgPath = path.join(exeDir, findExecutable(exeDir).name);
+    await fsp.chmod(dcgPath, 0o744);
+    fsopSemaphore = false;
+    return dcgPath;
+});
+
+ipcMain.handle('getFSOPSemaphore', () => {
+    return fsopSemaphore;
+});
+
+ipcMain.on('setFSOPSemaphore', (_, args) => {
+    fsopSemaphore = args;
+})
 
 ipcMain.on('selectOutputPath', (event) => {
     event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
 });
 
-ipcMain.on('selectToolPath', (event) => {
-    event.reply('selectToolPath-reply', dialog.showOpenDialogSync({ title: 'Select Tool Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.on('selectDCGPath', (event) => {
+    event.reply('selectDCGPath-reply', dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
 });
 
 ipcMain.on('openExplorer', (_, args) => {
@@ -194,3 +212,9 @@ ipcMain.on('openExplorer', (_, args) => {
     }
 });
 
+ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConsoleMessage-reply', startupConsoleMessage) });
+
+ipcMain.on('loadingTimeout', () => {
+    app.relaunch({ args: ['--relaunch'] });
+    app.exit(302);
+})

@@ -38,28 +38,30 @@ function calcVisibilityState(element) {
     return getSearchVisibility(element) && getTypeFilterVisibility(element) && getRarityFilterVisibility(element);
 }
 
-function setVisibility(element, visibilityState=calcVisibilityState(element)) {
+function setVisibility(element, visibilityState = calcVisibilityState(element)) {
     element.classList.remove((visibilityState ? 'hidden' : 'm-1'));
     element.classList.add((visibilityState ? 'm-1' : 'hidden'));
 }
 
 function setInputElemValue(elementId, value) {
-    // log.silly(`Setting #${elementId} to '${value}'`);
-    switch (typeof value) {
-        case 'string':
-            document.getElementById(elementId).value = value;
-            break;
+    let inputElem = document.getElementById(elementId);
+    if (inputElem) {
+        switch (typeof value) {
+            case 'string':
+                document.getElementById(elementId).value = value;
+                break;
 
-        case 'boolean':
-            document.getElementById(elementId).value = !!value;
-            break;
+            case 'boolean':
+                document.getElementById(elementId).value = !!value;
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 }
 
-function printConsole(text, type='log') {
+function printConsole(text, type = 'log') {
     let textElem = document.createElement('span');
     textElem.innerText = text;
     textElem.classList.add(`console-${type}`);

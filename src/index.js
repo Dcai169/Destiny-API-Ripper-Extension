@@ -198,20 +198,20 @@ ipcMain.on('setFSOPSemaphore', (_, args) => {
     fsopSemaphore = args;
 })
 
-ipcMain.on('selectOutputPath', (event) => {
-    event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.handle('selectOutputPath', (event) => {
+    return dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
-ipcMain.on('selectDCGPath', (event) => {
-    event.reply('selectDCGPath-reply', dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.handle('selectDCGPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
 ipcMain.handle('selectMDEPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })[0];
+    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
 ipcMain.handle('selectPKGPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })[0];
+    return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
 })
 
 ipcMain.on('openExplorer', (_, args) => {
@@ -220,7 +220,7 @@ ipcMain.on('openExplorer', (_, args) => {
     }
 });
 
-ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConsoleMessage-reply', startupConsoleMessage) });
+ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessage });
 
 ipcMain.on('loadingTimeout', () => {
     app.relaunch({ args: ['--relaunch'] });

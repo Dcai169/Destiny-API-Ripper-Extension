@@ -28,8 +28,6 @@ let itemMap = {
     }
 };
 
-ipcRenderer.send('getStartupConsoleMessage');
-
 function loadItems(itemMap) {
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
@@ -53,7 +51,7 @@ function searchBoxInputHandler() {
     }, 500);
 }
 
-function gameSelectorChangeListener() {
+function gameSelectorChangeHandler() {
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
@@ -64,8 +62,24 @@ function gameSelectorChangeListener() {
     }
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
+function localeChangeHandler() {
+    reloadRequired = true;
+    document.getElementById('modal-close-button').textContent = 'Reload';
+    userPreferences.set('locale', document.getElementById('locale').value);
+}
+
+function validateAndSetPath(path, settingKey) {
+    if (!path) return;
+    userPreferences.set(settingKey, path);
+    document.getElementById(settingKey).value = path;
+}
+
+window.addEventListener('DOMContentLoaded', () => {
     if (process.platform === 'win32' && process.arch === 'x64') document.getElementById('mde-settings').classList.remove('hidden');
+
+    ipcRenderer.invoke('getStartupConsoleMessage').then((startupConsoleMessage) => {
+        printConsole(startupConsoleMessage + '\n ');
+    });
 
     // Load userPreferences
     for ([key, value] of userPreferences) {
@@ -82,7 +96,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 });
 
 // Navbar items
-gameSelector.addEventListener('change', gameSelectorChangeListener);
+gameSelector.addEventListener('change', gameSelectorChangeHandler);
 [...document.getElementsByClassName('rarity-filter')].forEach((inputElem) => { inputElem.addEventListener('click', rarityFilterClickHandler); });
 [...document.getElementsByClassName('type-filter')].forEach((element) => { element.addEventListener('click', typeFilterClickHandler) });
 [...document.getElementsByClassName('dependent-filter')].forEach((element) => { element.addEventListener('click', dependentFilterClickHandler) });
@@ -97,17 +111,14 @@ document.getElementById('search-box').addEventListener('input', searchBoxInputHa
 document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').innerHTML = '' });
 
 // Settings modal
-document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.send('selectOutputPath') });
-document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.send('selectDCGPath') });
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
-document.getElementById('locale').addEventListener('change', () => {
-    reloadRequired = true;
-    document.getElementById('modal-close-button').textContent = 'Reload';
-    userPreferences.set('locale', document.getElementById('locale').value);
-});
-document.getElementById('mdePath').addEventListener('click', (event) => { ipcRenderer.invoke('selectMDEPath').then((res) => { userPreferences.set('mdePath', res); event.target.value = res; }) });
-document.getElementById('pkgPath').addEventListener('click', (event) => { ipcRenderer.invoke('selectPKGPath').then((res) => { userPreferences.set('pkgPath', res); event.target.value = res; }) });
+document.getElementById('locale').addEventListener('change', localeChangeHandler);
+
+document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.invoke('selectOutputPath').then((res) => { validateAndSetPath(res, 'outputPath') }) });
+document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.invoke('selectDCGPath').then((res) => { validateAndSetPath(res, 'dcgPath') }) });
+document.getElementById('mdePath').addEventListener('click', () => { ipcRenderer.invoke('selectMDEPath').then((res) => { validateAndSetPath(res, 'mdePath') }) });
+document.getElementById('pkgPath').addEventListener('click', () => { ipcRenderer.invoke('selectPKGPath').then((res) => { validateAndSetPath(res, 'pkgPath') }) });
 
 document.getElementById('modal-close-button').addEventListener('click', () => {
     if (reloadRequired) {
@@ -115,22 +126,6 @@ document.getElementById('modal-close-button').addEventListener('click', () => {
         reloadRequired = false;
     }
 });
-
-ipcRenderer.on('selectOutputPath-reply', (_, args) => {
-    if (args) {
-        userPreferences.set('outputPath', args[0]);
-        document.getElementById('outputPath').value = args[0];
-    }
-});
-
-ipcRenderer.on('selectDCGPath-reply', (_, args) => {
-    if (args) {
-        userPreferences.set('dcgPath', args[0]);
-        document.getElementById('dcgPath').value = args[0];
-    }
-});
-
-ipcRenderer.on('getStartupConsoleMessage-reply', (_, args) => { printConsole(args + '\n ', 'log') });
 
 // Keyboard shortcuts
 ipcRenderer.on('reload', (_, args) => {

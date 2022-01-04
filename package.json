@@ -76,6 +76,7 @@
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^7.0.2",
     "electron-util": "^0.14.2",
+    "jquery": "^3.6.0",
     "node-7z": "^2.1.2",
     "popper.js": "^1.16.1"
   },

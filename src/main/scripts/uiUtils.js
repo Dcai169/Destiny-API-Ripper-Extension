@@ -48,11 +48,11 @@ function setInputElemValue(elementId, value) {
     if (inputElem) {
         switch (typeof value) {
             case 'string':
-                document.getElementById(elementId).value = value;
+                inputElem.value = value;
                 break;
 
             case 'boolean':
-                document.getElementById(elementId).value = !!value;
+                inputElem.value = !!value;
                 break;
 
             default:

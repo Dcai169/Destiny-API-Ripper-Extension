@@ -202,3 +202,8 @@ ipcMain.on('openExplorer', (_, args) => {
 });
 
 ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConsoleMessage-reply', startupConsoleMessage) });
+
+ipcMain.on('loadingTimeout', () => {
+    app.relaunch();
+    app.quit();
+})

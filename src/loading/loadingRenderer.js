@@ -44,6 +44,7 @@ function setBarPercent(percent, delay = 0) {
         }
     } else {
         log.error('DCG path undefined')
+        setTimeout(() => { ipcRenderer.send('loadingTimeout') }, 7000);
     }
 })();
 

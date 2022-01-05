@@ -113,6 +113,8 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 // Settings modal
 document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
+document.getElementById('ripHDTextures').addEventListener('input', () => { userPreferences.set('ripHDTextures', document.getElementById('ripHDTextures').checked) });
+document.getElementById('ripShaders').addEventListener('input', () => { userPreferences.set('ripShaders', document.getElementById('ripShaders').checked) });
 document.getElementById('locale').addEventListener('change', localeChangeHandler);
 
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.invoke('selectOutputPath').then((res) => { validateAndSetPath(res, 'outputPath') }) });

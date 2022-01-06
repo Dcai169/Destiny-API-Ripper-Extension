@@ -14,6 +14,7 @@ setInterval(() => {
 }, 500);
 
 function setBarPercent(percent) {
+    if (percent > 100) { percent = 100; }
     document.getElementById('main-bar').style.width = `${percent}%`;
 }
 
@@ -40,7 +41,7 @@ function sendLoadingDoneEvent(textContent, delay) {
             if (`${targetedDCGLink.split('/')[7]}.0` !== `v${dcgVersion}`) {
                 setBarPercent(100);
                 log.warn(`DCG version mismatch: v${userPreferences.get('preferredDCGVersion')}`);
-                sendLoadingDoneEvent({'consoleMessage': 'DCG version mismatch', 'textType': 'log'}, 1000);
+                sendLoadingDoneEvent({'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}${(userPreferences.get('preferredDCGVersion') === 'latest' ? '\nNew DCG version available.' : '')}`, 'textType': 'log'}, 1000);
             } else {
                 setBarPercent(100);
                 log.verbose(`DCG version matches desired version`);

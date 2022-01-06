@@ -140,13 +140,13 @@ function itemTileClickHandler(event) {
     let clicked = event.currentTarget;
     switch (clicked.parentElement.id) {
         case 'item-container':
-            log.silly(`${clicked.id} added to queue`);
+            // log.debug(`${clicked.id} added to queue`);
             queue.append(clicked);
             break;
 
         case 'extract-queue':
             setVisibility(clicked);
-            log.silly(`${clicked.id} returned to container`);
+            // log.debug(`${clicked.id} returned to container`);
             addItemToContainer(clicked);
             break;
 

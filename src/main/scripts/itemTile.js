@@ -18,6 +18,10 @@ function createItemTile(item, game) {
         tileRoot.dataset.rarity = item.inventory.tierType;
         tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(distinguishGrenadeLauncherHash).map(itemCategoryHashToName).join(' ').trim();
 
+        if (!tileRoot.dataset.itemcategories) {
+            tileRoot.dataset.itemcategories = 'armorOrnament';
+        }
+
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item.displayProperties.name);
 

@@ -4,10 +4,12 @@ const log = require('electron-log');
 const { debugInfo } = require('electron-util');
 const { download } = require('electron-dl');
 const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
-const { logError } = require('./userPreferences.js');
 const fsp = require('fs').promises;
 const path = require('path');
+const { argv } = require('process');
+
 let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
+let relaunchFlag = argv.includes('--relaunch');
 
 store.initRenderer();
 log.info(debugInfo());
@@ -214,15 +216,17 @@ ipcMain.handle('selectPKGPath', () => {
     return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
 })
 
+ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessage });
+
+ipcMain.handle('getRelaunchFlag', () => { return relaunchFlag });
+
 ipcMain.on('openExplorer', (_, args) => {
     if (args) {
         shell.openPath(args[0]);
     }
 });
 
-ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessage });
-
 ipcMain.on('loadingTimeout', () => {
-    app.relaunch({ args: ['--relaunch'] });
+    app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
     app.exit(302);
 })

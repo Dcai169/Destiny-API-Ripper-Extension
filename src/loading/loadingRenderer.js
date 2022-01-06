@@ -36,26 +36,30 @@ function sendLoadingDoneEvent(textContent, delay) {
             log.info(`DCG version: v${dcgVersion}`);
             let targetedDCGLink = (await getReleaseAsset('TiredHobgoblin/Destiny-Collada-Generator', userPreferences.get('preferredDCGVersion'))).browser_download_url;
             setBarPercent(75);
-        
+
             // check if DCG matches desired version
             if (`${targetedDCGLink.split('/')[7]}.0` !== `v${dcgVersion}`) {
                 setBarPercent(100);
                 log.warn(`DCG version mismatch: v${userPreferences.get('preferredDCGVersion')}`);
-                sendLoadingDoneEvent({'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}${(userPreferences.get('preferredDCGVersion') === 'latest' ? '\nNew DCG version available.' : '')}`, 'textType': 'log'}, 1000);
+                sendLoadingDoneEvent({ 'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}${(userPreferences.get('preferredDCGVersion') === 'latest' ? '\nNew DCG version available.' : '')}`, 'textType': 'log' }, 1000);
             } else {
                 setBarPercent(100);
                 log.verbose(`DCG version matches desired version`);
-                sendLoadingDoneEvent({'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}`, 'textType': 'log'}, 1000);
+                sendLoadingDoneEvent({ 'consoleMessage': `DCG v${dcgVersion.substring(0, dcgVersion.length - 2)}`, 'textType': 'log' }, 1000);
             }
         } else { // Legacy DCG or misconfigured DCG path
-            setBarPercent(100); 
+            setBarPercent(100);
             log.warn(`DCG version check failed`);
-            sendLoadingDoneEvent({'consoleMessage': 'Destiny Collada Generator version check failed, Check the DCG path is configured correctly', 'textType': 'warn'}, 1000);
+            sendLoadingDoneEvent({ 'consoleMessage': 'Destiny Collada Generator version check failed, Check the DCG path is configured correctly', 'textType': 'warn' }, 1000);
         }
     } else {
         log.error('DCG path undefined')
-        setTimeout(() => { ipcRenderer.send('loadingTimeout') }, 7000);
-        setBarPercent(100);
+        if (await ipcRenderer.invoke('getRelaunchFlag')) {
+            setBarPercent(100);
+            sendLoadingDoneEvent({ 'consoleMessage': 'Destiny Collada Generator was not found, Check the DCG path is configured correctly', 'textType': 'error' }, 1000);
+        } else {
+            setTimeout(() => { ipcRenderer.send('loadingTimeout') }, 7000);
+        }
     }
 })();
 

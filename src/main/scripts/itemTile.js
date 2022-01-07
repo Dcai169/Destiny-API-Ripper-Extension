@@ -22,6 +22,24 @@ function createItemTile(item, game) {
             tileRoot.dataset.itemcategories = 'armorOrnament';
         }
 
+        switch (item?.classType) {
+            case 0:
+                tileRoot.dataset.class = 'titan';
+                break;
+
+            case 1:
+                tileRoot.dataset.class = 'hunter';
+                break;
+
+            case 2:
+                tileRoot.dataset.class = 'warlock';
+                break;
+
+            default:
+                if (item?.plug?.plugCategoryIdentifier.split('_')[2]) { tileRoot.dataset.class = item?.plug?.plugCategoryIdentifier.split('_')[2] }
+                break;
+        }
+
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item.displayProperties.name);
 
@@ -251,7 +269,7 @@ function itemCategoryHashToName(hash) {
 
         case 3317538576:
             return 'bow';
-        
+
         case 11:
             return 'shotgun';
 

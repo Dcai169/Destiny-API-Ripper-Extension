@@ -7,17 +7,12 @@ const { printConsole } = require('./uiUtils.js');
 const path = require('path');
 const fsp = require('fs').promises;
 
-const printConsoleLog = (text) => { printConsole(text, 'log') };
-const printConsoleError = (text) => { printConsole(text, 'error') };
+const printConsoleLog = (text) => { log.debug(text); printConsole(text, 'log'); };
+const printConsoleError = (text) => { log.error(text); printConsole(text, 'error'); };
 
 // Create working directory in temp
 let tempDir = path.join(api.app.getPath('temp'), 'destiny-api-ripper-extension');
 fsp.mkdir(tempDir, { recursive: true });
-
-function logAndReturn(value) {
-    log.info(value);
-    return value;
-}
 
 function replaceBackslashes(path) {
     return path?.replaceAll('\\', '/');
@@ -35,24 +30,33 @@ function updateUiDone(code) {
 }
 
 async function getMostRecentDestinyModel(folderPath) {
-    let latestFolderDirent;
+    let latestFolderName;
     let latestFolderSpawnTime;
-    (await fsp.readdir(folderPath, { withFileTypes: true }))
-        .filter(dirent => dirent.isDirectory())
-        .forEach(async folder => {
-            if (latestFolderDirent) {
-                if ((await fsp.stat(path.join(folderPath, folder.name))).birthtimeMs > latestFolderSpawnTime) {
-                    latestFolderDirent = folder.name;
+
+    return new Promise(async (resolve, reject) => {
+        (await fsp.readdir(folderPath, { withFileTypes: true }))
+            .filter(dirent => dirent.isDirectory())
+            .forEach(async (folder, index, arr) => {
+                let folderSpawnTime = (await fsp.stat(path.join(folderPath, folder.name))).birthtimeMs;
+    
+                if (latestFolderName) {
+                    if (folderSpawnTime > latestFolderSpawnTime) {
+                        latestFolderName = folder.name;
+                        latestFolderSpawnTime = folderSpawnTime;
+                    }
+                } else {
+                    latestFolderName = folder.name;
+                    latestFolderSpawnTime = folderSpawnTime;
                 }
-            } else {
-                latestFolderDirent = folder;
-                latestFolderSpawnTime = (await fsp.stat(path.join(folderPath, folder.name))).birthtimeMs;
-            }
-        })
-    return path.join(folderPath, latestFolderDirent.name);
+    
+                if (index === arr.length - 1) {
+                    resolve(path.join(folderPath, latestFolderName)); 
+                }
+            })
+    })
 }
 
-function runDCG(hashes, game="2") {
+function runDCG(hashes, game = "2") {
     // DestinyColladaGenerator.exe <GAME> -o <OUTPUT PATH> [<HASHES>]
     let exeArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes)
     let child = execFile(userPreferences.get('dcgPath'), exeArgs, (err) => {
@@ -66,12 +70,12 @@ function runDCG(hashes, game="2") {
     return child;
 }
 
-function runDCGRecursive(items, game="2") {
+function runDCGRecursive(items, game = "2") {
     return new Promise((resolve, reject) => {
         if (items.length > 0) {
             runDCG([items.pop().hash], game).on('exit', () => { runDCGRecursive(items, game) });
-        } 
-        
+        }
+
         if (items.length === 0) {
             resolve();
         }
@@ -93,7 +97,11 @@ function convertShaderJSON(shaderPath, name) {
 
 function runMDE(item, outputPath) {
     // MontevenDynamicExtractor.exe -p <PACKAGE PATH> -o <OUTPUT PATH> -n <ITEM NAME> -t -h <HASH>
-    let exeArgs = ['-p', replaceBackslashes(userPreferences.get('pkgPath')), '-o', replaceBackslashes(outputPath), '-t', (item.shader ? '-h' : '-a'), item.hash].concat((item.shader ? [] : ['-n', item.name]))
+    let exeArgs = ['--pkgspath', replaceBackslashes(userPreferences.get('pkgPath')), '--outputpath', replaceBackslashes(outputPath)]
+        // If the item's class is not null, add it to the name, then replace all the spaces with underscores
+        .concat((item.shader ? [] : ['--filename', `${(item.class ? `${item.class}_` : '')}${item.name.toLowerCase()}`.replaceAll(/[ -]/g, '_')]))
+        // If the item is a shader, use the '-h' flag, otherwise use the '-a' flag
+        .concat(['--textures', (item.shader ? '--shader' : '--api'), item.hash]);
     let child = execFile(userPreferences.get('mdePath'), exeArgs, { cwd: path.parse(userPreferences.get('mdePath')).dir }, (err) => {
         if (err) {
             throw err;
@@ -108,13 +116,45 @@ function runMDE(item, outputPath) {
 function runMDERecursive(items, outputPath) {
     return new Promise((resolve, reject) => {
         if (items.length > 0) {
-            runMDE(items.pop(), outputPath).on('exit', () => { runMDERecursive(items, outputPath) });
-        } 
+            runMDE(items.pop(), outputPath).on('exit', async () => { await runMDERecursive(items, outputPath) });
+        }
 
         if (items.length === 0) {
+            setTimeout(hideLoading, 4000);
             resolve();
         }
     })
+}
+
+function ripShader(shader) {
+    return new Promise(async (resolve, reject) => {
+        let workingDir = await fsp.mkdtemp(path.join(tempDir, `${shader.name}-`));
+        runMDE(shader, workingDir).on('exit', () => {
+            convertShaderJSON(path.join(workingDir, `${shader.hash}`, 'shader.json'), shader.name).on('exit', () => {
+                resolve();
+            })
+        });
+    })
+}
+
+function ripShaderRecursive(shaders) {
+    return new Promise((resolve, reject) => {
+        if (shaders.length > 0) {
+            ripShader(shaders.pop()).then(() => {
+                ripShaderRecursive(shaders);
+            })
+        }
+
+        if (shaders.length === 0) {
+            resolve();
+        }
+    })
+}
+
+function checkExecutionFinished(_3dItems, shaders) {
+    if (_3dItems === [] && shaders === []) {
+        hideLoading();
+    }
 }
 
 function executeQueue(game, items) {
@@ -137,43 +177,46 @@ function executeQueue(game, items) {
     // Extract 3d items
     if (userPreferences.get('ripHDTextures') && game === '2') {
         if (userPreferences.get('aggregateOutput')) {
-            runDCG(_3dItems.map((item) => { return item.hash })).on('exit', async () => {
-                await runMDERecursive(_3dItems, path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'Textures'))
+            runDCG(_3dItems.map((item) => { return item.hash })).on('close', async () => {
+                let hdtPath = path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'HD_Textures')
+                await fsp.mkdir(hdtPath);
+                runMDERecursive(_3dItems, hdtPath).then(() => {
+                    checkExecutionFinished(_3dItems, shaders);
+                })
             })
         } else {
-            // implement with a for loop
             for (const item of _3dItems) {
-                runDCG([item.hash]).on('exit', async () => {
-                    runMDE(item, path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'Textures'))
+                runDCG([item.hash]).on('close', async () => {
+                    let hdtPath = path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'HD_Textures')
+                    await fsp.mkdir(hdtPath);
+                    runMDE(item, path.join(hdtPath, 'Textures')).on('close', (code) => {
+                        log.info(`Done (Exit Code: ${code})`)
+                        checkExecutionFinished(_3dItems, shaders);
+                    });
                 })
             }
         }
     } else {
         // Skip HD textures
         if (userPreferences.get('aggregateOutput')) {
-            runDCG(_3dItems.map((i) => {return i.hash}), game).on('exit', (code) => {
+            runDCG(_3dItems.map((i) => { return i.hash }), game).on('close', (code) => {
                 log.info(`Done (Exit Code: ${code})`)
-                updateUiDone(code);
+                checkExecutionFinished(_3dItems, shaders);
             });
         } else {
-            runDCGRecursive(_3dItems, game);
+            runDCGRecursive(_3dItems, game).then(() => {
+                checkExecutionFinished(_3dItems, shaders);
+            });
         }
     }
 
     if (userPreferences.get('ripShaders') && shaders.length > 0) {
         // Extract shaders
         // Generate shader.json using MDE and save output to temp directory
-        shaders.forEach(async (shader) => {
-            let workingDir = await fsp.mkdtemp(path.join(tempDir, `${shader.name}-`));
-            runMDE(shader, workingDir).on('exit', () => {
-                // log.debug(path.join(workingDir, `${shader.hash}`, 'shader.json'))
-                convertShaderJSON(path.join(workingDir, `${shader.hash}`, 'shader.json'), shader.name)
-            });
-        })
-        // Convert shader.json to Blender python script using DCG
+        ripShaderRecursive(shaders).then(() => {
+            checkExecutionFinished(_3dItems, shaders);
+        });
     }
-
-    hideLoading();
 }
 
 function executeButtonClickHandler() {
@@ -182,14 +225,17 @@ function executeButtonClickHandler() {
         .then((version) => {
             if (version) {
                 if (navigator.onLine) {
-                    let items = [...queue.children].map(item => { return { 
-                        hash: item.id,
-                        name: item.getAttribute('name'),
-                        shader: item.dataset.itemcategories.includes('shader')
-                    } })
+                    let items = [...queue.children].map(item => {
+                        return {
+                            hash: item.id,
+                            name: item.getAttribute('name'),
+                            shader: item.dataset.itemcategories.includes('shader'),
+                            class: item.dataset?.class || null
+                        }
+                    })
 
-                    printConsole(`Hashes: ${items.map((i) => {return i.hash}).join(' ')}`);
-                    log.verbose(`Hashes: ${items.map((i) => {return i.hash}).join(' ')}`)
+                    printConsole(`Hashes: ${items.map((i) => { return i.hash }).join(' ')}`);
+                    log.verbose(`Hashes: ${items.map((i) => { return i.hash }).join(' ')}`)
 
                     executeQueue(gameSelector.value, items);
                 } else {

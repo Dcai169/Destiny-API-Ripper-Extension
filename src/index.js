@@ -4,10 +4,12 @@ const log = require('electron-log');
 const { debugInfo } = require('electron-util');
 const { download } = require('electron-dl');
 const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
-const { logError } = require('./userPreferences.js');
 const fsp = require('fs').promises;
 const path = require('path');
-let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
+const { argv } = require('process');
+
+let startupConsoleMessages = [{consoleMessage: `DARE v${app.getVersion()}`, type: 'log'}];
+let relaunchFlag = argv.includes('--relaunch');
 
 store.initRenderer();
 log.info(debugInfo());
@@ -164,7 +166,7 @@ app.on('activate', () => {
 let fsopSemaphore = false;
 
 ipcMain.on('loadingDone', (event, args) => {
-    startupConsoleMessage += args.consoleMessage;
+    startupConsoleMessages.push(args);
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
     log.verbose('Loading window destroyed');
@@ -198,13 +200,25 @@ ipcMain.on('setFSOPSemaphore', (_, args) => {
     fsopSemaphore = args;
 })
 
-ipcMain.on('selectOutputPath', (event) => {
-    event.reply('selectOutputPath-reply', dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.handle('selectOutputPath', (event) => {
+    return dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
-ipcMain.on('selectDCGPath', (event) => {
-    event.reply('selectDCGPath-reply', dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] }))
+ipcMain.handle('selectDCGPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
+
+ipcMain.handle('selectMDEPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
+});
+
+ipcMain.handle('selectPKGPath', () => {
+    return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
+})
+
+ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessages });
+
+ipcMain.handle('getRelaunchFlag', () => { return relaunchFlag });
 
 ipcMain.on('openExplorer', (_, args) => {
     if (args) {
@@ -212,9 +226,7 @@ ipcMain.on('openExplorer', (_, args) => {
     }
 });
 
-ipcMain.on('getStartupConsoleMessage', (event) => { event.reply('getStartupConsoleMessage-reply', startupConsoleMessage) });
-
 ipcMain.on('loadingTimeout', () => {
-    app.relaunch({ args: ['--relaunch'] });
+    app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
     app.exit(302);
 })

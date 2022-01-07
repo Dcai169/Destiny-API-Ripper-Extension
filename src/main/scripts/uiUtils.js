@@ -45,19 +45,18 @@ function setVisibility(element, visibilityState = calcVisibilityState(element)) 
 
 function setInputElemValue(elementId, value) {
     let inputElem = document.getElementById(elementId);
-    if (inputElem) {
-        switch (typeof value) {
-            case 'string':
-                inputElem.value = value;
-                break;
+    switch (inputElem.getAttribute('type')) {
+        case "text":
+        case "select":
+            inputElem.value = value;
+            break;
 
-            case 'boolean':
-                inputElem.value = !!value;
-                break;
-
-            default:
-                break;
-        }
+        case "checkbox":
+            inputElem.checked = value;
+            break;
+    
+        default:
+            break;
     }
 }
 

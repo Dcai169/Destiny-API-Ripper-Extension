@@ -50,6 +50,7 @@ function getDestiny2ItemDefinitions(locale = 'en') {
                             if (((item) => {
                                 if (DESTINY2_HASH_BLACKLIST.includes(item.hash)) { return false }
                                 if (!item?.displayProperties.name) { return false }
+                                if (item?.traitIds?.includes("item_type.ornament.armor")) { return true } // Ornaments
                                 if (item.itemCategoryHashes?.includes(3109687656)) { return false } // Mods
                                 if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [1, 20, 39, 41, 42, 43, 55, 1742617626, 3124752623].includes(itemCategoryHash) })) { return true } // Armor, weapons, shaders, ships, ghost shells, and sparrows
                             })(item)) {

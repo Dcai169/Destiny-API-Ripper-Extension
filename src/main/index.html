@@ -397,9 +397,9 @@
           <div class="d-inline p-1">
             <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
           </div>
-          <div class="d-inline hidden" id="loading-indicator">
+          <!-- <div class="d-inline hidden" id="loading-indicator">
             <div class="spinner-border" role="status"></div>
-          </div>
+          </div> -->
         </div>
         <!-- Container -->
         <div class="container p-2" id="extract-queue" style="overflow-y: auto; height: 60vh;" tabindex="-1"
@@ -436,20 +436,24 @@
         <div class="modal-body">
           <div class="container">
             <div class="mb-3">
-              <label class="form-label" for="outputPath">Output path</label>
-              <input class="form-control" type="text" name="output-path" id="outputPath" readonly>
-            </div>
-            <div class="mb-3">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
-                <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
+              <div class="form-row">
+                <div class="col">
+                  <label class="form-label" for="outputPath">Output path</label>
+                  <input class="form-control" type="text" name="output-path" id="outputPath" placeholder="Select an output path..." readonly>
+                </div>
+                <div class="col-2" id="aggregateCheckbox">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="aggregate-output" id="aggregateOutput">
+                    <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="mb-3">
               <label for="locale">Language</label>
-              <select class="custom-select" id="locale">
+              <select class="custom-select" id="locale" type="select">
                 <option value="de">Deutsch</option>
-                <option value="en">English</option>
+                <option value="en" selected>English</option>
                 <option value="es">Español</option>
                 <option value="es-mx">Español Mexicano</option>
                 <option value="fr">Français</option>
@@ -465,16 +469,39 @@
               <small>Changes will require reloading.</small>
             </div>
             <hr>
-            <h4>Advanced</h4>
             <div class="mb-3">
               <label class="form-label" for="dcgPath">Destiny Collada Generator path</label>
-              <input class="form-control" type="text" name="dcg-path" id="dcgPath" readonly>
+              <input class="form-control" type="text" name="dcg-path" id="dcgPath" placeholder="Select the DCG executable..." readonly>
             </div>
             <div class="mb-3">
               <label for="preferredDCGVersion">DCG Version</label>
               <select class="custom-select" id="preferredDCGVersion">
                 <option value="latest">Latest</option>
               </select>
+            </div>
+            <div class="hidden" id="mde-settings">
+              <hr>
+              <div class="mb-3">
+                <label for="mdePath">Monteven Dynamic Extractor path</label>
+                <input class="form-control" type="text" name="mde-exe-path" id="mdePath" placeholder="Select the MDE executable..." readonly>
+              </div>
+              <div class="mb-3">
+                <label for="pkgPath">Destiny 2 Packages path</label>
+                <input class="form-control" type="text" name="mde-pgk-path" id="pkgPath" placeholder="Select the Destiny 2 packages directory..." readonly>
+              </div>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rip-hd-textures" id="ripHDTextures">
+                  <label class="form-check-label" for="ripHDTextures">Rip HD textures</label>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="rip-shaders" id="ripShaders">
+                  <label class="form-check-label" for="ripShaders">Rip shaders</label>
+                </div>
+                <small class="checkboxNote">Shader ripping ignores Aggregate Output setting.</small>
+              </div>
             </div>
           </div>
         </div>

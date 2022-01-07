@@ -72,6 +72,22 @@ let schema = {
     "preferredDCGVersion": {
         type: 'string',
         default: 'latest'
+    },
+    "mdePath": {
+        type: 'string',
+        default: ''
+    },
+    "pkgPath": {
+        type: 'string',
+        default: ''
+    },
+    "ripHDTextures": {
+        type: 'boolean',
+        default: false
+    },
+    "ripShaders": {
+        type: 'boolean',
+        default: false
     }
 }
 

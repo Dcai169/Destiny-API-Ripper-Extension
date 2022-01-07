@@ -18,6 +18,28 @@ function createItemTile(item, game) {
         tileRoot.dataset.rarity = item.inventory.tierType;
         tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(distinguishGrenadeLauncherHash).map(itemCategoryHashToName).join(' ').trim();
 
+        if (!tileRoot.dataset.itemcategories) {
+            tileRoot.dataset.itemcategories = 'armorOrnament';
+        }
+
+        switch (item?.classType) {
+            case 0:
+                tileRoot.dataset.class = 'titan';
+                break;
+
+            case 1:
+                tileRoot.dataset.class = 'hunter';
+                break;
+
+            case 2:
+                tileRoot.dataset.class = 'warlock';
+                break;
+
+            default:
+                if (item?.plug?.plugCategoryIdentifier.split('_')[2]) { tileRoot.dataset.class = item?.plug?.plugCategoryIdentifier.split('_')[2] }
+                break;
+        }
+
         tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item.displayProperties.name);
 
@@ -140,13 +162,13 @@ function itemTileClickHandler(event) {
     let clicked = event.currentTarget;
     switch (clicked.parentElement.id) {
         case 'item-container':
-            log.silly(`${clicked.id} added to queue`);
+            // log.debug(`${clicked.id} added to queue`);
             queue.append(clicked);
             break;
 
         case 'extract-queue':
             setVisibility(clicked);
-            log.silly(`${clicked.id} returned to container`);
+            // log.debug(`${clicked.id} returned to container`);
             addItemToContainer(clicked);
             break;
 
@@ -247,7 +269,7 @@ function itemCategoryHashToName(hash) {
 
         case 3317538576:
             return 'bow';
-        
+
         case 11:
             return 'shotgun';
 

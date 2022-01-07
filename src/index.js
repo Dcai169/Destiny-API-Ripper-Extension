@@ -8,7 +8,7 @@ const fsp = require('fs').promises;
 const path = require('path');
 const { argv } = require('process');
 
-let startupConsoleMessage = `DARE v${app.getVersion()}\n`;
+let startupConsoleMessages = [{consoleMessage: `DARE v${app.getVersion()}`, type: 'log'}];
 let relaunchFlag = argv.includes('--relaunch');
 
 store.initRenderer();
@@ -166,7 +166,7 @@ app.on('activate', () => {
 let fsopSemaphore = false;
 
 ipcMain.on('loadingDone', (event, args) => {
-    startupConsoleMessage += args.consoleMessage;
+    startupConsoleMessages.push(args);
     createMainWindow();
     BrowserWindow.fromId(event.frameId).destroy();
     log.verbose('Loading window destroyed');
@@ -216,7 +216,7 @@ ipcMain.handle('selectPKGPath', () => {
     return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
 })
 
-ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessage });
+ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessages });
 
 ipcMain.handle('getRelaunchFlag', () => { return relaunchFlag });
 

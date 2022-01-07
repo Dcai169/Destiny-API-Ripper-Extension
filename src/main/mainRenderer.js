@@ -77,8 +77,11 @@ function validateAndSetPath(path, settingKey) {
 window.addEventListener('DOMContentLoaded', () => {
     if (process.platform === 'win32' && process.arch === 'x64') document.getElementById('mde-settings').classList.remove('hidden');
 
-    ipcRenderer.invoke('getStartupConsoleMessage').then((startupConsoleMessage) => {
-        printConsole(startupConsoleMessage + '\n ');
+    ipcRenderer.invoke('getStartupConsoleMessage').then((startupConsoleMessages) => {
+        startupConsoleMessages.forEach((message) => {
+            printConsole(message.consoleMessage, message.textType);
+        })
+        printConsole('\n');
     });
 
     // Load userPreferences

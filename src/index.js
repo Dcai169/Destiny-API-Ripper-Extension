@@ -205,11 +205,11 @@ ipcMain.handle('selectOutputPath', (event) => {
 });
 
 ipcMain.handle('selectDCGPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
+    return dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
 ipcMain.handle('selectMDEPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: { name: 'Executable Files', extensions: ['exe'] }, properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
+    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
 });
 
 ipcMain.handle('selectPKGPath', () => {

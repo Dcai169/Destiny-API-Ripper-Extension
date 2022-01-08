@@ -29,6 +29,7 @@ let itemMap = {
 };
 
 function loadItems(itemMap) {
+    itemContainer.innerHTML = '';
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });

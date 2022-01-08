@@ -14,6 +14,7 @@ const { userPreferences } = require('../userPreferences');
 let itemContainer = document.getElementById('item-container');
 let queue = document.getElementById('extract-queue');
 let gameSelector = document.getElementById('gameSelector');
+let searchBox = document.getElementById('search-box');
 
 let searchTimeout;
 let reloadRequired = false;
@@ -30,6 +31,8 @@ let itemMap = {
 
 function loadItems(itemMap) {
     itemContainer.innerHTML = '';
+    queue.innerHTML = '';
+
     itemMap.forEach((item) => {
         itemContainer.append(createItemTile(item, gameSelector.value));
     });
@@ -40,9 +43,9 @@ function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
 
     searchTimeout = setTimeout(() => {
-        if (document.getElementById('search-box').value) {
+        if (searchBox.value) {
             [...document.querySelectorAll('#item-container .item-tile.m-1')].forEach((item) => {
-                setVisibility(item, item.getAttribute('name').toLowerCase().includes(document.getElementById('search-box').value.toLowerCase()));
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
             })
         } else {
             [...document.getElementById('item-container').children].forEach((item) => {
@@ -53,6 +56,8 @@ function searchBoxInputHandler() {
 }
 
 function gameSelectorChangeHandler() {
+    searchBox.value = '';
+    
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {

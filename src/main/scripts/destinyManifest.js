@@ -17,6 +17,7 @@ function getDestiny1ItemDefinitions(locale = 'en') {
                     // Filter items in the manifest
                     if (((item) => {
                         if (item.hash === DEFAULT_SHADER_HASH) { return false }
+                        if (!item?.itemName) { return false }
                         if (item.itemCategoryHashes?.includes(1) && item.itemCategoryHashes?.length === 2) { return false } // Reforge Weapon
                         if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [15, 38, 51].includes(itemCategoryHash) })) { return false } // Blueprints and artifacts
                         if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [1, 20, 39, 41, 42, 43, 55].includes(itemCategoryHash) })) { return true } // Armor, weapons, shaders, ships, ghost shells, and sparrows
@@ -25,7 +26,7 @@ function getDestiny1ItemDefinitions(locale = 'en') {
                     }
                 }
                 // Sort into a Map Object
-                let items = Object.values(d1ItemDefinitions).sort((a, b) => { return a.index - b.index });
+                let items = Object.values(d1ItemDefinitions);
                 d1ItemDefinitions = new Map();
                 items.forEach((item) => {
                     d1ItemDefinitions.set(item.hash, item);

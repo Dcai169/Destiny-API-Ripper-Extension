@@ -56,7 +56,7 @@ function gameSelectorChangeHandler() {
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
-        itemMap[gameSelector.value].get(locale).then((res) => {
+        itemMap[gameSelector.value].get(userPreferences.get('locale').toLowerCase()).then((res) => {
             itemMap[gameSelector.value].items = res;
             loadItems(res);
         });

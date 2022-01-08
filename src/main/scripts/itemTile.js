@@ -2,21 +2,50 @@ const { setVisibility } = require('./uiUtils.js');
 const log = require('electron-log');
 
 function createItemTile(item, game) {
-    let tileRoot;
+    let tileRoot = document.createElement('div');
+    tileRoot.id = item.hash;
+
+    tileRoot.classList.add('item-tile');
+    tileRoot.classList.add('d-flex');
+    tileRoot.classList.add('align-items-center');
+    tileRoot.classList.add('m-1');
+
+    tileRoot.onclick = itemTileClickHandler;
+
+    let iconImg = document.createElement('img');
+    iconImg.setAttribute('referrerpolicy', 'no-referrer');
+    iconImg.setAttribute('crossorigin', 'None');
+    iconImg.loading = 'lazy';
+
+    iconImg.style.gridRow = '1';
+    iconImg.style.gridColumn = '1';
+
+    // Image div (Icon & Season Badge)
+    let iconDiv = document.createElement('div');
+    iconDiv.style.display = 'grid';
+    iconDiv.style.position = 'relative';
+
+    // Item text (Name & Type)
+    let textDiv = document.createElement('div');
+    textDiv.classList.add('tile-text');
+    textDiv.classList.add('d-inline-flex');
+    textDiv.classList.add('px-2');
+
+    let textContainer = document.createElement('div');
+    let titleText = document.createElement('p');
+    titleText.classList.add('item-name');
+    titleText.classList.add('m-0');
+
+    let typeText = document.createElement('p');
+    typeText.classList.add('m-0');
+
     if (game === '2') {
-        tileRoot = document.createElement('div');
-        tileRoot.id = item.hash;
-
         tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item.inventory.tierType)}-color)`;
-
-        tileRoot.classList.add('item-tile');
-        tileRoot.classList.add('d-flex');
-        tileRoot.classList.add('align-items-center');
-        tileRoot.classList.add('m-1');
 
         tileRoot.dataset.index = item.index;
         tileRoot.dataset.rarity = item.inventory.tierType;
         tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(distinguishGrenadeLauncherHash).map(itemCategoryHashToName).join(' ').trim();
+        tileRoot.setAttribute('name', item.displayProperties.name);
 
         if (!tileRoot.dataset.itemcategories) {
             tileRoot.dataset.itemcategories = 'armorOrnament';
@@ -40,24 +69,7 @@ function createItemTile(item, game) {
                 break;
         }
 
-        tileRoot.onclick = itemTileClickHandler;
-        tileRoot.setAttribute('name', item.displayProperties.name);
-
-        // Image div (Icon & Season Badge)
-        let iconDiv = document.createElement('div');
-        iconDiv.style.display = 'grid';
-        iconDiv.style.position = 'relative';
-
-        let iconImg = document.createElement('img');
         iconImg.src = `https://bungie.net${item.displayProperties.icon}`;
-        iconImg.setAttribute('referrerpolicy', 'no-referrer');
-        iconImg.setAttribute('crossorigin', 'None');
-        iconImg.loading = 'lazy';
-
-        iconImg.style.gridRow = '1';
-        iconImg.style.gridColumn = '1';
-
-        iconDiv.appendChild(iconImg);
 
         if (item.iconWatermark) {
             let watermarkImg = document.createElement('img');
@@ -73,87 +85,37 @@ function createItemTile(item, game) {
             iconDiv.appendChild(watermarkImg);
         }
 
-        // Item text (Name & Type)
-        let textDiv = document.createElement('div');
-        textDiv.classList.add('tile-text');
-        textDiv.classList.add('d-inline-flex');
-        textDiv.classList.add('px-2');
-
-        let textContainer = document.createElement('div');
-        let titleText = document.createElement('p');
-        titleText.classList.add('item-name');
-        titleText.classList.add('m-0');
         titleText.innerHTML = `<b class='m-0'>${item.displayProperties.name}</b>`;
         titleText.style.color = (item.inventory.tierType <= 2 ? 'black' : 'white');
 
-        let typeText = document.createElement('p');
-        typeText.classList.add('m-0');
         typeText.innerHTML = `<i class='fs-5 item-type'>${item.itemTypeDisplayName}</i>`;
         typeText.style.color = (item.inventory.tierType <= 2 ? '#707070' : '#DDD');
-
-        textContainer.appendChild(titleText);
-        textContainer.appendChild(typeText);
-        textDiv.appendChild(textContainer);
-
-        tileRoot.appendChild(iconDiv);
-        tileRoot.appendChild(textDiv);
     } else if (game === '1') {
-        tileRoot = document.createElement('div');
-        tileRoot.id = item.hash;
-
-        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item?.inventory.tierType)}-color)`;
-
-        tileRoot.classList.add('item-tile');
-        tileRoot.classList.add('d-flex');
-        tileRoot.classList.add('align-items-center');
-        tileRoot.classList.add('m-1');
+        tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item?.tierType)}-color)`;
+        tileRoot.dataset.itemcategories = item.itemCategoryHashes.map(itemCategoryHashToName).join(' ').trim();
 
         tileRoot.dataset.index = item.index;
-        tileRoot.dataset.rarity = item.inventory.tierType;
+        tileRoot.dataset.rarity = item.tierType;
 
-        tileRoot.onclick = itemTileClickHandler;
         tileRoot.setAttribute('name', item?.itemName ?? 'Classified');
 
-        // Image div (Icon & Season Badge)
-        let iconDiv = document.createElement('div');
-        iconDiv.style.display = 'grid';
-        iconDiv.style.position = 'relative';
-
-        let iconImg = document.createElement('img');
         iconImg.src = `https://bungie.net${(item.icon ? item.icon : '/img/misc/missing_icon.png')}`;
-        iconImg.setAttribute('referrerpolicy', 'no-referrer');
-        iconImg.setAttribute('crossorigin', 'None');
-        iconImg.loading = 'lazy';
 
-        iconImg.style.gridRow = '1';
-        iconImg.style.gridColumn = '1';
-
-        iconDiv.appendChild(iconImg);
-
-        // Item text (Name & Type)
-        let textDiv = document.createElement('div');
-        textDiv.classList.add('tile-text');
-        textDiv.classList.add('d-inline-flex');
-        textDiv.classList.add('px-2');
-
-        let textContainer = document.createElement('div');
-        let titleText = document.createElement('p');
-        titleText.classList.add('m-0');
         titleText.innerHTML = `<b class='m-0'>${(item?.itemName ?? `#${item.hash}`)}</b>`;
-        titleText.style.color = (item.inventory.tierType <= 2 ? 'black' : 'white');
+        titleText.style.color = (item.tierType <= 2 ? 'black' : 'white');
 
-        let typeText = document.createElement('p');
-        typeText.classList.add('m-0');
         typeText.innerHTML = `<i class='fs-5 item-type'>${item.itemTypeName}</i>`;
         typeText.style.color = (item.tierType <= 2 ? '#707070' : '#DDD');
-
-        textContainer.appendChild(titleText);
-        textContainer.appendChild(typeText);
-        textDiv.appendChild(textContainer);
-
-        tileRoot.appendChild(iconDiv);
-        tileRoot.appendChild(textDiv);
     }
+
+    iconDiv.appendChild(iconImg);
+
+    textContainer.appendChild(titleText);
+    textContainer.appendChild(typeText);
+    textDiv.appendChild(textContainer);
+
+    tileRoot.appendChild(iconDiv);
+    tileRoot.appendChild(textDiv);
 
     return tileRoot;
 }

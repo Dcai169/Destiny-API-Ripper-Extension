@@ -45,7 +45,7 @@ function setVisibility(element, visibilityState = calcVisibilityState(element)) 
 
 function setInputElemValue(elementId, value) {
     let inputElem = document.getElementById(elementId);
-    switch (inputElem.getAttribute('type')) {
+    switch (inputElem?.getAttribute('type')) {
         case "text":
         case "select":
             inputElem.value = value;

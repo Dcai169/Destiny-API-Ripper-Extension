@@ -32,6 +32,7 @@ const createMainWindow = () => {
             enableRemoteModule: true
         },
         backgroundColor: '#3E4145',
+        icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
         show: false
     });
 
@@ -98,6 +99,7 @@ const createLoadingWindow = () => {
             nodeIntegration: true,
             enableRemoteModule: true
         },
+        icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
         show: false
     });
 

@@ -27,6 +27,7 @@ function hideLoading() {
 function updateUiDone(code) {
     hideLoading();
     printConsole(`Done (Exit Code: ${code})`, (code) ? 'error' : 'log');
+    log.info(`Done (Exit Code: ${code})`);
 }
 
 async function getMostRecentDestinyModel(folderPath) {
@@ -189,20 +190,14 @@ function executeQueue(game, items) {
                 runDCG([item.hash]).on('close', async () => {
                     let hdtPath = path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'HD_Textures')
                     await fsp.mkdir(hdtPath);
-                    runMDE(item, path.join(hdtPath, 'Textures')).on('close', (code) => {
-                        log.info(`Done (Exit Code: ${code})`)
-                        checkExecutionFinished(_3dItems, shaders);
-                    });
+                    runMDE(item, path.join(hdtPath, 'Textures')).on('close', updateUiDone);
                 })
             }
         }
     } else {
         // Skip HD textures
         if (userPreferences.get('aggregateOutput')) {
-            runDCG(_3dItems.map((i) => { return i.hash }), game).on('close', (code) => {
-                log.info(`Done (Exit Code: ${code})`)
-                checkExecutionFinished(_3dItems, shaders);
-            });
+            runDCG(_3dItems.map((i) => { return i.hash }), game).on('close', updateUiDone);
         } else {
             runDCGRecursive(_3dItems, game).then(() => {
                 checkExecutionFinished(_3dItems, shaders);

@@ -32,7 +32,7 @@ function updateUiDone(code=0) {
 
 function dispatchImportRequest(path) {
     if (userPreferences.get('blenderConnector')) {
-        fetch('http://localhost:41786', { headers: {'X-Content-Path': path} });
+        fetch('http://localhost:41786', { method="HEAD", headers: {'X-Content-Path': path} });
     }
 }
 

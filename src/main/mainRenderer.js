@@ -18,6 +18,7 @@ let searchBox = document.getElementById('search-box');
 
 let searchTimeout;
 let reloadRequired = false;
+let previousSearch = '';
 let itemMap = {
     '1': {
         get: getDestiny1ItemDefinitions,
@@ -41,11 +42,22 @@ function loadItems(itemMap) {
 
 function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
+    let diff = searchBox.value.length - previousSearch.length;
 
     searchTimeout = setTimeout(() => {
-        [...document.getElementById('item-container').children].forEach((item) => { // this loop is super slow
-            setVisibility(item);
-        })
+        if (searchBox.value === '') {
+            [...document.getElementById('item-container').children].forEach((item) => { // this loop is super slow
+                setVisibility(item);
+            })
+        } else if (diff > 0) {
+            [...document.querySelectorAll('item-container .m-1')].forEach((item) => {
+                setVisibility(item);
+            })
+        } else if (diff < 0) {
+            [...document.querySelectorAll('item-container .hidden')].forEach((item) => {
+                setVisibility(item);
+            })
+        }
     }, 500);
 }
 

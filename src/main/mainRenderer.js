@@ -43,15 +43,9 @@ function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
 
     searchTimeout = setTimeout(() => {
-        if (searchBox.value) {
-            [...document.querySelectorAll('#item-container .item-tile.m-1')].forEach((item) => {
-                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
-            })
-        } else {
-            [...document.getElementById('item-container').children].forEach((item) => {
-                setVisibility(item);
-            })
-        }
+        [...document.getElementById('item-container').children].forEach((item) => { // this loop is super slow
+            setVisibility(item);
+        })
     }, 500);
 }
 

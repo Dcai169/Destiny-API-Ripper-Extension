@@ -30,6 +30,12 @@ function updateUiDone(code=0) {
     log.info(`Done (Exit Code: ${code})`);
 }
 
+function dispatchImportRequest(path) {
+    if (userPreferences.get('blenderConnector')) {
+        fetch('http://localhost:41786', { headers: {'X-Content-Path': path} });
+    }
+}
+
 async function getMostRecentDestinyModel(folderPath) {
     let latestFolderName;
     let latestFolderSpawnTime;
@@ -68,6 +74,7 @@ function runDCG(hashes, game = "2", callback = Promise.resolve) {
     child.stdout.on('data', printConsoleLog);
     child.stderr.on('data', printConsoleError);
     child.on('exit', async () => {
+        dispatchImportRequest(await getMostRecentDestinyModel(userPreferences.get('outputPath')));
         return callback();
     });
 }
@@ -94,6 +101,7 @@ function convertShaderJSON(shaderPath, name, callback = Promise.resolve) {
     child.stdout.on('data', printConsoleLog);
     child.stderr.on('data', printConsoleError);
     child.on('exit', async () => {
+        dispatchImportRequest(await getMostRecentDestinyModel(userPreferences.get('outputPath')));
         return callback()
     });
 }

@@ -25,6 +25,10 @@ function dependentFilterClickHandler(event) {
     });
 }
 
+function armorClassFilterClickHandler(event) {
+    updateItemVisibilityFromInputElem(event.target);
+}
+
 function updateDependentCheckboxes(dependentInputElem) {
     // This predicate gets all the checkboxes that the dependentInputElem depends on, and checks if they are all the same
     if ([...document.querySelectorAll(`[data-influence=${dependentInputElem.id}]`)].map((baseInputElem) => { return baseInputElem.checked }).every((state, _, arr) => { return state === arr[0]})) {
@@ -36,4 +40,4 @@ function updateDependentCheckboxes(dependentInputElem) {
     }
 }
 
-module.exports = { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler, updateItemVisibilityFromInputElem };
+module.exports = { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler, armorClassFilterClickHandler, updateItemVisibilityFromInputElem };

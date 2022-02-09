@@ -203,14 +203,14 @@ function itemCategoryHashToName(hash) {
         case 1742617626:
             return 'armorOrnament';
 
-        // case 22:
-        //     return 'titanArmor';
+        case 22:
+            return 'titanArmor';
 
-        // case 23:
-        //     return 'hunterArmor';
+        case 23:
+            return 'hunterArmor';
 
-        // case 21:
-        //     return 'warlockArmor';
+        case 21:
+            return 'warlockArmor';
 
         case 5:
             return 'autoRifle';

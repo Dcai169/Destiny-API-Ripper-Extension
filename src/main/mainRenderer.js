@@ -7,7 +7,7 @@ const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./sc
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, setInputElemValue, printConsole } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler } = require('./scripts/filterMenus.js');
+const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler, armorClassFilterClickHandler } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
@@ -115,6 +115,7 @@ gameSelector.addEventListener('change', gameSelectorChangeHandler);
 [...document.getElementsByClassName('rarity-filter')].forEach((inputElem) => { inputElem.addEventListener('click', rarityFilterClickHandler); });
 [...document.getElementsByClassName('type-filter')].forEach((element) => { element.addEventListener('click', typeFilterClickHandler) });
 [...document.getElementsByClassName('dependent-filter')].forEach((element) => { element.addEventListener('click', dependentFilterClickHandler) });
+[...document.getElementsByClassName('armor-class-filter')].forEach((element) => { element.addEventListener('click', armorClassFilterClickHandler) });
 document.getElementById('queue-clear-button').addEventListener('click', () => {
     [...queue.children].forEach(item => { addItemToContainer(item); });
     // log.silly('Queue cleared.');

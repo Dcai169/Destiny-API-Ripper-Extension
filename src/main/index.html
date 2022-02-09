@@ -36,7 +36,7 @@
                   <li class="dropdown-item">
                     <div class="container">
                       <input class="form-check-input" type="checkbox" id="sort-invert" disabled>
-                      <label class="form-check-label" for="sort-invert">Invert</label>
+                      <label class="form-check-label localized-text" for="sort-invert">Invert</label>
                     </div>
                   </li>
                   <li class="dropdown-divider">
@@ -46,25 +46,25 @@
                     <li class="dropdown-item">
                       <div class="container">
                         <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-index" checked>
-                        <label class="form-check-label" for="sort-rule-index">Original</label>
+                        <label class="form-check-label localized-text" for="sort-rule-index">Original</label>
                       </div>
                     </li>
                     <li class="dropdown-item">
                       <div class="container">
                         <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-alphabet" disabled>
-                        <label class="form-check-label" for="sort-rule-alphabet">Alphabetical</label>
+                        <label class="form-check-label localized-text" for="sort-rule-alphabet">Alphabetical</label>
                       </div>
                     </li>
                     <li class="dropdown-item">
                       <div class="container">
                         <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-rarity" disabled>
-                        <label class="form-check-label" for="sort-rule-rarity">Rarity</label>
+                        <label class="form-check-label localized-text" for="sort-rule-rarity">Rarity</label>
                       </div>
                     </li>
                     <li class="dropdown-item">
                       <div class="container">
                         <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-hash" disabled>
-                        <label class="form-check-label" for="sort-rule-hash">Hash</label>
+                        <label class="form-check-text localized-text" for="sort-rule-hash">Hash</label>
                       </div>
                     </li>
                   </form>
@@ -76,37 +76,37 @@
               <div class="btn-group" role="group">
                 <!-- Rarity -->
                 <div class="btn-group" role="group" style="width: 8ch;">
-                  <button id="rarity-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Rarity</button>
+                  <button id="rarity-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle localized-text" data-toggle="dropdown">Rarity</button>
                   <ul>
                     <ul class="dropdown-menu" aria-labelledby="rarity-dropdown-button">
                       <li class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input rarity-filter" type="checkbox" id="filter-exotic" data-selector="[data-rarity='6']" checked>
-                          <label class="form-check-label" for="filter-exotic" style="color: var(--exotic-color);">Exotic</label>
+                          <label class="form-check-label localized-text" for="filter-exotic" style="color: var(--exotic-color);">Exotic</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input rarity-filter" type="checkbox" id="filter-legendary" data-selector="[data-rarity='5']" checked>
-                          <label class="form-check-label" for="filter-legendary" style="color: var(--legendary-color);">Legendary</label>
+                          <label class="form-check-label localized-text" for="filter-legendary" style="color: var(--legendary-color);">Legendary</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input rarity-filter" type="checkbox" id="filter-rare" data-selector="[data-rarity='4']" checked>
-                          <label class="form-check-label" for="filter-rare" style="color: var(--rare-color);">Rare</label>
+                          <label class="form-check-label localized-text" for="filter-rare" style="color: var(--rare-color);">Rare</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input rarity-filter" type="checkbox" id="filter-uncommon" data-selector="[data-rarity='3']" checked>
-                          <label class="form-check-label" for="filter-uncommon" style="color: var(--uncommon-color);">Uncommon</label>
+                          <label class="form-check-label localized-text" for="filter-uncommon" style="color: var(--uncommon-color);">Uncommon</label>
                         </div>
                       </li>
                       <li class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input rarity-filter" type="checkbox" id="filter-common" data-selector="[data-rarity='2']" checked>
-                          <label class="form-check-label" for="filter-common" style="color: var(--common-color);">Common</label>
+                          <label class="form-check-label localized-text" for="filter-common" style="color: var(--common-color);">Common</label>
                         </div>
                       </li>
                     </ul>
@@ -114,201 +114,206 @@
                 </div>
                 <!-- Item Type -->
                 <div class="btn-group" role="group">
-                  <button id="type-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">Item Type</button>
+                  <button id="type-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle localized-text" data-toggle="dropdown">Item Type</button>
                   <ul class="dropdown-menu" aria-labelledby="type-dropdown-button" style="transform: translate(calc(100% - 4px), -35.5%);">
                     <li class="dropdown-submenu">
                       <div class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input dependent-filter" type="checkbox" id="filter-armor" checked>
-                          <label class="form-check-label" for="filter-armor">Armor</label>
+                          <label class="form-check-label localized-text" for="filter-armor">Armor</label>
                         </div>
                       </div>
-                      <ul class="dropdown-menu" style="transform: translate(calc(100% - 40px), -56.8%);">
+                      <ul class="dropdown-menu" style="transform: translate(calc(100% - 40px), -39.5%);">
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-helmet" data-selector="[data-itemcategories*='helmet']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-helmet">Helmet</label>
+                            <label class="form-check-label localized-text" for="filter-helmet">Helmet</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-gauntlets" data-selector="[data-itemcategories*='gauntlets']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-gauntlets">Arms</label>
+                            <label class="form-check-label localized-text" for="filter-gauntlets">Arms</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-chest" data-selector="[data-itemcategories*='chest']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-chest">Chest Armor</label>
+                            <label class="form-check-label localized-text" for="filter-chest">Chest Armor</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-legs" data-selector="[data-itemcategories*='legs']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-legs">Legs</label>
+                            <label class="form-check-label localized-text" for="filter-legs">Legs</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-class" data-selector="[data-itemcategories*='class']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-class">Class Item</label>
+                            <label class="form-check-label localized-text" for="filter-class">Class Item</label>
                           </div>
                         </li>
-                        <!-- <li class="dropdown-divider">
-                          <hr>
-                        </li>
-                        <li class="dropdown-item">
-                          <div class="container">
-                            <input class="form-check-input" type="checkbox" id="filter-titanArmor" data-selector="[data-itemcategories*='titanArmor']" checked>
-                            <label class="form-check-label" for="filter-titanArmor">Titan Armor</label>
-                          </div>
-                        </li>
-                        <li class="dropdown-item">
-                          <div class="container">
-                            <input class="form-check-input" type="checkbox" id="filter-hunterArmor" data-selector="[data-itemcategories*='hunterArmor']" checked>
-                            <label class="form-check-label" for="filter-hunterArmor">Hunter Armor</label>
-                          </div>
-                        </li>
-                        <li class="dropdown-item">
-                          <div class="container">
-                            <input class="form-check-input" type="checkbox" id="filter-warlockArmor" data-selector="[data-itemcategories*='warlockArmor']" checked>
-                            <label class="form-check-label" for="filter-warlockArmor">Warlock Armor</label>
-                          </div>
-                        </li> -->
-                        </li>
+
                         <li class="dropdown-divider">
                           <hr>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-armorOrnament" data-selector="[data-itemcategories*='armorOrnament']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-armorOrnament">Armor Ornaments</label>
+                            <label class="form-check-label localized-text" for="filter-armorOrnament">Armor Ornaments</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-masks" data-selector="[data-itemcategories*='masks']" data-influence="filter-armor" checked>
-                            <label class="form-check-label" for="filter-masks">Masks</label>
+                            <label class="form-check-label localized-text" for="filter-masks">Masks</label>
+                          </div>
+                        </li>
+
+                        <li class="dropdown-divider">
+                          <hr>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input armor-class-filter" type="checkbox" id="filter-titanArmor" data-selector="[data-itemcategories*='titanArmor']" checked>
+                            <label class="form-check-label localized-text" for="filter-titanArmor">Titan Armor</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input armor-class-filter" type="checkbox" id="filter-hunterArmor" data-selector="[data-itemcategories*='hunterArmor']" checked>
+                            <label class="form-check-label localized-text" for="filter-hunterArmor">Hunter Armor</label>
+                          </div>
+                        </li>
+                        <li class="dropdown-item">
+                          <div class="container">
+                            <input class="form-check-input armor-class-filter" type="checkbox" id="filter-warlockArmor" data-selector="[data-itemcategories*='warlockArmor']" checked>
+                            <label class="form-check-label localized-text" for="filter-warlockArmor">Warlock Armor</label>
                           </div>
                         </li>
                       </ul>
                     </li>
+
                     <li class="dropdown-submenu">
                       <div class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input dependent-filter" type="checkbox" id="filter-weapons" checked>
-                          <label class="form-check-label" for="filter-weapons">Weapons</label>
+                          <label class="form-check-label localized-text" for="filter-weapons">Weapons</label>
                         </div>
                       </div>
                       <ul class="dropdown-menu" style="transform: translate(calc(100% - 53px), -17.88%);">
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-autoRifle" data-selector="[data-itemcategories*='autoRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-autoRifle">Auto Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-autoRifle">Auto Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-scoutRifle" data-selector="[data-itemcategories*='scoutRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-scoutRifle">Scout Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-scoutRifle">Scout Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-pulseRifle" data-selector="[data-itemcategories*='pulseRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-pulseRifle">Pulse Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-pulseRifle">Pulse Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-handCannon" data-selector="[data-itemcategories*='handCannon']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-handCannon">Hand Cannons</label>
+                            <label class="form-check-label localized-text" for="filter-handCannon">Hand Cannons</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-submachineGun" data-selector="[data-itemcategories*='submachineGun']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-submachineGun">Submachine Guns</label>
+                            <label class="form-check-label localized-text" for="filter-submachineGun">Submachine Guns</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-sidearm" data-selector="[data-itemcategories*='sidearm']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-sidearm">Sidearms</label>
+                            <label class="form-check-label localized-text" for="filter-sidearm">Sidearms</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-bow" data-selector="[data-itemcategories*='bow']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-bow">Bows</label>
+                            <label class="form-check-label localized-text" for="filter-bow">Bows</label>
                           </div>
                         </li>
+
                         <li class="dropdown-divider">
                           <hr>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-shotgun" data-selector="[data-itemcategories*='shotgun']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-shotgun">Shotguns</label>
+                            <label class="form-check-label localized-text" for="filter-shotgun">Shotguns</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-breachGrenadeLauncher" data-selector="[data-itemcategories*='breachGrenadeLauncher']:not([data-itemcategories*='4'])" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-breachGrenadeLauncher">Grenade Launchers</label>
+                            <label class="form-check-label localized-text" for="filter-breachGrenadeLauncher">Grenade Launchers</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-fusionRifle" data-selector="[data-itemcategories*='fusionRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-fusionRifle">Fusion Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-fusionRifle">Fusion Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-sniperRifle" data-selector="[data-itemcategories*='sniperRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-sniperRifle">Sniper Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-sniperRifle">Sniper Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-traceRifle" data-selector="[data-itemcategories*='traceRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-traceRifle">Trace Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-traceRifle">Trace Rifles</label>
                           </div>
                         </li>
+
                         <li class="dropdown-divider">
                           <hr>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-sword" data-selector="[data-itemcategories*='sword']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-sword">Swords</label>
+                            <label class="form-check-label localized-text" for="filter-sword">Swords</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-heavyGrenadeLauncher" data-selector="[data-itemcategories*='heavyGrenadeLauncher']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-heavyGrenadeLauncher">Grenade Launchers</label>
+                            <label class="form-check-label localized-text" for="filter-heavyGrenadeLauncher">Grenade Launchers</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-rocketLauncher" data-selector="[data-itemcategories*='rocketLauncher']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-rocketLauncher">Rocket Launchers</label>
+                            <label class="form-check-label localized-text" for="filter-rocketLauncher">Rocket Launchers</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-linearFusionRifle" data-selector="[data-itemcategories*='linearFusionRifle']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-linearFusionRifle">Linear Fusion Rifles</label>
+                            <label class="form-check-label localized-text" for="filter-linearFusionRifle">Linear Fusion Rifles</label>
                           </div>
                         </li>
                         <li class="dropdown-item">
                           <div class="container">
                             <input class="form-check-input type-filter" type="checkbox" id="filter-machineGun" data-selector="[data-itemcategories*='machineGun']" data-influence="filter-weapons" checked>
-                            <label class="form-check-label" for="filter-machineGun">Machine Guns</label>
+                            <label class="form-check-label localized-text" for="filter-machineGun">Machine Guns</label>
                           </div>
                         </li>
+
                         <li class="dropdown-divider">
                           <hr>
                         </li>
@@ -320,11 +325,12 @@
                         </li>
                       </ul>
                     </li>
+
                     <li class="dropdown-submenu">
                       <div class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input dependent-filter" type="checkbox" id="filter-equipment" checked>
-                          <label class="form-check-label" for="filter-equipment">Equipment</label>
+                          <label class="form-check-label localized-text" for="filter-equipment">Equipment</label>
                         </div>
                       </div>
                       <ul class="dropdown-menu" style="transform: translate(calc(100% - 6px), -73%);">
@@ -332,7 +338,7 @@
                           <div class="dropdown-item">
                             <div class="container">
                               <input class="form-check-input type-filter" type="checkbox" id="filter-ships" data-selector="[data-itemcategories*='ships']" data-influence="filter-equipment" checked>
-                              <label class="form-check-label" for="filter-ships">Ships</label>
+                              <label class="form-check-label localized-text" for="filter-ships">Ships</label>
                             </div>
                           </div>
                         </li>
@@ -340,7 +346,7 @@
                           <div class="dropdown-item">
                             <div class="container">
                               <input class="form-check-input type-filter" type="checkbox" id="filter-sparrows" data-selector="[data-itemcategories*='sparrows']" data-influence="filter-equipment" checked>
-                              <label class="form-check-label" for="filter-sparrows">Sparrows</label>
+                              <label class="form-check-label localized-text" for="filter-sparrows">Sparrows</label>
                             </div>
                           </div>
                         </li>
@@ -348,7 +354,7 @@
                           <div class="dropdown-item">
                             <div class="container">
                               <input class="form-check-input type-filter" type="checkbox" id="filter-ghostShells" data-selector="[data-itemcategories*='ghostShells']" data-influence="filter-equipment" checked>
-                              <label class="form-check-label" for="filter-ghostShells">Ghost Shells</label>
+                              <label class="form-check-label localized-text" for="filter-ghostShells">Ghost Shells</label>
                             </div>
                           </div>
                         </li>
@@ -358,7 +364,7 @@
                       <div class="dropdown-item">
                         <div class="container">
                           <input class="form-check-input type-filter" type="checkbox" id="filter-shaders" data-selector="[data-itemcategories*='shaders']" checked>
-                          <label class="form-check-label" for="filter-shaders">Shaders</label>
+                          <label class="form-check-label localized-text" for="filter-shaders">Shaders</label>
                         </div>
                       </div>
                     </li>
@@ -369,14 +375,13 @@
           </div>
           <div class="d-flex p-2" style="float: right; margin: 0 0 0 auto;">
             <div class="d-inline p-1">
-              <input class="form-control me-2" id="search-box" type="search" placeholder="Search" aria-label="Search">
+              <input class="form-control me-2 localized-text" id="search-box" type="search" placeholder="Search" aria-label="Search">
             </div>
           </div>
         </div>
         <div class="d-flex p-2">
           <div class="d-inline p-1">
-            <button class="btn btn-info" id="settings-button" data-toggle="modal"
-              data-target="#settingsModal">Settings</button>
+            <button class="btn btn-info localized-text" id="settings-button" data-toggle="modal" data-target="#settingsModal">Settings</button>
           </div>
         </div>
       </div>
@@ -389,21 +394,20 @@
         <!-- Buttons -->
         <div class="container p-2 d-flex justify-content-center">
           <div class="d-inline p-1">
-            <button type="button" class="btn btn-outline-danger" id="queue-clear-button">Clear Queue</button>
+            <button type="button" class="btn btn-outline-danger localized-text" id="queue-clear-button">Clear Queue</button>
           </div>
           <div class="d-inline p-1">
-            <button type="button" class="btn btn-info" id="open-output">Open Output Folder</button>
+            <button type="button" class="btn btn-info localized-text" id="open-output">Open Output Folder</button>
           </div>
           <div class="d-inline p-1">
-            <button type="button" class="btn btn-primary" id="queue-execute-button">Execute Queue</button>
+            <button type="button" class="btn btn-primary localized-text" id="queue-execute-button">Execute Queue</button>
           </div>
           <!-- <div class="d-inline hidden" id="loading-indicator">
             <div class="spinner-border" role="status"></div>
           </div> -->
         </div>
         <!-- Container -->
-        <div class="container p-2" id="extract-queue" style="overflow-y: auto; height: 60vh;" tabindex="-1"
-          disabled="disabled"></div>
+        <div class="container p-2" id="extract-queue" style="overflow-y: auto; height: 60vh;" tabindex="-1" disabled="disabled"></div>
       </div>
       <div class="container" id="console" style="background-color: black;">
         <!-- Console Buttons -->
@@ -411,11 +415,11 @@
           <div class="d-inline p-1">
             <div class="mt-2">
               <input class="form-check-input" type="checkbox" id="console-autoscroll-toggle" checked>
-              <label class="form-check-label" for="console-autoscroll-toggle">Autoscroll</label>
+              <label class="form-check-label localized-text" for="console-autoscroll-toggle">Autoscroll</label>
             </div>
           </div>
           <div class="d-inline p-1">
-            <button type="button" class="btn btn-link" id="console-clear">Clear Console</button>
+            <button type="button" class="btn btn-link localized-text" id="console-clear">Clear Console</button>
           </div>
         </div>
         <div class="container" id="console-container" style="overflow-y: auto; height: 22vh; width: 25vw;">
@@ -425,12 +429,13 @@
     </div>
   </div>
   </div>
+
   <!-- Modal -->
   <div class="modal fade" tabindex="-1" id="settingsModal">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Settings</h5>
+          <h5 class="modal-title localized-text">Settings</h5>
           <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -438,19 +443,19 @@
             <div class="mb-3">
               <div class="form-row">
                 <div class="col">
-                  <label class="form-label" for="outputPath">Output path</label>
+                  <label class="form-label localized-text" for="outputPath">Output path</label>
                   <input class="form-control" type="text" name="output-path" id="outputPath" placeholder="Select an output path..." readonly>
                 </div>
                 <div class="col-2" id="aggregateCheckbox">
                   <div class="form-check">
                     <input class="form-check-input settings-checkbox" type="checkbox" name="aggregate-output" id="aggregateOutput">
-                    <label class="form-check-label" for="aggregateOutput">Aggregate output</label>
+                    <label class="form-check-label localized-text" for="aggregateOutput">Aggregate output</label>
                   </div>
                 </div>
               </div>
             </div>
             <div class="mb-3">
-              <label for="locale">Language</label>
+              <label class="localized-text" for="locale">Language</label>
               <select class="custom-select" id="locale" type="select">
                 <option value="de">Deutsch</option>
                 <option value="en" selected>English</option>
@@ -466,54 +471,54 @@
                 <option value="zh-cht">繁體中文</option>
                 <option value="zh-chs">简体中文</option>
               </select>
-              <small>Changes will require reloading.</small>
+              <small class="localized-text">Changes will require reloading.</small>
             </div>
             <hr>
             <div class="mb-3">
-              <label class="form-label" for="dcgPath">Destiny Collada Generator path</label>
+              <label class="form-label localized-text" for="dcgPath">Destiny Collada Generator path</label>
               <input class="form-control" type="text" name="dcg-path" id="dcgPath" placeholder="Select the DCG executable..." readonly>
             </div>
             <div class="mb-3">
-              <label for="preferredDCGVersion">DCG Version</label>
+              <label class="form-label localized-text" for="preferredDCGVersion">DCG Version</label>
               <select class="custom-select" id="preferredDCGVersion">
                 <option value="latest">Latest</option>
               </select>
             </div>
             <div class="mb-3">
               <div class="form-check">
-                <input class="form-check-input settings-checkbox" type="checkbox" name="blenderConnector" id="blenderConnector">
-                <label class="form-check-label" for="blenderConnector">Enable DARE Blender Connector</label>
+                <input class="form-check-input settings-checkbox " type="checkbox" name="blenderConnector" id="blenderConnector">
+                <label class="form-check-label localized-text" for="blenderConnector">Enable DARE Blender Connector</label>
               </div>
             </div>
             <div class="hidden" id="mde-settings">
               <hr>
               <div class="mb-3">
-                <label for="mdePath">Monteven Dynamic Extractor path</label>
+                <label class="form-check-label localized-text" for="mdePath">Monteven Dynamic Extractor path</label>
                 <input class="form-control" type="text" name="mde-exe-path" id="mdePath" placeholder="Select the MDE executable..." readonly>
               </div>
               <div class="mb-3">
-                <label for="pkgPath">Destiny 2 Packages path</label>
+                <label class="form-check-label localized-text" for="pkgPath">Destiny 2 Packages path</label>
                 <input class="form-control" type="text" name="mde-pgk-path" id="pkgPath" placeholder="Select the Destiny 2 packages directory..." readonly>
               </div>
               <div class="mb-3">
                 <div class="form-check">
                   <input class="form-check-input settings-checkbox" type="checkbox" name="rip-hd-textures" id="ripHDTextures">
-                  <label class="form-check-label" for="ripHDTextures">Rip HD textures</label>
+                  <label class="form-check-label localized-text" for="ripHDTextures">Rip HD textures</label>
                 </div>
               </div>
               <div class="mb-3">
                 <div class="form-check">
                   <input class="form-check-input settings-checkbox" type="checkbox" name="rip-shaders" id="ripShaders">
-                  <label class="form-check-label" for="ripShaders">Rip shaders</label>
+                  <label class="form-check-label localized-text" for="ripShaders">Rip shaders</label>
                 </div>
-                <small class="checkboxNote">Shader ripping ignores Aggregate Output setting.</small>
+                <small class="checkboxNote localized-text">Shader ripping ignores Aggregate Output setting.</small>
               </div>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <h6>Changes are saved automatically.</h6>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal-close-button">Close</button>
+          <h6 class="localized-text">Changes are saved automatically.</h6>
+          <button type="button" class="btn btn-secondary localized-text" data-dismiss="modal" id="modal-close-button">Close</button>
         </div>
       </div>
     </div>

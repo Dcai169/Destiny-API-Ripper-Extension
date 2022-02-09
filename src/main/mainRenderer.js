@@ -57,7 +57,7 @@ function searchBoxInputHandler() {
 
 function gameSelectorChangeHandler() {
     searchBox.value = '';
-    
+
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
@@ -114,18 +114,15 @@ document.getElementById('queue-clear-button').addEventListener('click', () => {
     // log.silly('Queue cleared.');
 });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
 // Console
 document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').innerHTML = '' });
 
 // Settings modal
-document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
-document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
-document.getElementById('ripHDTextures').addEventListener('input', () => { userPreferences.set('ripHDTextures', document.getElementById('ripHDTextures').checked) });
-document.getElementById('ripShaders').addEventListener('input', () => { userPreferences.set('ripShaders', document.getElementById('ripShaders').checked) });
+[...document.getElementsByClassName('settings-checkbox')].forEach((inputElem) => { inputElem.addEventListener('input', () => { userPreferences.set(inputElem.id, inputElem.checked) }) })
 document.getElementById('locale').addEventListener('change', localeChangeHandler);
-
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.invoke('selectOutputPath').then((res) => { validateAndSetPath(res, 'outputPath') }) });
 document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.invoke('selectDCGPath').then((res) => { validateAndSetPath(res, 'dcgPath') }) });
 document.getElementById('mdePath').addEventListener('click', () => { ipcRenderer.invoke('selectMDEPath').then((res) => { validateAndSetPath(res, 'mdePath') }) });

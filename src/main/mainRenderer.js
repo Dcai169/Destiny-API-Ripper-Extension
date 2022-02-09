@@ -42,21 +42,27 @@ function loadItems(itemMap) {
 
 function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
-    let diff = searchBox.value.length - previousSearch.length;
 
     searchTimeout = setTimeout(() => {
-        if (searchBox.value === '') {
+        let search = searchBox.value;
+        let diff = search.length - previousSearch.length;
+        console.log({search, previousSearch, diff});
+
+        if (search === '') {
             [...document.getElementById('item-container').children].forEach((item) => { // this loop is super slow
                 setVisibility(item);
             })
+            previousSearch = '';
         } else if (diff > 0) {
-            [...document.querySelectorAll('item-container .m-1')].forEach((item) => {
-                setVisibility(item);
+            [...document.querySelectorAll('#item-container .m-1')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
             })
+            previousSearch = search;
         } else if (diff < 0) {
-            [...document.querySelectorAll('item-container .hidden')].forEach((item) => {
-                setVisibility(item);
+            [...document.querySelectorAll('#item-container .hidden')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
             })
+            previousSearch = search;
         }
     }, 500);
 }

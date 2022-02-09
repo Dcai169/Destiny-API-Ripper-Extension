@@ -12,6 +12,7 @@ const printConsoleError = (text) => { log.error(text); printConsole(text, 'error
 
 // Create working directory in temp
 let tempDir = path.join(api.app.getPath('temp'), 'destiny-api-ripper-extension');
+let buttonTimout;
 fsp.mkdir(tempDir, { recursive: true });
 
 function replaceBackslashes(path) {
@@ -19,12 +20,11 @@ function replaceBackslashes(path) {
 }
 
 function hideLoading() {
-    // document.getElementById('loading-indicator').classList.remove('p-1');
-    // document.getElementById('loading-indicator').classList.add('hidden');
+    clearTimeout(buttonTimout);
     document.getElementById('queue-execute-button').removeAttribute('disabled');
 }
 
-function updateUiDone(code) {
+function updateUiDone(code=0) {
     hideLoading();
     printConsole(`Done (Exit Code: ${code})`, (code) ? 'error' : 'log');
     log.info(`Done (Exit Code: ${code})`);
@@ -57,7 +57,7 @@ async function getMostRecentDestinyModel(folderPath) {
     })
 }
 
-function runDCG(hashes, game = "2") {
+function runDCG(hashes, game = "2", callback = Promise.resolve) {
     // DestinyColladaGenerator.exe <GAME> -o <OUTPUT PATH> [<HASHES>]
     let exeArgs = [game, '-o', userPreferences.get('outputPath')].concat(hashes)
     let child = execFile(userPreferences.get('dcgPath'), exeArgs, (err) => {
@@ -67,14 +67,15 @@ function runDCG(hashes, game = "2") {
     });
     child.stdout.on('data', printConsoleLog);
     child.stderr.on('data', printConsoleError);
-
-    return child;
+    child.on('exit', async () => {
+        return callback();
+    });
 }
 
 function runDCGRecursive(items, game = "2") {
     return new Promise((resolve, reject) => {
         if (items.length > 0) {
-            runDCG([items.pop().hash], game).on('exit', () => { runDCGRecursive(items, game) });
+            runDCG([items.pop().hash], game, () => { return runDCGRecursive(items, game) });
         }
 
         if (items.length === 0) {
@@ -83,7 +84,7 @@ function runDCGRecursive(items, game = "2") {
     })
 }
 
-function convertShaderJSON(shaderPath, name) {
+function convertShaderJSON(shaderPath, name, callback = Promise.resolve) {
     // DestinyColladaGenerator.exe -s <SHADER JSON PATH> <OUTPUT PATH> <ITEM NAME>
     let child = execFile(userPreferences.get('dcgPath'), ['-s', shaderPath, userPreferences.get('outputPath'), name], (err) => {
         if (err) {
@@ -92,8 +93,9 @@ function convertShaderJSON(shaderPath, name) {
     });
     child.stdout.on('data', printConsoleLog);
     child.stderr.on('data', printConsoleError);
-
-    return child;
+    child.on('exit', async () => {
+        return callback()
+    });
 }
 
 function runMDE(item, outputPath) {
@@ -103,6 +105,7 @@ function runMDE(item, outputPath) {
         .concat((item.shader ? [] : ['--filename', `${(item.class ? `${item.class}_` : '')}${item.name.toLowerCase()}`.replaceAll(/[ -]/g, '_')]))
         // If the item is a shader, use the '-h' flag, otherwise use the '-a' flag
         .concat(['--textures', (item.shader ? '--shader' : '--api'), item.hash]);
+
     let child = execFile(userPreferences.get('mdePath'), exeArgs, { cwd: path.parse(userPreferences.get('mdePath')).dir }, (err) => {
         if (err) {
             throw err;
@@ -121,19 +124,16 @@ function runMDERecursive(items, outputPath) {
         }
 
         if (items.length === 0) {
-            setTimeout(hideLoading, 4000);
             resolve();
         }
     })
 }
 
-function ripShader(shader) {
+function ripShader(shader, callback = Promise.resolve) {
     return new Promise(async (resolve, reject) => {
         let workingDir = await fsp.mkdtemp(path.join(tempDir, `${shader.name}-`));
         runMDE(shader, workingDir).on('exit', () => {
-            convertShaderJSON(path.join(workingDir, `${shader.hash}`, 'shader.json'), shader.name).on('exit', () => {
-                resolve();
-            })
+            convertShaderJSON(path.join(workingDir, `${shader.hash}`, 'shader.json'), shader.name, callback);
         });
     })
 }
@@ -141,9 +141,7 @@ function ripShader(shader) {
 function ripShaderRecursive(shaders) {
     return new Promise((resolve, reject) => {
         if (shaders.length > 0) {
-            ripShader(shaders.pop()).then(() => {
-                ripShaderRecursive(shaders);
-            })
+            ripShader(shaders.pop(), () => { return ripShaderRecursive(shaders) })
         }
 
         if (shaders.length === 0) {
@@ -152,24 +150,25 @@ function ripShaderRecursive(shaders) {
     })
 }
 
-function checkExecutionFinished(_3dItems, shaders) {
-    if (_3dItems === [] && shaders === []) {
-        hideLoading();
-    }
+function checkExecutionFinished(_3dItems, shaders, delay=1000) {
+    setTimeout(() => {
+        if (_3dItems === [] && shaders === []) {
+            updateUiDone();
+        }
+    }, delay);
 }
 
 function executeQueue(game, items) {
     // change DOM to reflect program state
     document.getElementById('queue-execute-button').setAttribute('disabled', 'disabled');
-    // document.getElementById('loading-indicator').classList.remove('hidden');
-    // document.getElementById('loading-indicator').classList.add('p-1');
+    buttonTimout = setTimeout(hideLoading, 1000*16);
 
     let _3dItems = [];
-    let shaders = [];
+    let d2Shaders = [];
 
     items.forEach((item) => {
-        if (item.shader) {
-            shaders.push(item);
+        if (item.shader && item.game === '2') {
+            d2Shaders.push(item);
         } else {
             _3dItems.push(item);
         }
@@ -178,11 +177,11 @@ function executeQueue(game, items) {
     // Extract 3d items
     if (userPreferences.get('ripHDTextures') && game === '2') {
         if (userPreferences.get('aggregateOutput')) {
-            runDCG(_3dItems.map((item) => { return item.hash })).on('close', async () => {
+            runDCG(_3dItems.map((item) => { return item.hash }), game, async () => {
                 let hdtPath = path.join((await getMostRecentDestinyModel(userPreferences.get('outputPath'))), 'HD_Textures')
                 await fsp.mkdir(hdtPath);
                 runMDERecursive(_3dItems, hdtPath).then(() => {
-                    checkExecutionFinished(_3dItems, shaders);
+                    checkExecutionFinished(_3dItems, d2Shaders);
                 })
             })
         } else {
@@ -200,16 +199,16 @@ function executeQueue(game, items) {
             runDCG(_3dItems.map((i) => { return i.hash }), game).on('close', updateUiDone);
         } else {
             runDCGRecursive(_3dItems, game).then(() => {
-                checkExecutionFinished(_3dItems, shaders);
+                checkExecutionFinished(_3dItems, d2Shaders);
             });
         }
     }
 
-    if (userPreferences.get('ripShaders') && shaders.length > 0) {
+    if (userPreferences.get('ripShaders') && d2Shaders.length > 0) {
         // Extract shaders
         // Generate shader.json using MDE and save output to temp directory
-        ripShaderRecursive(shaders).then(() => {
-            checkExecutionFinished(_3dItems, shaders);
+        ripShaderRecursive(d2Shaders).then(() => {
+            checkExecutionFinished(_3dItems, d2Shaders);
         });
     }
 }
@@ -225,7 +224,8 @@ function executeButtonClickHandler() {
                             hash: item.id,
                             name: item.getAttribute('name'),
                             shader: item.dataset.itemcategories.includes('shader'),
-                            class: item.dataset?.class || null
+                            class: item.dataset?.class || null,
+                            game: item.dataset.game
                         }
                     })
 

@@ -10,6 +10,7 @@ function createItemTile(item, game) {
     tileRoot.classList.add('align-items-center');
     tileRoot.classList.add('m-1');
 
+    tileRoot.dataset.game = game;
     tileRoot.onclick = itemTileClickHandler;
 
     let iconImg = document.createElement('img');

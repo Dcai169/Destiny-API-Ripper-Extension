@@ -35,7 +35,7 @@ function loadItems(itemMap) {
     queue.innerHTML = '';
 
     itemMap.forEach((item) => {
-        itemContainer.append(createItemTile(item, gameSelector.value));
+        itemContainer.append(createItemTile(item, gameSelector.value, userPreferences.get('loadThumbnails')));
     });
     log.debug(`${itemMap.size} items loaded`);
 }
@@ -80,10 +80,19 @@ function gameSelectorChangeHandler() {
     }
 }
 
-function localeChangeHandler() {
+function settingRequiresReload() {
     reloadRequired = true;
     document.getElementById('modal-close-button').textContent = 'Reload';
+}
+
+function localeChangeHandler() {
+    settingRequiresReload();
     userPreferences.set('locale', document.getElementById('locale').value);
+}
+
+function loadThumbnailClickHandler(inputElem) {
+    settingRequiresReload();
+    userPreferences.set(inputElem.id, inputElem.checked)
 }
 
 function validateAndSetPath(path, settingKey) {
@@ -135,6 +144,7 @@ document.getElementById('console-clear').addEventListener('click', () => { docum
 
 // Settings modal
 [...document.getElementsByClassName('settings-checkbox')].forEach((inputElem) => { inputElem.addEventListener('input', () => { userPreferences.set(inputElem.id, inputElem.checked) }) })
+document.getElementById('loadThumbnails').addEventListener('click', () => { loadThumbnailClickHandler(document.getElementById('loadThumbnail')) });
 document.getElementById('locale').addEventListener('change', localeChangeHandler);
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.invoke('selectOutputPath').then((res) => { validateAndSetPath(res, 'outputPath') }) });
 document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.invoke('selectDCGPath').then((res) => { validateAndSetPath(res, 'dcgPath') }) });

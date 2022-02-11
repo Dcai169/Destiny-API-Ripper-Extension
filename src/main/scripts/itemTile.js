@@ -1,7 +1,7 @@
 const { setVisibility } = require('./uiUtils.js');
 const log = require('electron-log');
 
-function createItemTile(item, game) {
+function createItemTile(item, game, loadThumbnails = true) {
     let tileRoot = document.createElement('div');
     tileRoot.id = item.hash;
 
@@ -115,7 +115,9 @@ function createItemTile(item, game) {
     textContainer.appendChild(typeText);
     textDiv.appendChild(textContainer);
 
-    tileRoot.appendChild(iconDiv);
+    if (loadThumbnails) {
+        tileRoot.appendChild(iconDiv);
+    }
     tileRoot.appendChild(textDiv);
 
     return tileRoot;

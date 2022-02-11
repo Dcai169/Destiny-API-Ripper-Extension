@@ -92,6 +92,10 @@ let schema = {
     "blenderConnector": {
         type: 'boolean',
         default: false
+    },
+    "loadThumbnails": {
+        type: 'boolean',
+        default: true
     }
 }
 

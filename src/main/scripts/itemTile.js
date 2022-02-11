@@ -54,15 +54,15 @@ function createItemTile(item, game) {
 
         switch (item?.classType) {
             case 0:
-                tileRoot.dataset.class = 'titan';
+                tileRoot.dataset.itemcategories += ' titanArmor';
                 break;
 
             case 1:
-                tileRoot.dataset.class = 'hunter';
+                tileRoot.dataset.itemcategories += ' hunterArmor';
                 break;
 
             case 2:
-                tileRoot.dataset.class = 'warlock';
+                tileRoot.dataset.itemcategories += ' warlockArmor';
                 break;
 
             default:
@@ -203,14 +203,14 @@ function itemCategoryHashToName(hash) {
         case 1742617626:
             return 'armorOrnament';
 
-        case 22:
-            return 'titanArmor';
+        // case 22:
+        //     return 'titanArmor';
 
-        case 23:
-            return 'hunterArmor';
+        // case 23:
+        //     return 'hunterArmor';
 
-        case 21:
-            return 'warlockArmor';
+        // case 21:
+        //     return 'warlockArmor';
 
         case 5:
             return 'autoRifle';

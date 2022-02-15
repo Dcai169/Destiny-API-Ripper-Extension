@@ -7,7 +7,7 @@ const { getDestiny1ItemDefinitions, getDestiny2ItemDefinitions } = require('./sc
 const { createItemTile, addItemToContainer } = require('./scripts/itemTile.js');
 const { setVisibility, setInputElemValue, printConsole } = require('./scripts/uiUtils.js');
 const { executeButtonClickHandler } = require('./scripts/toolWrapper.js');
-const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler } = require('./scripts/filterMenus.js');
+const { typeFilterClickHandler, dependentFilterClickHandler, rarityFilterClickHandler, armorClassFilterClickHandler } = require('./scripts/filterMenus.js');
 const { userPreferences } = require('../userPreferences');
 
 // Document Objects
@@ -18,6 +18,7 @@ let searchBox = document.getElementById('search-box');
 
 let searchTimeout;
 let reloadRequired = false;
+let previousSearch = '';
 let itemMap = {
     '1': {
         get: getDestiny1ItemDefinitions,
@@ -34,7 +35,7 @@ function loadItems(itemMap) {
     queue.innerHTML = '';
 
     itemMap.forEach((item) => {
-        itemContainer.append(createItemTile(item, gameSelector.value));
+        itemContainer.append(createItemTile(item, gameSelector.value, userPreferences.get('loadThumbnails')));
     });
     log.debug(`${itemMap.size} items loaded`);
 }
@@ -43,21 +44,32 @@ function searchBoxInputHandler() {
     clearTimeout(searchTimeout);
 
     searchTimeout = setTimeout(() => {
-        if (searchBox.value) {
-            [...document.querySelectorAll('#item-container .item-tile.m-1')].forEach((item) => {
-                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
-            })
-        } else {
-            [...document.getElementById('item-container').children].forEach((item) => {
+        let search = searchBox.value;
+        let diff = search.length - previousSearch.length;
+        console.log({search, previousSearch, diff});
+
+        if (search === '') {
+            [...document.getElementById('item-container').children].forEach((item) => { // this loop is super slow
                 setVisibility(item);
             })
+            previousSearch = '';
+        } else if (diff > 0) {
+            [...document.querySelectorAll('#item-container .m-1')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
+            })
+            previousSearch = search;
+        } else if (diff < 0) {
+            [...document.querySelectorAll('#item-container .hidden')].forEach((item) => {
+                setVisibility(item, item.getAttribute('name').toLowerCase().includes(searchBox.value.toLowerCase()));
+            })
+            previousSearch = search;
         }
     }, 500);
 }
 
 function gameSelectorChangeHandler() {
     searchBox.value = '';
-    
+
     if (itemMap[gameSelector.value].items) {
         loadItems(itemMap[gameSelector.value].items);
     } else {
@@ -68,10 +80,19 @@ function gameSelectorChangeHandler() {
     }
 }
 
-function localeChangeHandler() {
+function settingRequiresReload() {
     reloadRequired = true;
     document.getElementById('modal-close-button').textContent = 'Reload';
+}
+
+function localeChangeHandler() {
+    settingRequiresReload();
     userPreferences.set('locale', document.getElementById('locale').value);
+}
+
+function loadThumbnailClickHandler(inputElem) {
+    settingRequiresReload();
+    userPreferences.set(inputElem.id, inputElem.checked)
 }
 
 function validateAndSetPath(path, settingKey) {
@@ -109,23 +130,22 @@ gameSelector.addEventListener('change', gameSelectorChangeHandler);
 [...document.getElementsByClassName('rarity-filter')].forEach((inputElem) => { inputElem.addEventListener('click', rarityFilterClickHandler); });
 [...document.getElementsByClassName('type-filter')].forEach((element) => { element.addEventListener('click', typeFilterClickHandler) });
 [...document.getElementsByClassName('dependent-filter')].forEach((element) => { element.addEventListener('click', dependentFilterClickHandler) });
+[...document.getElementsByClassName('armor-class-filter')].forEach((element) => { element.addEventListener('click', armorClassFilterClickHandler) });
 document.getElementById('queue-clear-button').addEventListener('click', () => {
     [...queue.children].forEach(item => { addItemToContainer(item); });
     // log.silly('Queue cleared.');
 });
 document.getElementById('queue-execute-button').addEventListener('click', executeButtonClickHandler);
+document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
 document.getElementById('search-box').addEventListener('input', searchBoxInputHandler);
 
 // Console
 document.getElementById('console-clear').addEventListener('click', () => { document.getElementById('console-text').innerHTML = '' });
 
 // Settings modal
-document.getElementById('open-output').addEventListener('click', () => { ipcRenderer.send('openExplorer', [userPreferences.get('outputPath')]) })
-document.getElementById('aggregateOutput').addEventListener('input', () => { userPreferences.set('aggregateOutput', document.getElementById('aggregateOutput').checked) });
-document.getElementById('ripHDTextures').addEventListener('input', () => { userPreferences.set('ripHDTextures', document.getElementById('ripHDTextures').checked) });
-document.getElementById('ripShaders').addEventListener('input', () => { userPreferences.set('ripShaders', document.getElementById('ripShaders').checked) });
+[...document.getElementsByClassName('settings-checkbox')].forEach((inputElem) => { inputElem.addEventListener('input', () => { userPreferences.set(inputElem.id, inputElem.checked) }) })
+document.getElementById('loadThumbnails').addEventListener('click', () => { loadThumbnailClickHandler(document.getElementById('loadThumbnail')) });
 document.getElementById('locale').addEventListener('change', localeChangeHandler);
-
 document.getElementById('outputPath').addEventListener('click', () => { ipcRenderer.invoke('selectOutputPath').then((res) => { validateAndSetPath(res, 'outputPath') }) });
 document.getElementById('dcgPath').addEventListener('click', () => { ipcRenderer.invoke('selectDCGPath').then((res) => { validateAndSetPath(res, 'dcgPath') }) });
 document.getElementById('mdePath').addEventListener('click', () => { ipcRenderer.invoke('selectMDEPath').then((res) => { validateAndSetPath(res, 'mdePath') }) });

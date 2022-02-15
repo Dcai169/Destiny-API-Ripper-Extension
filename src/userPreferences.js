@@ -88,6 +88,14 @@ let schema = {
     "ripShaders": {
         type: 'boolean',
         default: false
+    },
+    "blenderConnector": {
+        type: 'boolean',
+        default: false
+    },
+    "loadThumbnails": {
+        type: 'boolean',
+        default: true
     }
 }
 

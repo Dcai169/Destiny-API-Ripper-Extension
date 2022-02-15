@@ -52,7 +52,7 @@ function setInputElemValue(elementId, value) {
             break;
 
         case "checkbox":
-            inputElem.checked = value;
+            inputElem.checked = !!value;
             break;
     
         default:

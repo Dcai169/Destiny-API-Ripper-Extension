@@ -6,6 +6,11 @@ require('dotenv').config({ path: 'api.env' });
 const BASE_URL = 'https://bungie.net';
 const DEFAULT_SHADER_HASH = 4248210736; // Default Shader
 const DESTINY2_HASH_BLACKLIST = [702981643, 2965439266, 2426387438, 3807544519, 2325217837, 4248210736];
+const DESTINY2_HASH_WHITELIST = [
+    2899766705, 648507367, 1364005110, 997252576, 2731019523, 
+    765924941, 3933597171, 1844055850, 2359657268, 1436723983, 
+    673268892, 2226216068, 2969943001, 20603181, 3971164198
+];
 
 function getDestiny1ItemDefinitions(locale = 'en') {
     return new Promise((resolve, reject) => {
@@ -47,10 +52,12 @@ function getDestiny2ItemDefinitions(locale = 'en') {
                     .then((res) => {
                         for (let [hash, item] of Object.entries(res.data)) {
                             if (((item) => {
+                                if (DESTINY2_HASH_WHITELIST.includes(item.hash)) { return true }
                                 if (DESTINY2_HASH_BLACKLIST.includes(item.hash)) { return false }
                                 if (!item?.displayProperties.name) { return false }
-                                if (item?.traitIds?.includes("item_type.ornament.armor")) { return true } // Ornaments
                                 if (item.itemCategoryHashes?.includes(3109687656)) { return false } // Mods
+                                if (item.itemCategoryHashes?.includes(20) && !(item.index >= 8110)) { return false } // Armor 1.0
+                                if (item?.traitIds?.includes("item_type.ornament.armor")) { return true } // Ornaments
                                 if (item.itemCategoryHashes?.some((itemCategoryHash) => { return [1, 20, 39, 41, 42, 43, 55, 1742617626, 3124752623].includes(itemCategoryHash) })) { return true } // Armor, weapons, shaders, ships, ghost shells, and sparrows
                             })(item)) {
                                 d2ItemDefinitions[hash] = item;

@@ -1,7 +1,7 @@
 const { setVisibility } = require('./uiUtils.js');
 const log = require('electron-log');
 
-function createItemTile(item, game) {
+function createItemTile(item, game, loadThumbnails = true) {
     let tileRoot = document.createElement('div');
     tileRoot.id = item.hash;
 
@@ -10,6 +10,7 @@ function createItemTile(item, game) {
     tileRoot.classList.add('align-items-center');
     tileRoot.classList.add('m-1');
 
+    tileRoot.dataset.game = game;
     tileRoot.onclick = itemTileClickHandler;
 
     let iconImg = document.createElement('img');
@@ -53,15 +54,15 @@ function createItemTile(item, game) {
 
         switch (item?.classType) {
             case 0:
-                tileRoot.dataset.class = 'titan';
+                tileRoot.dataset.itemcategories += ' titanArmor';
                 break;
 
             case 1:
-                tileRoot.dataset.class = 'hunter';
+                tileRoot.dataset.itemcategories += ' hunterArmor';
                 break;
 
             case 2:
-                tileRoot.dataset.class = 'warlock';
+                tileRoot.dataset.itemcategories += ' warlockArmor';
                 break;
 
             default:
@@ -114,7 +115,9 @@ function createItemTile(item, game) {
     textContainer.appendChild(typeText);
     textDiv.appendChild(textContainer);
 
-    tileRoot.appendChild(iconDiv);
+    if (loadThumbnails) {
+        tileRoot.appendChild(iconDiv);
+    }
     tileRoot.appendChild(textDiv);
 
     return tileRoot;

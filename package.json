@@ -1,7 +1,7 @@
 {
   "name": "destiny-api-ripper-extension",
   "productName": "Destiny API Ripper Extension",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "An extension for the Destiny Collada Generator",
   "main": "src/index.js",
   "scripts": {
@@ -9,14 +9,44 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "test": "mocha",
-    "lint": "echo \"No linting configured\""
+    "test": "npm run lint",
+    "lint": "xo"
+  },
+  "xo": {
+    "env": [
+      "browser",
+      "es2021",
+      "node"
+    ],
+    "space": 2,
+    "rules": {
+      "unicorn/filename-case": [
+        "error",
+        {
+          "case": "camelCase"
+        }
+      ],
+      "unicorn/prefer-module": "off",
+      "unicorn/no-array-for-each": "off",
+      "unicorn/numeric-separators-style": "off",
+      "unicorn/prefer-query-selector": "off",
+      "unicorn/prefer-dom-node-append": "off",
+      "array-element-newline": "off",
+      "no-await-in-loop": "off",
+      "no-labels": "off"
+    }
   },
   "keywords": [],
   "author": {
     "name": "Daniel Cai",
     "email": "danielxcai169@gmail.com"
   },
+  "contributors": [
+    {
+      "name": "Bowen Jiang",
+      "email": "mem0z@outlook.com"
+    }
+  ],
   "license": "MIT",
   "config": {
     "forge": {
@@ -36,7 +66,18 @@
       "packagerConfig": {
         "packageManager": "npm",
         "executableName": "destiny-api-ripper-extension",
-        "icon": "D:/Projects/GitHub/Destiny-API-Ripper-Extension/src/styles/icons/icon_outline"
+        "icon": "src/styles/icons/icon_outline",
+        "overwrite": true,
+        "asar": false,
+        "ignore": [
+          ".git",
+          ".vscode",
+          ".idea",
+          "src/extraResources"
+        ],
+        "extraResource": [
+          "src/extraResources/Destiny 1 Item Definition"
+        ]
       },
       "makers": [
         {
@@ -64,26 +105,20 @@
     }
   },
   "dependencies": {
-    "7zip-bin": "^5.1.0",
-    "axios": "^0.21.1",
-    "bootstrap": "^4.6.0",
-    "dotenv": "^8.2.0",
-    "electron-dl": "^3.2.0",
-    "electron-log": "^4.3.2",
+    "7zip-bin": "^5.2.0",
+    "axios": "^1.4.0",
+    "electron-log": "^4.4.8",
     "electron-squirrel-startup": "^1.0.0",
-    "electron-store": "^7.0.2",
-    "electron-util": "^0.14.2",
-    "jquery": "^3.6.0",
-    "node-7z": "^2.1.2",
-    "popper.js": "^1.16.1"
+    "electron-store": "^8.1.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.54",
-    "@electron-forge/maker-deb": "^6.0.0-beta.54",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
-    "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^11.5.0",
-    "mocha": "^8.3.0"
+    "@electron-forge/cli": "^6.1.1",
+    "@electron-forge/maker-deb": "^6.1.1",
+    "@electron-forge/maker-rpm": "^6.1.1",
+    "@electron-forge/maker-squirrel": "^6.1.1",
+    "@electron-forge/maker-zip": "^6.1.1",
+    "electron": "^24.3.1",
+    "npm-check-updates": "^16.10.12",
+    "xo": "^0.54.2"
   }
 }

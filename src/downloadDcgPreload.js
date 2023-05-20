@@ -90,7 +90,8 @@ window.addEventListener('load', async () => {
   const destinationDir = path.join(binPath, path.parse(latestAsset.name).name);
   const extension = platformKeyword === 'Win64' ? '.exe' : '';
   const pathToExe = path.join(destinationDir, latestAsset.name.replace('-' + platformKeyword + '-Unpacked.7z', extension));
-  const child = spawn(path7za, ['x', '-o*', packagePath], {cwd: binPath});
+  const actual7zaPath = await ipcRenderer.invoke('isPackaged') ? path7za.replace('app.asar', 'app.asar.unpacked') : path7za;
+  const child = spawn(actual7zaPath, ['x', '-o*', packagePath], {cwd: binPath});
   child.stdout.on('data', chunk => {
     printMessage('7za(stdout): ' + chunk);
   });
@@ -98,26 +99,29 @@ window.addEventListener('load', async () => {
     printMessage('7za(stderr): ' + chunk);
   });
   child.on('close', code => {
-    if (code) {
-      printMessage('Failed to extract DCG! 7za exited with code ' + code + '.');
-    } else {
+    if (code === 0) {
       appConfig.set('dcgPath', pathToExe);
       printMessage('DCG has been successfully extracted. New path is set to: ' + pathToExe);
       try {
         fs.rmSync(packagePath, {force: true});
-        printMessage('No longer needed archive has been deleted. You can safely close this window.');
+        printMessage('No longer needed archive has been deleted.');
       } catch (error) {
         printMessage('Failed to delete no longer needed archive: ' + packagePath);
-        printMessage('You may wish to manually delete it to free up space. Error message: ' + error.message);
+        printMessage('Error message: ' + error.message);
       }
+
+      if (platformKeyword !== 'Win64') {
+        const child = spawn('chmod', ['+x', pathToExe]);
+        child.on('close', code => {
+          if (code !== 0) {
+            printMessage('Failed to add execute bit to DCG! Check if it can be launched. Chmod exited with code ' + code + '.');
+          }
+        });
+      }
+    } else {
+      printMessage('Failed to extract DCG! 7za exited with code ' + code + '.');
     }
 
-    if (platformKeyword === 'Linux64') {
-      printMessage('DCG requires GDI+ to function. See https://github.com/TiredHobgoblin/Destiny-Collada-Generator for more information.');
-    }
-
-    if (platformKeyword !== 'Win64') {
-      spawn('chmod', ['+x', pathToExe]);
-    }
+    printMessage('All actions done. You can safely close this window.');
   });
 }, false);

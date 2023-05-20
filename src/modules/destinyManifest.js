@@ -17,7 +17,7 @@ const DESTINY2_HASH_WHITELIST = new Set([
 async function getDestiny1ItemsMetadata(locale = 'en') {
   const gzPath = await ipcRenderer.invoke('isPackaged') ? path.join(process.resourcesPath, 'Destiny 1 Item Definition', locale + '.json.gz') : path.join(__dirname, '../extraResources/Destiny 1 Item Definition', locale + '.json.gz');
   const jsonFile = zlib.gunzipSync(fs.readFileSync(gzPath));
-  let d1ItemsMetadata = {};
+  const d1ItemsMetadata = new Map();
   for (const [hash, item] of Object.entries(JSON.parse(jsonFile.toString()))) {
     // Filter items in the manifest
     if ((item => {
@@ -44,16 +44,10 @@ async function getDestiny1ItemsMetadata(locale = 'en') {
         return true;
       }
     })(item)) {
-      d1ItemsMetadata[hash] = item;
+      d1ItemsMetadata.set(hash, item);
     }
   }
 
-  // Sort into a Map Object
-  const items = Object.values(d1ItemsMetadata);
-  d1ItemsMetadata = new Map();
-  items.forEach(item => {
-    d1ItemsMetadata.set(item.hash, item);
-  });
   return d1ItemsMetadata;
 }
 

@@ -5,11 +5,6 @@ const store = require('electron-store');
 
 store.initRenderer();
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) {
-  app.quit();
-}
-
 // Prevent windows from being garbage collected
 let mainWindow;
 // eslint-disable-next-line no-unused-vars

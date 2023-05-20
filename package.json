@@ -1,7 +1,7 @@
 {
   "name": "destiny-api-ripper-extension",
   "productName": "Destiny API Ripper Extension",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "An extension for the Destiny Collada Generator",
   "main": "src/index.js",
   "scripts": {
@@ -48,74 +48,16 @@
     }
   ],
   "license": "MIT",
-  "config": {
-    "forge": {
-      "make_targets": {
-        "win32": [
-          "zip"
-        ],
-        "darwin": [
-          "dmg",
-          "zip"
-        ],
-        "linux": [
-          "deb",
-          "rpm"
-        ]
-      },
-      "packagerConfig": {
-        "packageManager": "npm",
-        "executableName": "destiny-api-ripper-extension",
-        "icon": "src/styles/icons/icon_outline",
-        "overwrite": true,
-        "asar": false,
-        "ignore": [
-          ".git",
-          ".vscode",
-          ".idea",
-          "src/extraResources"
-        ],
-        "extraResource": [
-          "src/extraResources/Destiny 1 Item Definition"
-        ]
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "win32",
-            "darwin"
-          ],
-          "config": {
-            "name": "destiny-api-ripper-extension"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "platforms": [
-            "linux"
-          ],
-          "config": {
-            "name": "destiny-api-ripper-extension",
-            "maintainer": "Daniel Cai",
-            "homepage": "https://github.com/Dcai169/Destiny-API-Ripper-Extension"
-          }
-        }
-      ]
-    }
-  },
   "dependencies": {
     "7zip-bin": "^5.2.0",
     "axios": "^1.4.0",
     "electron-log": "^4.4.8",
-    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.1.1",
     "@electron-forge/maker-deb": "^6.1.1",
     "@electron-forge/maker-rpm": "^6.1.1",
-    "@electron-forge/maker-squirrel": "^6.1.1",
     "@electron-forge/maker-zip": "^6.1.1",
     "electron": "^24.3.1",
     "npm-check-updates": "^16.10.12",

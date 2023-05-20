@@ -2,7 +2,7 @@ const {ipcRenderer} = require('electron');
 const path = require('node:path');
 const {promises: fsp} = require('node:fs');
 const process = require('node:process');
-const {execFile} = require('node:child_process');
+const {spawn} = require('node:child_process');
 const log = require('electron-log');
 const {getDestiny1ItemsMetadata, getDestiny2ItemsMetadata} = require('./modules/destinyManifest.js');
 const {appConfig} = require('./modules/appConfig.js');
@@ -223,11 +223,7 @@ window.addEventListener('load', () => {
 
   function runDCG(exeArgs) {
     return new Promise((resolve, reject) => {
-      const child = execFile(appConfig.get('dcgPath'), exeArgs, error => {
-        if (error) {
-          reject(error);
-        }
-      });
+      const child = spawn(appConfig.get('dcgPath'), exeArgs);
       child.stdout.on('data', chunk => {
         printSubprocessMessages('DCG', 'stdout', chunk);
       });
@@ -235,8 +231,13 @@ window.addEventListener('load', () => {
         printSubprocessMessages('DCG', 'stderr', chunk);
       });
       child.on('exit', code => {
-        printExitCode('DCG', code);
-        resolve();
+        if (code === 0) {
+          printExitCode('DCG', code);
+          resolve();
+        } else {
+          printExitCode('DCG', code);
+          reject();
+        }
       });
     });
   }
@@ -268,11 +269,7 @@ window.addEventListener('load', () => {
         .concat((item.shader ? [] : ['--filename', `${(item.class ? `${item.class}_` : '')}${item.name.toLowerCase()}`.replaceAll(/[ -]/g, '_')]))
         // If the item is a shader, use the '-h' flag, otherwise use the '-a' flag
         .concat(['--textures', (item.shader ? '--shader' : '--api'), item.hash]);
-      const child = execFile(appConfig.get('mdePath'), exeArgs, {cwd: path.parse(appConfig.get('mdePath')).dir}, error => {
-        if (error) {
-          reject(error);
-        }
-      });
+      const child = spawn(appConfig.get('mdePath'), exeArgs, {cwd: path.parse(appConfig.get('mdePath')).dir});
       child.stdout.on('data', chunk => {
         printSubprocessMessages('MDE', 'stdout', chunk);
       });
@@ -280,8 +277,13 @@ window.addEventListener('load', () => {
         printSubprocessMessages('MDE', 'stderr', chunk);
       });
       child.on('exit', code => {
-        printExitCode('MDE', code);
-        resolve();
+        if (code === 0) {
+          printExitCode('MDE', code);
+          resolve();
+        } else {
+          printExitCode('MDE', code);
+          reject();
+        }
       });
     });
   }
@@ -583,7 +585,7 @@ window.addEventListener('load', () => {
       tileRoot.style.backgroundColor = `var(--${tierNumberToRarityName(item?.tierType)}-color)`;
       tileRoot.dataset.itemcategories = item.itemCategoryHashes.map((hash, ..._) => itemCategoryHashToName[hash]).join(' ').trim();
 
-      tileRoot.dataset.index = item.index;
+      tileRoot.dataset.index = item.hash;
       tileRoot.dataset.rarity = item.tierType;
 
       tileRoot.setAttribute('name', item?.itemName ?? 'Classified');
@@ -650,7 +652,7 @@ window.addEventListener('load', () => {
 
         if (!['en', 'fr', 'es', 'de', 'it', 'ja', 'pt-br'].includes(locale)) {
           d1Locale = 'en';
-          printWarn('Destiny 1 is not available in "' + locale + '", showing "' + d1Locale + '" instead.');
+          printWarn('Destiny 1 is not available in "' + locale + '", showing "en" instead.');
         }
 
         metadataStorage[1].displayLanguage = d1Locale;
@@ -733,7 +735,7 @@ window.addEventListener('load', () => {
     if (metadataStorage[gameSelectorElement.value].holder && metadataStorage[gameSelectorElement.value].displayLanguage === appConfig.get('locale')) {
       generateTiles(metadataStorage[gameSelectorElement.value].holder);
     } else {
-      initializeTiles();
+      initializeTiles().then();
     }
   }
 
@@ -846,7 +848,7 @@ window.addEventListener('load', () => {
   // Keyboard shortcuts
   ipcRenderer.on('reload', (_, args) => {
     if (args) {
-      initializeTiles();
+      initializeTiles().then();
     }
   });
   ipcRenderer.on('force-reload', (_, args) => {

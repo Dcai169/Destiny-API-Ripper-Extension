@@ -51,3 +51,30 @@ body {
 .hidden {
     content-visibility: hidden;
 }
+
+#output-path-row {
+    display: grid;
+    grid-auto-columns: 80% 20%;
+}
+
+#outputPath {
+    grid-column: 1;
+}
+
+#aggregateCheckbox {
+    grid-column: 2;
+    padding-top: 0.4rem;
+}
+
+#aggregate-checkbox-div {
+    display: grid;
+}
+
+#aggregateOutput {
+    grid-column: 1;
+}
+
+#aggregate-output-label {
+    grid-column: 2;
+    width: max-content;
+}

@@ -1,5 +1,5 @@
 # Destiny API Ripper Extension
-Destiny API Ripper Extension (DARE) is an extension and GUI for the [Destiny Collada Generator](https://github.com/TiredHobgoblin/Destiny-Collada-Generator) and [Monteven Dynamic Extractor](https://github.com/MontagueM/MontevenDynamicExtractor).
+Destiny API Ripper Extension (DARE) is an extension and GUI for the [Destiny Collada Generator](https://github.com/TiredHobgoblin/Destiny-Collada-Generator) and [Monteven Dynamic Extractor](https://github.com/nblockbuster/MontevenDynamicExtractor).
 
 ### Usage
 

@@ -57,6 +57,7 @@ const createSettingsWindow = async () => {
     show: false,
     parent: parentWindow,
     modal: true,
+    resizable: false,
   });
   _window.setMenuBarVisibility(false);
   _window.on('ready-to-show', () => {

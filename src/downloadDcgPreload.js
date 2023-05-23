@@ -101,10 +101,10 @@ window.addEventListener('load', async () => {
   child.on('close', code => {
     if (code === 0) {
       appConfig.set('dcgPath', pathToExe);
-      printMessage('DCG has been successfully extracted. New path is set to: ' + pathToExe);
+      printMessage('DCG has been successfully extracted. DCG path is ' + pathToExe);
       try {
         fs.rmSync(packagePath, {force: true});
-        printMessage('No longer needed archive has been deleted.');
+        // printMessage('No longer needed archive has been deleted.');
       } catch (error) {
         printMessage('Failed to delete no longer needed archive: ' + packagePath);
         printMessage('Error message: ' + error.message);
@@ -114,7 +114,7 @@ window.addEventListener('load', async () => {
         const child = spawn('chmod', ['+x', pathToExe]);
         child.on('close', code => {
           if (code !== 0) {
-            printMessage('Failed to add execute bit to DCG! Check if it can be launched. Chmod exited with code ' + code + '.');
+            printMessage('Failed to add execute permissions to DCG! Check if it can be launched. Chmod exited with code ' + code + '.');
           }
         });
       }
@@ -122,6 +122,6 @@ window.addEventListener('load', async () => {
       printMessage('Failed to extract DCG! 7za exited with code ' + code + '.');
     }
 
-    printMessage('All actions done. You can safely close this window.');
+    printMessage('DCG download complete. You may now close this window.');
   });
 }, false);

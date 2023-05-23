@@ -211,7 +211,7 @@ app.on('activate', async () => {
       cancelId: 0,
       title: 'Confirmation',
       message: 'Download and configure DCG automatically?',
-      detail: 'Destiny Collada Generator (DCG) is required, but not configured. You can let DARE handle that for you now or manually configure it later.',
+      detail: 'Destiny Collada Generator (DCG) is required, but not configured. DARE download DCG automatically, or you can manually configure it later.',
     }));
     return choice.response;
   });

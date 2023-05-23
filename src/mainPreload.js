@@ -362,7 +362,7 @@ window.addEventListener('load', () => {
         await dispatchImportRequest();
       }
     } else {
-      printInfo('No 3D model found in queue.');
+      // printInfo('No 3D models found in queue');
     }
 
     if (appConfig.get('ripShaders')) {
@@ -373,10 +373,10 @@ window.addEventListener('load', () => {
         await ripAllShaders(d2Shaders);
         await dispatchImportRequest;
       } else {
-        printInfo('Custom shader ripping is enabled, but no shader found in queue.');
+        // printInfo('No shaders found in queue');
       }
     } else {
-      printInfo('Custom shader ripping is disabled.');
+      printInfo('Shader ripping is disabled');
     }
   }
 
@@ -384,13 +384,13 @@ window.addEventListener('load', () => {
     printWarn('Starting rip(s). This could take a while...');
     // Check if Output path is configured
     if (!appConfig.get('outputPath')) {
-      printError('Output path is not configured! Abort.');
+      printError('Output path is not configured! Aborting...');
       return;
     }
 
     // Check if DCG is configured
     if (!appConfig.get('dcgPath')) {
-      printError('Destiny Collada Generator is not configured! Abort.');
+      printError('Destiny Collada Generator is not configured! Aborting...');
       return;
     }
 
@@ -398,20 +398,20 @@ window.addEventListener('load', () => {
     if (process.platform === 'win32' && (appConfig.get('ripHDTextures') || appConfig.get('ripShaders'))) {
       // When applicable, check if MDE is configured
       if (!appConfig.get('mdePath')) {
-        printError('Monteven Dynamic Extractor is not configured! Abort.');
+        printError('Monteven Dynamic Extractor is not configured! Aborting...');
         return;
       }
 
       // When applicable, check if Destiny 2 packages is configured
       if (!appConfig.get('pkgPath')) {
-        printError('Destiny 2 Packages is not configured! Abort.');
+        printError('Destiny 2 Packages is not configured! Aborting...');
         return;
       }
     }
 
     // Check if ripping queue is empty
     if ([...queueContainerElement.children].length === 0) {
-      printError('No item in queue! Abort.');
+      printError('No items in queue');
       return;
     }
 
@@ -641,7 +641,7 @@ window.addEventListener('load', () => {
   async function initializeTiles() {
     const locale = appConfig.get('locale').toLowerCase();
     const gameGeneration = gameSelectorElement.value;
-    printStatus('Loading "' + locale + '" item definition of Destiny ' + gameGeneration + '...');
+    printStatus(`Loading Destiny ${gameGeneration} items with locale ${locale}`);
     switch (gameGeneration) {
       case '1': {
         let d1Locale = locale;
@@ -660,7 +660,7 @@ window.addEventListener('load', () => {
           metadataStorage[gameGeneration].holder = await getDestiny1ItemsMetadata(d1Locale);
           generateTiles(metadataStorage[gameGeneration].holder);
         } catch (error) {
-          printError('Unable to load Destiny 1 item definition. Error message: ' + error.message);
+          printError('Unable to load Destiny 1 item definitions. Error message: ' + error.message);
         }
 
         break;
@@ -672,14 +672,18 @@ window.addEventListener('load', () => {
           metadataStorage[gameGeneration].holder = await getDestiny2ItemsMetadata(locale);
           generateTiles(metadataStorage[gameGeneration].holder);
         } catch (error) {
-          printError('Unable to load Destiny 2 item definition. Error message: ' + error.message);
+          if (error.message === "Request failed with status code 500") {
+            printError('Unable to load Destiny 2 item definitions. It seems the API is down, try again later.')
+          } else {
+            printError('Unable to load Destiny 2 item definitions. Error message: ' + error.message);
+          }
         }
 
         break;
       }
 
       default: {
-        printError('Unexpected game generation when trying to load item definition: ' + gameGeneration + '!');
+        printError('Unexpected game generation when trying to load item definitions: ' + gameGeneration + '!');
       }
     }
   }
@@ -755,7 +759,7 @@ window.addEventListener('load', () => {
     if (!appConfig.get('outputPath')) {
       // Set default output directory
       const defaultOutputPath = path.join(await ipcRenderer.invoke('getPath', 'documents'), 'DARE Output');
-      printWarn('Output path is not configured. Setting it to: ' + defaultOutputPath);
+      printWarn(`Output path is not configured. Defaulting to ${defaultOutputPath} `);
       try {
         await fsp.mkdir(defaultOutputPath, {recursive: true});
         appConfig.set('outputPath', defaultOutputPath);

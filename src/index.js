@@ -1,234 +1,219 @@
-const { app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell } = require('electron');
+const {app, BrowserWindow, ipcMain, dialog, Menu, MenuItem, shell} = require('electron');
+const path = require('node:path');
+const process = require('node:process');
 const store = require('electron-store');
-const log = require('electron-log');
-const { debugInfo } = require('electron-util');
-const { download } = require('electron-dl');
-const { extract7zip, findExecutable } = require('./loading/scripts/loadingScripts.js');
-const fsp = require('fs').promises;
-const path = require('path');
-const { argv } = require('process');
-
-let startupConsoleMessages = [{consoleMessage: `DARE v${app.getVersion()}`, type: 'log'}];
-let relaunchFlag = argv.includes('--relaunch');
 
 store.initRenderer();
-log.info(debugInfo());
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
-if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
-    app.quit();
+// Prevent windows from being garbage collected
+let mainWindow;
+// eslint-disable-next-line no-unused-vars
+let settingsWindow;
+// eslint-disable-next-line no-unused-vars
+let dcgWindow;
+let shouldReloadItems = false;
+
+function setShouldReloadItemsHandler(_, flag) {
+  shouldReloadItems = flag;
 }
 
-const createMainWindow = () => {
-    log.verbose('Main window spawned');
-
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 1600,
-        height: 1000,
-        webPreferences: {
-            contextIsolation: false,
-            nodeIntegration: true,
-            enableRemoteModule: true
-        },
-        backgroundColor: '#3E4145',
-        icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
-        show: false
-    });
-
-    mainWindow.maximize();
-
-    // Menu items
-    const mainMenu = new Menu();
-    mainMenu.append(new MenuItem({
-        label: 'File',
-        submenu: [
-            {
-                role: 'reload',
-                accelerator: 'CmdOrCtrl+R',
-                click: () => { mainWindow.webContents.send('reload', true) }
-            },
-            {
-                role: 'forceReload',
-                accelerator: 'CmdOrCtrl+Shift+R',
-                click: () => { mainWindow.webContents.send('force-reload', true) }
-            },
-            {
-                role: 'toggleDevTools',
-                accelerator: 'CmdOrCtrl+Shift+I',
-                click: () => { mainWindow.BrowserWindow.openDevTools() }
-            },
-            {
-                role: 'quit',
-                accelerator: 'CmdOrCtrl+Q',
-                click: () => { app.quit() }
-            }
-        ]
-    }));
-
-    Menu.setApplicationMenu(mainMenu);
-
-    app.once('browser-window-created', () => {
-        mainWindow.webContents.send('system-locale', app.getLocale());
-        mainWindow.webContents.send('app-version', app.getVersion());
-    });
-
-    // and load the index.html of the app.
-    mainWindow.loadFile(path.join(__dirname, 'main', 'index.html'));
-
-    // Hide menubar
-    mainWindow.setMenuBarVisibility(false);
-
-    mainWindow.on('ready-to-show', () => {
-        mainWindow.show();
-    })
-
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools();
+const createMainWindow = async () => {
+  const _window = new BrowserWindow({
+    width: 1600,
+    height: 1000,
+    webPreferences: {
+      preload: path.join(__dirname, 'mainPreload.js'),
+      sandbox: false,
+    },
+    backgroundColor: '#3E4145',
+    icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
+    show: false,
+  });
+  _window.setMenuBarVisibility(false);
+  _window.on('ready-to-show', () => {
+    _window.show();
+    _window.maximize();
+  });
+  _window.on('closed', () => {
+    // Dereference the window
+    mainWindow = undefined;
+  });
+  await _window.loadFile(path.join(__dirname, 'main.html'));
+  return _window;
 };
 
-const createLoadingWindow = () => {
-    log.verbose('Loading window spawned');
-
-    const loadingWindow = new BrowserWindow({
-        width: 400,
-        height: 250,
-        frame: false,
-        webPreferences: {
-            contextIsolation: false,
-            nodeIntegration: true,
-            enableRemoteModule: true
-        },
-        icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
-        show: false
-    });
-
-    // Menu items
-    const loadingMenu = new Menu();
-    loadingMenu.append(new MenuItem({
-        label: 'File',
-        submenu: [{
-            role: 'toggleDevTools',
-            accelerator: 'CmdOrCtrl+Shift+I',
-            click: () => { mainWindow.BrowserWindow.openDevTools() }
-        },
-        {
-            role: 'quit',
-            accelerator: 'CmdOrCtrl+Q',
-            click: () => { app.quit() }
-        }]
-    }));
-
-    Menu.setApplicationMenu(loadingMenu);
-
-    // Set window as non resizable and non closeable
-    loadingWindow.setResizable(false);
-    loadingWindow.setClosable(false);
-
-    // and load the index.html of the app.
-    loadingWindow.loadFile(path.join(__dirname, 'loading', 'index.html'));
-
-    // Hide menubar
-    loadingWindow.setMenuBarVisibility(false);
-
-    loadingWindow.on('ready-to-show', () => {
-        loadingWindow.show();
-    })
-
-    // Open the DevTools.
-    // loadingWindow.webContents.openDevTools();
+const createSettingsWindow = async () => {
+  ipcMain.on('setShouldReloadItems', setShouldReloadItemsHandler);
+  const parentWindow = BrowserWindow.getFocusedWindow();
+  const _window = new BrowserWindow({
+    width: 1000,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, 'settingsPreload.js'),
+      sandbox: false,
+    },
+    backgroundColor: '#3E4145',
+    icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
+    show: false,
+    parent: parentWindow,
+    modal: true,
+    resizable: false,
+  });
+  _window.setMenuBarVisibility(false);
+  _window.on('ready-to-show', () => {
+    _window.show();
+  });
+  _window.on('close', async event => {
+    event.preventDefault();
+    // Avoid window flicker
+    parentWindow.focus();
+    _window.destroy();
+    if (shouldReloadItems) {
+      mainWindow.webContents.send('reload', true);
+      setShouldReloadItemsHandler(null, false);
+    }
+  });
+  _window.on('closed', () => {
+    // Dereference the window
+    settingsWindow = undefined;
+    ipcMain.removeListener('setShouldReloadItems', setShouldReloadItemsHandler);
+  });
+  await _window.loadFile(path.join(__dirname, 'settings.html'));
+  return _window;
 };
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-    createLoadingWindow();
+const createDCGWindow = async () => {
+  const parentWindow = BrowserWindow.getFocusedWindow();
+  const _window = new BrowserWindow({
+    width: 700,
+    height: 300,
+    webPreferences: {
+      preload: path.join(__dirname, 'downloadDcgPreload.js'),
+      sandbox: false,
+    },
+    backgroundColor: '#3E4145',
+    icon: path.join(__dirname, 'styles', 'icons', 'icon_outline.png'),
+    show: false,
+    parent: parentWindow,
+    modal: true,
+  });
+  _window.setMenuBarVisibility(false);
+  _window.on('ready-to-show', () => {
+    _window.show();
+  });
+  _window.on('closed', () => {
+    // Dereference the window
+    mainWindow = undefined;
+  });
+  await _window.loadFile(path.join(__dirname, 'downloadDcg.html'));
+  return _window;
+};
+
+// Prevent multiple instances of the app
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+}
+
+app.on('second-instance', () => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+
+    mainWindow.show();
+  }
 });
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-        app.quit();
-    }
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 });
 
-app.on('activate', () => {
-    // On OS X it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) {
-        createMainWindow();
-    }
+app.on('activate', async () => {
+  // On OS X it's common to re-create a window in the app when the
+  // dock icon is clicked and there are no other windows open.
+  if (BrowserWindow.getAllWindows().length === 0) {
+    mainWindow = await createMainWindow();
+  }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and import them here.
-let fsopSemaphore = false;
+// eslint-disable-next-line unicorn/prefer-top-level-await
+(async () => {
+  await app.whenReady();
+  ipcMain.handle('getPath', (_, f) => app.getPath(f));
+  ipcMain.handle('getAppVersion', () => app.getVersion());
+  mainWindow = await createMainWindow();
+  // Menu items
+  const mainMenu = new Menu();
+  mainMenu.append(new MenuItem({
+    label: 'File',
+    submenu: [
+      {
+        role: 'reload',
+        accelerator: 'CmdOrCtrl+R',
+        click() {
+          mainWindow.webContents.send('reload', true);
+        },
+      },
+      {
+        role: 'forceReload',
+        accelerator: 'CmdOrCtrl+Shift+R',
+        click() {
+          mainWindow.webContents.send('force-reload', true);
+        },
+      },
+      {
+        role: 'toggleDevTools',
+        accelerator: 'CmdOrCtrl+Shift+I',
+        click() {
+          mainWindow.BrowserWindow.openDevTools();
+        },
+      },
+      {
+        role: 'quit',
+        accelerator: 'CmdOrCtrl+Q',
+        click() {
+          app.quit();
+        },
+      },
+    ],
+  }));
 
-ipcMain.on('loadingDone', (event, args) => {
-    startupConsoleMessages.push(args);
-    createMainWindow();
-    BrowserWindow.fromId(event.frameId).destroy();
-    log.verbose('Loading window destroyed');
-});
+  Menu.setApplicationMenu(mainMenu);
 
-ipcMain.handle('download', async (event, { url, dlPath }) => {
-    if (event.sender.getURL().includes('loading')) {
-        let dlData;
-        fsopSemaphore = true;
-        await download(BrowserWindow.fromId(event.frameId), url, { directory: dlPath, saveAs: false, overwrite: true, onCompleted: (res) => { dlData = res } });
-        return dlData;
-    }
-});
+  ipcMain.on('createSettingsWindow', async () => {
+    settingsWindow = await createSettingsWindow();
+  });
+  ipcMain.on('createDCGWindow', async () => {
+    dcgWindow = await createDCGWindow();
+  });
 
-ipcMain.handle('decompress7zip', async (_, args) => {
-    let archivePath = args.path;
-    let exeDir = path.parse(archivePath).dir;
+  function openFileDialog(dialogTitle, isDir) {
+    return dialog.showOpenDialogSync({
+      title: dialogTitle,
+      properties: [isDir ? 'openDirectory' : 'openFile', 'createDirectory', 'dontAddToRecent'],
+    })?.pop();
+  }
 
-    await extract7zip(archivePath)
-    let dcgPath = path.join(exeDir, findExecutable(exeDir).name);
-    await fsp.chmod(dcgPath, 0o744);
-    fsopSemaphore = false;
-    return dcgPath;
-});
-
-ipcMain.handle('getFSOPSemaphore', () => {
-    return fsopSemaphore;
-});
-
-ipcMain.on('setFSOPSemaphore', (_, args) => {
-    fsopSemaphore = args;
-})
-
-ipcMain.handle('selectOutputPath', (event) => {
-    return dialog.showOpenDialogSync({ title: 'Select Output Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
-});
-
-ipcMain.handle('selectDCGPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select DCG Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
-});
-
-ipcMain.handle('selectMDEPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select MDE Path', filters: [{ name: 'Executable Files', extensions: ['exe'] }], properties: ['openFile', 'createDirectory', 'dontAddToRecent'] })?.pop();
-});
-
-ipcMain.handle('selectPKGPath', () => {
-    return dialog.showOpenDialogSync({ title: 'Select Destiny 2 Packages Path', properties: ['openDirectory', 'createDirectory', 'dontAddToRecent'] })?.pop();
-})
-
-ipcMain.handle('getStartupConsoleMessage', () => { return startupConsoleMessages });
-
-ipcMain.handle('getRelaunchFlag', () => { return relaunchFlag });
-
-ipcMain.on('openExplorer', (_, args) => {
-    if (args) {
-        shell.openPath(args[0]);
-    }
-});
-
-ipcMain.on('loadingTimeout', () => {
-    app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) });
-    app.exit(302);
-})
+  ipcMain.handle('getNewPathForSettings', (_, dialogTitle, isDir) => openFileDialog(dialogTitle, isDir));
+  ipcMain.on('openExplorer', (_, path) => {
+    shell.openPath(path);
+  });
+  ipcMain.handle('isPackaged', () => app.isPackaged);
+  ipcMain.handle('confirmDCGDownload', async () => {
+    const choice = await (dialog.showMessageBox(mainWindow, {
+      type: 'question',
+      buttons: ['No', 'Yes'],
+      defaultId: 0,
+      cancelId: 0,
+      title: 'Confirmation',
+      message: 'Download and configure DCG automatically?',
+      detail: 'Destiny Collada Generator (DCG) is required, but not configured. DARE download DCG automatically, or you can manually configure it later.',
+    }));
+    return choice.response;
+  });
+})();

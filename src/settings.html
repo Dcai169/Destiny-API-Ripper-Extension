@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Settings (changes are saved automatically)</title>
+  <link rel="stylesheet" href="styles/darkly_bootstrap.min.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+
+<body>
+  <div class="mb-3">
+    <div class="form-row">
+      <div class="col">
+        <label class="form-label localized-text" for="outputPath">Output Directory</label>
+        <div id="output-path-row">
+          <input class="form-control" type="text" name="output-path" id="outputPath"
+            placeholder="Select an output path..." readonly>
+          <div class="col-2" id="aggregateCheckbox">
+            <div class="form-check" id="aggregate-checkbox-div" title="Put everything except custom shader(s) in the same directory.">
+              <input class="form-check-input settings-checkbox" type="checkbox" name="aggregate-output"
+                id="aggregateOutput">
+              <label class="form-check-label localized-text" id="aggregate-output-label" for="aggregateOutput">Aggregate
+                Output</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="localized-text" for="locale">Item Language</label>
+    <select class="custom-select" id="locale" type="select">
+      <option value="de">Deutsch</option>
+      <option value="en" selected>English</option>
+      <option value="es">Español</option>
+      <option value="es-mx">Español Mexicano</option>
+      <option value="fr">Français</option>
+      <option value="it">Italiano</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+      <option value="pl">Polski</option>
+      <option value="pt-br">Português Brasileiro</option>
+      <option value="ru">Русский</option>
+      <option value="zh-chs">简体中文</option>
+      <option value="zh-cht">繁體中文</option>
+    </select>
+    <small class="localized-text">Changing languages will reload all items and the ripping queue
+      will be cleared.</small>
+  </div>
+  <div class="mb-3">
+    <label class="form-label localized-text" for="dcgPath">Destiny Collada Generator Executable</label>
+    <input class="form-control" type="text" name="dcg-path" id="dcgPath" placeholder="Select the DCG executable..."
+      readonly>
+  </div>
+  <div class="row mb-3 mx-0">
+    <div class="form-check col-6">
+      <input class="form-check-input settings-checkbox " type="checkbox" name="blenderConnector" id="blenderConnector">
+      <label class="form-check-label localized-text" for="blenderConnector">Enable DARE Blender Connector</label>
+    </div>
+    <div class="form-check col-6">
+      <input class="form-check-input settings-checkbox " type="checkbox" name="loadThumbnails" id="loadThumbnails">
+      <label class="form-check-label localized-text" for="loadThumbnails">Load item thumbnails</label>
+    </div>
+  </div>
+  <div class="mde-settings hidden" id="mde-settings">
+    <div class="mb-3">
+      <label class="form-check-label localized-text" for="mdePath">Monteven Dynamic Extractor Executable</label>
+      <input class="form-control" type="text" name="mde-exe-path" id="mdePath"
+        placeholder="Select the MDE executable..." readonly>
+    </div>
+    <div class="mb-3">
+      <label class="form-check-label localized-text" for="pkgPath">Destiny 2 Packages Directory</label>
+      <input class="form-control" type="text" name="mde-pgk-path" id="pkgPath"
+        placeholder="Select the Destiny 2 packages directory..." readonly>
+    </div>
+    <div class="row mb-3 mx-0">
+      <div class="mb-3 col-6 pl-0">
+        <div class="form-check">
+          <input class="form-check-input settings-checkbox" type="checkbox" name="rip-hd-textures" id="ripHDTextures">
+          <label class="form-check-label localized-text" for="ripHDTextures">Rip HD textures</label>
+        </div>
+        <small class="checkboxNote localized-text">Destiny 2 items only</small>
+      </div>
+      <div class="mb-3 col-6 pl-0">
+        <div class="form-check">
+          <input class="form-check-input settings-checkbox" type="checkbox" name="rip-shaders" id="ripShaders">
+          <label class="form-check-label localized-text" for="ripShaders">Rip shaders</label>
+        </div>
+        <small class="checkboxNote localized-text">Shader ripping ignores the Aggregate Output setting</small>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

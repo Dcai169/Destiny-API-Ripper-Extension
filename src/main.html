@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Destiny API Ripper Extension</title>
+  <link rel="stylesheet" href="styles/darkly_bootstrap.min.css">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+<!-- Page Content -->
+<div id="main-content">
+  <!-- Header -->
+  <div class="d-flex bg-dark">
+    <div class="container d-flex" style="position: relative;">
+      <div class="d-flex p-2" style="float: left; margin: 0 auto 0 0;">
+        <!-- Game Selector -->
+        <div class="d-inline p-1">
+          <label for="game-selector"></label><select class="custom-select" id="game-selector">
+          <option value="1">Destiny 1</option>
+          <option value="2" selected>Destiny 2</option>
+        </select>
+        </div>
+        <!-- Sort Selector -->
+        <div class="d-inline p-1 dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="sort-dropdown-button"
+                  data-toggle="dropdown">Sort By
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="sort-dropdown">
+            <li class="dropdown-item">
+              <div class="container">
+                <input class="form-check-input" type="checkbox" id="sort-invert" disabled>
+                <label class="form-check-label localized-text" for="sort-invert">Invert</label>
+              </div>
+            </li>
+            <li class="dropdown-divider"></li>
+            <li class="dropdown-item">
+              <div class="container">
+                <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-index" checked>
+                <label class="form-check-label localized-text" for="sort-rule-index">Index</label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="container">
+                <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-alphabet" disabled>
+                <label class="form-check-label localized-text" for="sort-rule-alphabet">Alphabet</label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="container">
+                <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-rarity" disabled>
+                <label class="form-check-label localized-text" for="sort-rule-rarity">Rarity</label>
+              </div>
+            </li>
+            <li class="dropdown-item">
+              <div class="container">
+                <input class="form-check-input" type="radio" name="sort-rule" id="sort-rule-hash" disabled>
+                <label class="form-check-label localized-text" for="sort-rule-hash">Hash</label>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <!-- Filter Dropdown -->
+        <div class="d-inline p-1 btn-group" role="group">
+          <!-- Rarity -->
+          <div class="btn-group" role="group" style="width: 8ch;">
+            <button id="rarity-dropdown-button" type="button"
+                    class="btn btn-secondary dropdown-toggle localized-text" data-toggle="dropdown">
+              Rarity
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="rarity-dropdown-button">
+              <li class="dropdown-item">
+                <div class="container">
+                  <input class="form-check-input rarity-filter" type="checkbox"
+                         id="filter-exotic" data-selector="[data-rarity='6']" checked>
+                  <label class="form-check-label localized-text" for="filter-exotic"
+                         style="color: var(--exotic-color);">Exotic</label>
+                </div>
+              </li>
+              <li class="dropdown-item">
+                <div class="container">
+                  <input class="form-check-input rarity-filter" type="checkbox"
+                         id="filter-legendary" data-selector="[data-rarity='5']" checked>
+                  <label class="form-check-label localized-text" for="filter-legendary"
+                         style="color: var(--legendary-color);">Legendary</label>
+                </div>
+              </li>
+              <li class="dropdown-item">
+                <div class="container">
+                  <input class="form-check-input rarity-filter" type="checkbox"
+                         id="filter-rare" data-selector="[data-rarity='4']" checked>
+                  <label class="form-check-label localized-text" for="filter-rare"
+                         style="color: var(--rare-color);">Rare</label>
+                </div>
+              </li>
+              <li class="dropdown-item">
+                <div class="container">
+                  <input class="form-check-input rarity-filter" type="checkbox"
+                         id="filter-uncommon" data-selector="[data-rarity='3']" checked>
+                  <label class="form-check-label localized-text" for="filter-uncommon"
+                         style="color: var(--uncommon-color);">Uncommon</label>
+                </div>
+              </li>
+              <li class="dropdown-item">
+                <div class="container">
+                  <input class="form-check-input rarity-filter" type="checkbox"
+                         id="filter-common" data-selector="[data-rarity='2']" checked>
+                  <label class="form-check-label localized-text" for="filter-common"
+                         style="color: var(--common-color);">Common</label>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- Item Type -->
+          <div class="btn-group" role="group">
+            <button id="type-dropdown-button" type="button" class="btn btn-secondary dropdown-toggle localized-text"
+                    data-toggle="dropdown">Item Type
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="type-dropdown-button"
+                style="position: absolute; transform: translate3d(0px, 36px, 0px); top: 0; left: 0; will-change: transform;">
+              <li class="dropdown-submenu">
+                <div class="dropdown-item">
+                  <div class="container">
+                    <input class="form-check-input category-filter" type="checkbox" id="filter-armor" checked>
+                    <label class="form-check-label localized-text" for="filter-armor">Armor</label>
+                  </div>
+                </div>
+                <ul class="dropdown-menu" style="transform: translate(calc(100% - 40px), -39.5%);">
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-helmet"
+                             data-selector="[data-itemcategories*='helmet']" data-influence="filter-armor" checked>
+                      <label class="form-check-label localized-text" for="filter-helmet">Helmet</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-gauntlets"
+                             data-selector="[data-itemcategories*='gauntlets']" data-influence="filter-armor"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-gauntlets">Arms</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-chest"
+                             data-selector="[data-itemcategories*='chest']" data-influence="filter-armor" checked>
+                      <label class="form-check-label localized-text" for="filter-chest">Chest Armor</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-legs"
+                             data-selector="[data-itemcategories*='legs']" data-influence="filter-armor" checked>
+                      <label class="form-check-label localized-text" for="filter-legs">Legs</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-class"
+                             data-selector="[data-itemcategories*='class']" data-influence="filter-armor" checked>
+                      <label class="form-check-label localized-text" for="filter-class">Class Item</label>
+                    </div>
+                  </li>
+
+                  <li class="dropdown-divider">
+
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-armorOrnament"
+                             data-selector="[data-itemcategories*='armorOrnament']" data-influence="filter-armor"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-armorOrnament">Armor
+                        Ornaments</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-masks"
+                             data-selector="[data-itemcategories*='masks']" data-influence="filter-armor" checked>
+                      <label class="form-check-label localized-text" for="filter-masks">Masks</label>
+                    </div>
+                  </li>
+
+                  <li class="dropdown-divider">
+
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input armor-class-filter" type="checkbox" id="filter-titanArmor"
+                             data-selector="[data-itemcategories*='titanArmor']" data-influence="filter-armor"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-titanArmor">Titan Armor</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input armor-class-filter" type="checkbox" id="filter-hunterArmor"
+                             data-selector="[data-itemcategories*='hunterArmor']" data-influence="filter-armor"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-hunterArmor">Hunter Armor</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input armor-class-filter" type="checkbox" id="filter-warlockArmor"
+                             data-selector="[data-itemcategories*='warlockArmor']" data-influence="filter-armor"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-warlockArmor">Warlock Armor</label>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="dropdown-submenu">
+                <div class="dropdown-item">
+                  <div class="container">
+                    <input class="form-check-input category-filter" type="checkbox" id="filter-weapon" checked>
+                    <label class="form-check-label localized-text" for="filter-weapon">Weapons</label>
+                  </div>
+                </div>
+                <ul class="dropdown-menu" style="transform: translate(calc(100% - 53px), -17.88%);">
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-autoRifle"
+                             data-selector="[data-itemcategories*='autoRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-autoRifle">Auto Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-scoutRifle"
+                             data-selector="[data-itemcategories*='scoutRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-scoutRifle">Scout Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-pulseRifle"
+                             data-selector="[data-itemcategories*='pulseRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-pulseRifle">Pulse Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-handCannon"
+                             data-selector="[data-itemcategories*='handCannon']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-handCannon">Hand Cannons</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-submachineGun"
+                             data-selector="[data-itemcategories*='submachineGun']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-submachineGun">Submachine
+                        Guns</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-sidearm"
+                             data-selector="[data-itemcategories*='sidearm']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-sidearm">Sidearms</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-bow"
+                             data-selector="[data-itemcategories*='bow']" data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-bow">Bows</label>
+                    </div>
+                  </li>
+
+                  <li class="dropdown-divider">
+
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-shotgun"
+                             data-selector="[data-itemcategories*='shotgun']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-shotgun">Shotguns</label>
+                    </div>
+                  </li>
+                  <!--<li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-breachgrenadeLauncher"
+                             data-selector="[data-itemcategories*='breachgrenadeLauncher']:not([data-itemcategories*='4'])"
+                             data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-breachgrenadeLauncher">Grenade
+                        Launchers</label>
+                    </div>
+                  </li>-->
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-fusionRifle"
+                             data-selector="[data-itemcategories*='fusionRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-fusionRifle">Fusion Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-sniperRifle"
+                             data-selector="[data-itemcategories*='sniperRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-sniperRifle">Sniper Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-traceRifle"
+                             data-selector="[data-itemcategories*='traceRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-traceRifle">Trace Rifles</label>
+                    </div>
+                  </li>
+
+                  <li class="dropdown-divider">
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-glaive"
+                             data-selector="[data-itemcategories*='glaive']"
+                             data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-grenadeLauncher">Glaives</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-grenadeLauncher"
+                             data-selector="[data-itemcategories*='grenadeLauncher']"
+                             data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-grenadeLauncher">Grenade
+                        Launchers</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-divider">
+
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-sword"
+                             data-selector="[data-itemcategories*='sword']" data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-sword">Swords</label>
+                    </div>
+                  </li>
+                  <!--<li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-heavygrenadeLauncher"
+                             data-selector="[data-itemcategories*='heavygrenadeLauncher']"
+                             data-influence="filter-weapon" checked>
+                      <label class="form-check-label localized-text" for="filter-heavygrenadeLauncher">Grenade
+                        Launchers</label>
+                    </div>
+                  </li>-->
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-rocketLauncher"
+                             data-selector="[data-itemcategories*='rocketLauncher']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-rocketLauncher">Rocket
+                        Launchers</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-linearFusionRifle"
+                             data-selector="[data-itemcategories*='linearFusionRifle']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-linearFusionRifle">Linear Fusion
+                        Rifles</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-machineGun"
+                             data-selector="[data-itemcategories*='machineGun']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label localized-text" for="filter-machineGun">Machine Guns</label>
+                    </div>
+                  </li>
+                  <li class="dropdown-divider">
+
+                  </li>
+                  <li class="dropdown-item">
+                    <div class="container">
+                      <input class="form-check-input item-filter" type="checkbox" id="filter-weaponOrnament"
+                             data-selector="[data-itemcategories*='weaponOrnament']" data-influence="filter-weapon"
+                             checked>
+                      <label class="form-check-label" for="filter-weaponOrnament">Weapon Ornaments</label>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <li class="dropdown-submenu">
+                <div class="dropdown-item">
+                  <div class="container">
+                    <input class="form-check-input category-filter" type="checkbox" id="filter-equipment" checked>
+                    <label class="form-check-label localized-text" for="filter-equipment">Equipment</label>
+                  </div>
+                </div>
+                <ul class="dropdown-menu" style="transform: translate(calc(100% - 6px), -73%);">
+                  <li>
+                    <div class="dropdown-item">
+                      <div class="container">
+                        <input class="form-check-input item-filter" type="checkbox" id="filter-ships"
+                               data-selector="[data-itemcategories*='ships']" data-influence="filter-equipment"
+                               checked>
+                        <label class="form-check-label localized-text" for="filter-ships">Ships</label>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="dropdown-item">
+                      <div class="container">
+                        <input class="form-check-input item-filter" type="checkbox" id="filter-sparrows"
+                               data-selector="[data-itemcategories*='sparrows']" data-influence="filter-equipment"
+                               checked>
+                        <label class="form-check-label localized-text" for="filter-sparrows">Sparrows</label>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <div class="dropdown-item">
+                      <div class="container">
+                        <input class="form-check-input item-filter" type="checkbox" id="filter-ghostShells"
+                               data-selector="[data-itemcategories*='ghostShells']"
+                               data-influence="filter-equipment" checked>
+                        <label class="form-check-label localized-text" for="filter-ghostShells">Ghost Shells</label>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <div class="dropdown-item">
+                  <div class="container">
+                    <input class="form-check-input item-filter" type="checkbox" id="filter-shaders"
+                           data-selector="[data-itemcategories*='shaders']" checked>
+                    <label class="form-check-label localized-text" for="filter-shaders">Shaders</label>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="d-flex p-2" style="float: right; margin: 0 0 0 auto;">
+        <div class="d-inline p-1">
+          <input class="form-control me-2 localized-text" id="search-box" type="search"
+                 placeholder="Search" aria-label="Search">
+        </div>
+      </div>
+    </div>
+    <div class="d-flex p-2">
+      <div class="d-inline p-1">
+        <button class="btn btn-info localized-text" id="settings-button" data-toggle="modal"
+                data-target="#settingsModal">Settings
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Body -->
+  <div class="m-2"
+       style="display: flex; flex-flow: row wrap; flex-direction: column; overflow: auto; height:91vh; justify-content: flex-start;"
+       id="item-container" tabindex="-1" disabled="disabled"></div>
+</div>
+<!-- Queue -->
+<div id="right-panel" style="display: grid; grid-template-rows: 70% 1fr; height: 100vh;">
+  <div class="container">
+    <!-- Buttons -->
+    <div class="container p-2 d-flex justify-content-center">
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-outline-danger localized-text" id="clear-queue-button">Clear
+          Queue
+        </button>
+      </div>
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-info localized-text" id="open-output-button">Open Output Directory
+        </button>
+      </div>
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-primary localized-text" id="start-ripping-button">Start Ripping
+        </button>
+      </div>
+      <!-- <div class="d-inline hidden" id="loading-indicator">
+        <div class="spinner-border" role="status"></div>
+      </div> -->
+    </div>
+    <!-- Container -->
+    <div class="container p-2" id="queue-container" style="overflow-y: auto; height: 60vh;" tabindex="-1"
+         disabled="disabled"></div>
+  </div>
+  <div class="container" id="status" style="background-color: black;">
+    <!-- Status Controls -->
+    <div class="container p-2 d-flex justify-content-end">
+      <div class="d-inline p-1">
+        <div class="mt-2">
+          <input class="form-check-input" type="checkbox" id="toggle-status-autoscroll" checked>
+          <label class="form-check-label localized-text"
+                 for="toggle-status-autoscroll">Auto Scroll</label>
+        </div>
+      </div>
+      <div class="d-inline p-1">
+        <button type="button" class="btn btn-link localized-text" id="clear-status">Clear Status</button>
+      </div>
+    </div>
+    <div class="container" id="status-container" style="overflow-y: auto; height: 22vh; width: 25vw;">
+      <code id="status-text" style="white-space: pre-line; color: white;"></code>
+    </div>
+  </div>
+</div>
+</body>
+</html>

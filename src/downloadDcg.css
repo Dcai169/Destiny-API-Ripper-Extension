@@ -1,0 +1,99 @@
+@font-face {
+    font-family: "Neue Haas Grotesk Display";
+    src: url("styles/fonts/NHaasGroteskDSPro-55Rg.woff2") format('woff2');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Neue Haas Grotesk Display";
+    src: url("styles/fonts/NHaasGroteskDSPro-56It.woff2") format('woff2');
+    font-style: italic;
+}
+
+@font-face {
+    font-family: "Neue Haas Grotesk Display";
+    src: url("styles/fonts/NHaasGroteskDSPro-65Md.woff2") format('woff2');
+    font-weight: bold;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    height: calc(100vh - 2em);
+}
+
+body {
+    margin: 1em;
+    display: grid;
+    grid: repeat(10, 1fr) min-content / auto-flow;
+    grid-gap: 0;
+    font-family: "Lucida Console",
+    "Neue Haas Grotesk Display",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    "Liberation Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'liga', 'clig', 'kern';
+    color: white;
+    line-height: normal;
+}
+
+#message {
+    grid-area: 1 / 1 / 9 / 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    line-height: 1.5em;
+}
+
+#bottom-row {
+    white-space: nowrap;
+    grid-area: 10 / 1 / 10 / 1;
+    display: flex;
+    height: min-content;
+    align-self: center;
+}
+
+label {
+    display: flex;
+    flex: min-content;
+    max-width: min-content;
+    user-select: none;
+    align-items: center;
+}
+
+#status {
+    display: flex;
+    flex: auto;
+    align-items: center;
+    position: relative;
+}
+
+#progress-bar {
+    display: flex;
+    flex: auto;
+    position: absolute;
+    background-color: white;
+    width: 0;
+    height: 1em;
+    z-index: 1;
+}
+
+#progress-text {
+    display: flex;
+    flex: auto;
+    mix-blend-mode: difference;
+    justify-content: right;
+    z-index: 2;
+}

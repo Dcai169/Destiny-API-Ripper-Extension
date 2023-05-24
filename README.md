@@ -10,4 +10,4 @@ DCG can be automatically downloaded, but MDE requires manual configuration:
 2. In DARE's settings window, set the paths to your Destiny 2 packages directory and the MDE executable.
 
 ### License
-MIT
+DARE is licenced under the MIT Licence

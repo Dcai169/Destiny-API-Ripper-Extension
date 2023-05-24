@@ -49,7 +49,7 @@ window.addEventListener('load', () => {
   });
   for (const id of ['outputPath', 'dcgPath', 'mdePath', 'pkgPath']) {
     document.getElementById(id).addEventListener('click', event => {
-      const dialogTitle = 'Select ' + event.target.previousElementSibling.textContent;
+      const dialogTitle = 'Select ' + document.getElementById(`${id}-label`).textContent;
       ipcRenderer.invoke('getNewPathForSettings', dialogTitle, dialogTitle.includes('Directory')).then(response => {
         if (response) {
           appConfig.set(id, response);

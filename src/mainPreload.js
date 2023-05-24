@@ -672,8 +672,8 @@ window.addEventListener('load', () => {
           metadataStorage[gameGeneration].holder = await getDestiny2ItemsMetadata(locale);
           generateTiles(metadataStorage[gameGeneration].holder);
         } catch (error) {
-          if (error.message === "Request failed with status code 500") {
-            printError('Unable to load Destiny 2 item definitions. It seems the API is down, try again later.')
+          if (error.message === 'Request failed with status code 500') {
+            printError('Unable to load Destiny 2 item definitions. It seems the API is down, try again later.');
           } else {
             printError('Unable to load Destiny 2 item definitions. Error message: ' + error.message);
           }

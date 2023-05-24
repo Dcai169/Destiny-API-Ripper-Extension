@@ -51,6 +51,7 @@
   "dependencies": {
     "7zip-bin": "^5.2.0",
     "axios": "^1.4.0",
+    "dotenv": "^16.0.3",
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0"
   },

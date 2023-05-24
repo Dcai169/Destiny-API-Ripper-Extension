@@ -5,6 +5,7 @@ const process = require('node:process');
 const {ipcRenderer} = require('electron');
 const axios = require('axios');
 const {appConfig} = require('./appConfig.js');
+require('dotenv').config();
 
 const DEFAULT_SHADER_HASH = 4248210736; // Default Shader
 const DESTINY2_HASH_BLACKLIST = new Set([702981643, 2965439266, 2426387438, 3807544519, 2325217837, 4248210736]);
@@ -118,7 +119,7 @@ async function loadGzippedD2Json(path) {
 
 async function getDestiny2ItemsMetadata(locale = 'en') {
   const BASE_URL = 'https://bungie.net';
-  const d2Manifest = await axios.get(BASE_URL + '/Platform/Destiny2/Manifest/');
+  const d2Manifest = await axios.get(BASE_URL + '/Platform/Destiny2/Manifest/', {headers: {'X-API-Key': process.env.API_KEY}});
   const d2ManifestVersion = d2Manifest.data.Response.version;
   const d2ItemDefinitionURL = BASE_URL + d2Manifest.data.Response.jsonWorldComponentContentPaths[locale].DestinyInventoryItemDefinition;
   const jsonFilename = new URL(d2ItemDefinitionURL).pathname.split('/').at(-1);

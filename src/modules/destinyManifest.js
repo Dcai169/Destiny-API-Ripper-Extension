@@ -95,7 +95,7 @@ async function loadGzippedD2Json(path) {
       }
 
       // Ornaments
-      if (item?.traitIds?.includes('item_type.ornament.armor')) {
+      if (item?.traitIds?.includes('item_type.ornament.armor') || item?.traitIds?.includes('item.ornament.armor')) {
         return true;
       }
 

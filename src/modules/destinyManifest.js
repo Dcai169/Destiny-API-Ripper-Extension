@@ -94,12 +94,12 @@ async function loadGzippedD2Json(path) {
         return false;
       }
 
-      // Ornaments
-      if (item?.traitIds?.includes('item_type.ornament.armor') || item?.traitIds?.includes('item.ornament.armor')) {
+      // Ornaments and shaders
+      if (item?.traitIds?.includes('item.ornament.armor') || item?.traitIds?.includes('item.shader')) {
         return true;
       }
 
-      // Armor, weapons, shaders, ships, ghost shells, and sparrows
+      // Weapons, armor, ships, ghost shells, and sparrows (respectively)
       if (item.itemCategoryHashes?.some(itemCategoryHash => [1, 20, 39, 41, 42, 43, 55, 1742617626, 3124752623].includes(itemCategoryHash))) {
         return true;
       }

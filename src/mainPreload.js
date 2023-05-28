@@ -533,8 +533,12 @@ window.addEventListener('load', () => {
         .map((hash, ..._) => itemCategoryHashToName[hash]).join(' ').trim();
       tileRoot.setAttribute('name', item.displayProperties.name);
 
-      if (!tileRoot.dataset.itemcategories) {
+      if (item.traitIds.includes('item.ornament.armor')) {
         tileRoot.dataset.itemcategories = 'armorOrnament';
+      } 
+      
+      if (item.traitIds.includes('item.shader')) {
+        tileRoot.dataset.itemcategories = 'shaders';
       }
 
       switch (item?.classType) {

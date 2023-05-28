@@ -266,7 +266,7 @@ window.addEventListener('load', () => {
       // MontevenDynamicExtractor.exe -p <PACKAGE PATH> -o <OUTPUT PATH> -n <ITEM NAME> -t -h <HASH>
       const exeArgs = ['--pkgspath', replaceBackslashes(appConfig.get('pkgPath')), '--outputpath', replaceBackslashes(outputPath)]
         // If the item's class is not null, add it to the name, then replace all the spaces with underscores
-        .concat((item.shader ? [] : ['--filename', `${(item.class ? `${item.class}_` : '')}${item.name.toLowerCase()}`.replaceAll(/[ -]/g, '_')]))
+        .concat((item.shader ? [] : ['--filename', `${(item.class ? `${item.class}_` : '')}${item.name.toLowerCase()}`.replaceAll(/[ -\"\']/g, '_')]))
         // If the item is a shader, use the '-h' flag, otherwise use the '-a' flag
         .concat(['--textures', (item.shader ? '--shader' : '--api'), item.hash]);
       const child = spawn(appConfig.get('mdePath'), exeArgs, {cwd: path.parse(appConfig.get('mdePath')).dir});

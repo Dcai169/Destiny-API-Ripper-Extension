@@ -282,7 +282,7 @@ window.addEventListener('load', () => {
           resolve();
         } else {
           printExitCode('MDE', code);
-          reject(new Error(`Exit code: ${code}`));
+          reject(new Error(`MDE failed with exit code: ${code}`));
         }
       });
     });

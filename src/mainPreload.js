@@ -236,7 +236,7 @@ window.addEventListener('load', () => {
           resolve();
         } else {
           printExitCode('DCG', code);
-          reject();
+          reject(new Error(`DCG failed with exit code: ${code}`));
         }
       });
     });

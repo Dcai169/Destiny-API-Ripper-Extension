@@ -236,7 +236,7 @@ window.addEventListener('load', () => {
           resolve();
         } else {
           printExitCode('DCG', code);
-          reject();
+          reject(new Error(`DCG failed with exit code: ${code}`));
         }
       });
     });
@@ -282,7 +282,7 @@ window.addEventListener('load', () => {
           resolve();
         } else {
           printExitCode('MDE', code);
-          reject();
+          reject(new Error(`MDE failed with exit code: ${code}`));
         }
       });
     });

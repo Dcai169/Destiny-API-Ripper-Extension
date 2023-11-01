@@ -1,7 +1,7 @@
 {
   "name": "destiny-api-ripper-extension",
   "productName": "Destiny API Ripper Extension",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "An extension for the Destiny Collada Generator",
   "main": "src/index.js",
   "scripts": {
@@ -53,13 +53,16 @@
     "axios": "^1.4.0",
     "dotenv": "^16.0.3",
     "electron-log": "^4.4.8",
+    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.1.1",
-    "@electron-forge/maker-deb": "^6.1.1",
-    "@electron-forge/maker-rpm": "^6.1.1",
-    "@electron-forge/maker-zip": "^6.1.1",
+    "@electron-forge/cli": "^6.4.2",
+    "@electron-forge/maker-deb": "^6.4.2",
+    "@electron-forge/maker-rpm": "^6.4.2",
+    "@electron-forge/maker-squirrel": "^6.4.2",
+    "@electron-forge/maker-zip": "^6.4.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.2",
     "electron": "^24.3.1",
     "npm-check-updates": "^16.10.12",
     "xo": "^0.54.2"

@@ -170,7 +170,7 @@ window.addEventListener('load', () => {
     printInfo(softwareName + ` exited with code ${code}`, (code) ? 'error' : 'log');
   }
 
-  async function currDirPath(outputPath) {
+  async function currDirPath(outputPath, returnLength = 1) {
     let currDirName;
     let lastDirCreationTime;
     const f = await fsp.readdir(outputPath, {withFileTypes: true});
@@ -223,7 +223,7 @@ window.addEventListener('load', () => {
 
   function runDCG(exeArgs) {
     return new Promise((resolve, reject) => {
-      const child = spawn(appConfig.get('dcgPath'), exeArgs);
+      const child = spawn(appConfig.get('dcgPath'), exeArgs, {cwd: path.parse(appConfig.get('dcgPath')).dir});
       child.stdout.on('data', chunk => {
         printSubprocessMessages('DCG', 'stdout', chunk);
       });
@@ -242,10 +242,19 @@ window.addEventListener('load', () => {
     });
   }
 
-  function ripFromAPI(hashes, gameGeneration = '2') {
+  function ripFromAPI(hashes, gameGeneration = '2', aggregateOutput = false) {
     return new Promise((resolve, reject) => {
       // DestinyColladaGenerator.exe <GAME> -o <OUTPUT PATH> [<HASHES>]
-      runDCG([gameGeneration, '-o', appConfig.get('outputPath')].concat(hashes))
+      let args = [gameGeneration, '-o', appConfig.get('outputPath')]
+
+      if (aggregateOutput) {
+        args = args.concat(['-m', 'true'])
+      }
+
+      args = args.concat(hashes)
+      console.log(args)
+
+      runDCG(args)
         .then(() => {
           resolve();
         })
@@ -336,31 +345,22 @@ window.addEventListener('load', () => {
     // Check platform in case the user modified config.json outside of DARE
     if (process.platform === 'win32' && appConfig.get('ripHDTextures') && gameGeneration === '2' && _3dItems.length > 0) {
       printInfo('Ripping HD textures...');
+      await ripFromAPI(_3dItems.map(item => item.hash), gameGeneration, appConfig.get('aggregateOutput'));
+
       if (appConfig.get('aggregateOutput')) {
-        await ripFromAPI(_3dItems.map(item => item.hash), gameGeneration);
         const hdtPath = path.join((await currDirPath(appConfig.get('outputPath'))), 'HD_Textures');
         await fsp.mkdir(hdtPath);
         await runMDEAll(_3dItems, hdtPath);
-        await dispatchImportRequest();
       } else {
-        for (const item of _3dItems) {
-          await ripFromAPI([item.hash], gameGeneration);
-          const hdtPath = path.join((await currDirPath(appConfig.get('outputPath'))), 'HD_Textures');
-          await fsp.mkdir(hdtPath);
-          await runMDE(item, hdtPath);
-          await dispatchImportRequest();
-        }
+        
       }
+
+      await dispatchImportRequest();
     } else if (_3dItems.length > 0) {
       // Skip HD textures
       printInfo('Ripping API textures...');
-      if (appConfig.get('aggregateOutput')) {
-        await ripFromAPI(_3dItems.map(item => item.hash), gameGeneration);
-        await dispatchImportRequest();
-      } else {
-        await ripAllFromAPI(_3dItems, gameGeneration);
-        await dispatchImportRequest();
-      }
+      await ripFromAPI(_3dItems.map(item => item.hash), gameGeneration, appConfig.get('aggregateOutput'));
+      await dispatchImportRequest();
     } else {
       // printInfo('No 3D models found in queue');
     }
